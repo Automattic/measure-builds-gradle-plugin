@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit
 class BuildReporter(
     private val analyticsReporter: AnalyticsReporter
 ) {
+
+    @Suppress("TooGenericExceptionCaught")
     fun report(buildData: BuildData) {
         try {
             reportMeasured(buildData)
@@ -21,7 +23,9 @@ class BuildReporter(
         reportInternal(buildData)
 
         val reportingOverhead = nowMillis() - start
-        println("$STOPWATCH_ICON Build time '${buildData.buildTime} ms' reported to $analyticsReporter in $reportingOverhead ms.$STOPWATCH_ICON")
+        println(
+            "$STOPWATCH_ICON Build time '${buildData.buildTime} ms' reported in $reportingOverhead ms.$STOPWATCH_ICON"
+        )
     }
 
     private fun reportInternal(buildData: BuildData) {

@@ -17,7 +17,7 @@ data class BuildData(
     val isBuildCache: Boolean,
     val maxWorkers: Int,
     val taskStatistics: TaskStatistics,
-    val buildDataCollectionOverhead: Long // This is only collection overhead. We cannot see the reporting overhead as measuring and reporting it will add meta- overhead :D
+    val buildDataCollectionOverhead: Long
 )
 
 enum class Environment {
