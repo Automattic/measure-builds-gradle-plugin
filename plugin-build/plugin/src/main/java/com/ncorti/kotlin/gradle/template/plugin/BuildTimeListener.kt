@@ -25,5 +25,4 @@ internal class BuildTimeListener(
 
         buildReporter.report(buildData)
     }
-
 }

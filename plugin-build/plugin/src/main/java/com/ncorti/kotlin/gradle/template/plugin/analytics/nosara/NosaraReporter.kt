@@ -15,7 +15,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 
-
 class NosaraReporter : AnalyticsReporter {
 
     override suspend fun report(event: BuildData) {
@@ -44,4 +43,3 @@ class NosaraReporter : AnalyticsReporter {
         client.close()
     }
 }
-
