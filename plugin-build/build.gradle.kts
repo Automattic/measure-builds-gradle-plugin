@@ -2,6 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     kotlin("jvm") version BuildPluginsVersion.KOTLIN apply false
+    kotlin("plugin.serialization") version BuildPluginsVersion.KOTLIN apply false
     id("com.gradle.plugin-publish") version BuildPluginsVersion.PLUGIN_PUBLISH apply false
     id("io.gitlab.arturbosch.detekt") version BuildPluginsVersion.DETEKT
     id("org.jlleitschuh.gradle.ktlint") version BuildPluginsVersion.KTLINT
