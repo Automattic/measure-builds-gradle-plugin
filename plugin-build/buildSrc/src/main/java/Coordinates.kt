@@ -1,20 +1,20 @@
 object PluginCoordinates {
-    const val ID = "com.ncorti.kotlin.gradle.template.plugin"
-    const val GROUP = "com.ncorti.kotlin.gradle.template"
-    const val VERSION = "1.0.0"
-    const val IMPLEMENTATION_CLASS = "com.ncorti.kotlin.gradle.template.plugin.TemplatePlugin"
+    const val ID = "com.automattic.kotlin.gradle.tracks.plugin"
+    const val GROUP = "com.automattic.kotlin.gradle.tracks"
+    const val VERSION = "0.0.1-SNAPSHOT"
+    const val IMPLEMENTATION_CLASS = "com.automattic.kotlin.gradle.tracks.plugin.BuildTimePlugin"
 }
 
 object PluginBundle {
-    const val VCS = "https://github.com/cortinico/kotlin-gradle-plugin-template"
-    const val WEBSITE = "https://github.com/cortinico/kotlin-gradle-plugin-template"
-    const val DESCRIPTION = "An empty Gradle plugin created from a template"
-    const val DISPLAY_NAME = "An empty Gradle Plugin from a template"
+    const val VCS = "https://github.com/wzieba/tracks-gradle/"
+    const val WEBSITE = "https://github.com/wzieba/tracks-gradle/"
+    const val DESCRIPTION = "Gradle plugin which reports build times to Tracks."
+    const val DISPLAY_NAME = "Gradle plugin which reports build times to Tracks."
     val TAGS = listOf(
         "plugin",
         "gradle",
-        "sample",
-        "template"
+        "automattic",
+        "tracks"
     )
 }
 

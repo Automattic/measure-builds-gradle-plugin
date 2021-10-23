@@ -1,8 +1,10 @@
 plugins {
     java
-    id("com.ncorti.kotlin.gradle.template.plugin")
+    id("com.automattic.kotlin.gradle.tracks.plugin")
 }
 
-templateExampleConfig {
-    message.set("Just trying this gradle plugin...")
+tracks {
+    automatticProject.set(com.automattic.kotlin.gradle.tracks.plugin.TracksExtension.AutomatticProject.TracksGradle)
+    debug.set(false)
+    uploadEnabled.set(true)
 }
