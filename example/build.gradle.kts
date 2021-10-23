@@ -1,4 +1,4 @@
 plugins {
     java
-    id("com.ncorti.kotlin.gradle.template.plugin")
+    id("com.automattic.kotlin.gradle.tracks.plugin")
 }

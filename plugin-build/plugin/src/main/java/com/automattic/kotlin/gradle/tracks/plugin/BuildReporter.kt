@@ -1,6 +1,6 @@
-package com.ncorti.kotlin.gradle.template.plugin
+package com.automattic.kotlin.gradle.tracks.plugin
 
-import com.ncorti.kotlin.gradle.template.plugin.analytics.AnalyticsReporter
+import com.automattic.kotlin.gradle.tracks.plugin.analytics.AnalyticsReporter
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 

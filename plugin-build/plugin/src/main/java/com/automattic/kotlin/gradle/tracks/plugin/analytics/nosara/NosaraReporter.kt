@@ -1,7 +1,7 @@
-package com.ncorti.kotlin.gradle.template.plugin.analytics.nosara
+package com.automattic.kotlin.gradle.tracks.plugin.analytics.nosara
 
-import com.ncorti.kotlin.gradle.template.plugin.BuildData
-import com.ncorti.kotlin.gradle.template.plugin.analytics.AnalyticsReporter
+import com.automattic.kotlin.gradle.tracks.plugin.BuildData
+import com.automattic.kotlin.gradle.tracks.plugin.analytics.AnalyticsReporter
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature

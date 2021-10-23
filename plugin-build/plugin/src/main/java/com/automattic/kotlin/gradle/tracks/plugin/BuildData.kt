@@ -1,4 +1,4 @@
-package com.ncorti.kotlin.gradle.template.plugin
+package com.automattic.kotlin.gradle.tracks.plugin
 
 data class BuildData(
     val action: String,

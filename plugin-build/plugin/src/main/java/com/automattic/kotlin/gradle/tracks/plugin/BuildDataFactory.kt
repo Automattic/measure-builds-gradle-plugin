@@ -1,4 +1,4 @@
-package com.ncorti.kotlin.gradle.template.plugin
+package com.automattic.kotlin.gradle.tracks.plugin
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.BuildResult

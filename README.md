@@ -12,7 +12,7 @@ Just click on [![Use this template](https://img.shields.io/badge/-Use%20this%20t
 
 Once created don't forget to update the:
 - [Plugin Coordinates](plugin-build/buildSrc/src/main/java/Coordinates.kt)
-- Plugin Usages (search for [com.ncorti.kotlin.gradle.template](https://github.com/cortinico/kotlin-gradle-plugin-template/search?q=com.ncorti.kotlin.gradle.template&unscoped_q=com.ncorti.kotlin.gradle.template) in the repo and replace it with your ID).
+- Plugin Usages (search for [com.automattic.kotlin.gradle.template](https://github.com/cortinico/kotlin-gradle-plugin-template/search?q=com.automattic.kotlin.gradle.template&unscoped_q=com.automattic.kotlin.gradle.template) in the repo and replace it with your ID).
 
 ## Features 🎨
 

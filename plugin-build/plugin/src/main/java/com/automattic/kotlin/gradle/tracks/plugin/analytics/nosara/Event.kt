@@ -1,6 +1,6 @@
-package com.ncorti.kotlin.gradle.template.plugin.analytics.nosara
+package com.automattic.kotlin.gradle.tracks.plugin.analytics.nosara
 
-import com.ncorti.kotlin.gradle.template.plugin.Environment
+import com.automattic.kotlin.gradle.tracks.plugin.Environment
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package com.ncorti.kotlin.gradle.template.plugin
+package com.automattic.kotlin.gradle.tracks.plugin
 
 import org.gradle.BuildListener
 import org.gradle.BuildResult

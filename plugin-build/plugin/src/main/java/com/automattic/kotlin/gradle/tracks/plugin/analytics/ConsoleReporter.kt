@@ -1,6 +1,6 @@
-package com.ncorti.kotlin.gradle.template.plugin.analytics
+package com.automattic.kotlin.gradle.tracks.plugin.analytics
 
-import com.ncorti.kotlin.gradle.template.plugin.BuildData
+import com.automattic.kotlin.gradle.tracks.plugin.BuildData
 
 class ConsoleReporter(private val reporterName: String) : AnalyticsReporter {
 
