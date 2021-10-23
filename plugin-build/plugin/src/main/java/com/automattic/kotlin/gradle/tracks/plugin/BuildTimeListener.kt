@@ -8,7 +8,8 @@ import org.gradle.api.invocation.Gradle
 
 internal class BuildTimeListener(
     private val buildDataFactory: BuildDataFactory,
-    private val buildReporter: BuildReporter
+    private val buildReporter: BuildReporter,
+    private val tracksExtension: TracksExtension
 ) : BuildListener {
     private val taskExecutionStatisticsEventAdapter = TaskExecutionStatisticsEventAdapter()
 
@@ -19,10 +20,22 @@ internal class BuildTimeListener(
     }
 
     override fun buildFinished(result: BuildResult) {
-        val buildData = buildDataFactory.buildData(result, taskExecutionStatisticsEventAdapter.statistics)
+        val buildData = buildDataFactory.buildData(
+            result,
+            taskExecutionStatisticsEventAdapter.statistics,
+            tracksExtension.automatticProject.get()
+        )
 
-        println("Build data collected in ${buildData.buildDataCollectionOverhead} ms")
+        if (tracksExtension.uploadEnabled.getOrElse(true)) {
+            buildReporter.report(
+                buildData,
+                tracksExtension.username.getOrElse(ANONYMOUS_TRACKS_USER),
+                tracksExtension.debug.getOrElse(false)
+            )
+        }
+    }
 
-        buildReporter.report(buildData)
+    companion object {
+        private const val ANONYMOUS_TRACKS_USER = "anon"
     }
 }

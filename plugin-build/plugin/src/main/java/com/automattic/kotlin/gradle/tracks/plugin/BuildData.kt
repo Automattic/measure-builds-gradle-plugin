@@ -1,6 +1,7 @@
 package com.automattic.kotlin.gradle.tracks.plugin
 
 data class BuildData(
+    val forProject: TracksExtension.AutomatticProject,
     val action: String,
     val buildTime: Long,
     val tasks: List<String>,
@@ -8,7 +9,6 @@ data class BuildData(
     val failure: Throwable?,
     val daemonsRunning: Int,
     val thisDaemonBuilds: Int,
-    val hostname: String,
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,

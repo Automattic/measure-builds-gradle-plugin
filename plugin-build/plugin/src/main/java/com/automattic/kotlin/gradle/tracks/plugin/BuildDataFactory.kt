@@ -1,6 +1,5 @@
 package com.automattic.kotlin.gradle.tracks.plugin
 
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.BuildResult
 import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
 import org.gradle.api.invocation.Gradle
@@ -13,7 +12,11 @@ import java.util.concurrent.TimeUnit
 object BuildDataFactory {
 
     @Suppress("UnstableApiUsage")
-    fun buildData(result: BuildResult, statistics: TaskExecutionStatistics): BuildData {
+    fun buildData(
+        result: BuildResult,
+        statistics: TaskExecutionStatistics,
+        automatticProject: TracksExtension.AutomatticProject
+    ): BuildData {
         val start = nowMillis()
 
         val gradle = result.gradle as DefaultGradle
@@ -26,13 +29,13 @@ object BuildDataFactory {
         val startParameter = gradle.startParameter
 
         return BuildData(
+            forProject = automatticProject,
             action = result.action,
             buildTime = totalTime,
             failed = result.failure != null,
             failure = result.failure,
             daemonsRunning = daemonInfo.numberOfRunningDaemons,
             thisDaemonBuilds = daemonInfo.numberOfBuilds,
-            hostname = hostname(),
             tasks = startParameter.taskNames,
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,
@@ -49,12 +52,6 @@ object BuildDataFactory {
             ),
             buildDataCollectionOverhead = nowMillis() - start
         )
-    }
-
-    private fun hostname(): String {
-        val process = Runtime.getRuntime().exec("hostname")
-        process.waitFor()
-        return ProcessGroovyMethods.getText(process).trim()
     }
 
     private fun Gradle.environment(): Environment {

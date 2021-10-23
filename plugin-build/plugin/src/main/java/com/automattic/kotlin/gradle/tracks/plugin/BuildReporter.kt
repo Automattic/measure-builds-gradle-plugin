@@ -1,6 +1,7 @@
 package com.automattic.kotlin.gradle.tracks.plugin
 
 import com.automattic.kotlin.gradle.tracks.plugin.analytics.AnalyticsReporter
+import com.automattic.kotlin.gradle.tracks.plugin.analytics.Emojis.FAILURE_ICON
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
@@ -9,34 +10,32 @@ class BuildReporter(
 ) {
 
     @Suppress("TooGenericExceptionCaught")
-    fun report(buildData: BuildData) {
+    fun report(buildData: BuildData, username: String, debug: Boolean) {
         try {
-            reportMeasured(buildData)
+            reportMeasured(buildData, username, debug)
         } catch (ex: Exception) {
-            println("Build time reporting failed: $ex")
+            println("$FAILURE_ICON Build time reporting failed: $ex")
         }
     }
 
-    private fun reportMeasured(buildData: BuildData) {
+    private fun reportMeasured(buildData: BuildData, username: String, debug: Boolean) {
         val start = nowMillis()
 
-        reportInternal(buildData)
+        reportInternal(buildData, username, debug)
 
         val reportingOverhead = nowMillis() - start
-        println(
-            "$STOPWATCH_ICON Build time '${buildData.buildTime} ms' reported in $reportingOverhead ms.$STOPWATCH_ICON"
-        )
+        if (debug) {
+            println(
+                "Reporting overhead: $reportingOverhead ms."
+            )
+        }
     }
 
-    private fun reportInternal(buildData: BuildData) {
+    private fun reportInternal(buildData: BuildData, username: String, debug: Boolean) {
         runBlocking {
-            analyticsReporter.report(buildData)
+            analyticsReporter.report(buildData, username, debug)
         }
     }
 
     private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
-
-    companion object {
-        private const val STOPWATCH_ICON = "\u23F1"
-    }
 }
