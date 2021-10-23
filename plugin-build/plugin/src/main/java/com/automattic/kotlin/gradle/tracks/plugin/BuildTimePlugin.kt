@@ -1,11 +1,13 @@
 package com.automattic.kotlin.gradle.tracks.plugin
 
+import kotlin.time.ExperimentalTime
 import com.automattic.kotlin.gradle.tracks.plugin.analytics.networking.TracksReporter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 const val EXTENSION_NAME = "tracks"
 
+@ExperimentalTime
 abstract class BuildTimePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create(EXTENSION_NAME, TracksExtension::class.java, project)

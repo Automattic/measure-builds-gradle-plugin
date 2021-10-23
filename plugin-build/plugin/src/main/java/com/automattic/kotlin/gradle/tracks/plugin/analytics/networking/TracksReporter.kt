@@ -21,8 +21,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import java.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.toDuration
 
+@ExperimentalTime
 class TracksReporter : AnalyticsReporter {
 
     override suspend fun report(event: BuildData, username: String, debug: Boolean) {
@@ -54,9 +57,9 @@ class TracksReporter : AnalyticsReporter {
             println(
                 when (response.status) {
                     HttpStatusCode.Accepted -> {
-                        val buildTime = Duration.ofMillis(event.buildTime)
+                        val buildTime = event.buildTime.toDuration(DurationUnit.MILLISECONDS)
                         "$SUCCESS_ICON Build time report of " +
-                            "${buildTime.toMinutes()}m ${buildTime.toSeconds()}s has been received by Tracks."
+                            "${buildTime.inWholeMinutes}m ${buildTime.inWholeSeconds}s has been received by Tracks."
                     }
                     else -> "$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
                 }
