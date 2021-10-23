@@ -1,9 +1,9 @@
 package com.automattic.kotlin.gradle.tracks.plugin
 
-import kotlin.time.ExperimentalTime
 import com.automattic.kotlin.gradle.tracks.plugin.analytics.networking.TracksReporter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import kotlin.time.ExperimentalTime
 
 const val EXTENSION_NAME = "tracks"
 
