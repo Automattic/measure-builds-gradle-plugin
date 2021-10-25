@@ -30,6 +30,7 @@ internal class BuildTimeListener(
             buildReporter.report(
                 buildData,
                 tracksExtension.username.getOrElse(ANONYMOUS_TRACKS_USER),
+                tracksExtension.customEventName.orNull,
                 tracksExtension.debug.getOrElse(false)
             )
         }

@@ -28,7 +28,12 @@ import kotlin.time.toDuration
 @ExperimentalTime
 class TracksReporter : AnalyticsReporter {
 
-    override suspend fun report(event: BuildData, username: String, debug: Boolean) {
+    override suspend fun report(
+        event: BuildData,
+        username: String,
+        customEventName: String?,
+        debug: Boolean
+    ) {
         if (debug) {
             println("Reporting $event")
         }
@@ -48,7 +53,7 @@ class TracksReporter : AnalyticsReporter {
                 append(HttpHeaders.UserAgent, "Gradle")
             }
             contentType(ContentType.Application.Json)
-            body = event.toTracksPayload(username)
+            body = event.toTracksPayload(customEventName, username)
         }.execute { response: HttpResponse ->
             if (debug) {
                 println(response)

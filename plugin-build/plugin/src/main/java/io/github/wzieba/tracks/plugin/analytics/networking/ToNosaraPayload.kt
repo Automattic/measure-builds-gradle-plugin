@@ -3,10 +3,10 @@ package io.github.wzieba.tracks.plugin.analytics.networking
 import io.github.wzieba.tracks.plugin.BuildData
 import io.github.wzieba.tracks.plugin.TracksExtension
 
-fun BuildData.toTracksPayload(username: String) = TracksPayload(
+fun BuildData.toTracksPayload(customEventName: String?, username: String) = TracksPayload(
     events = listOf(
         Event(
-            eventName = this.forProject.toEventName(),
+            eventName = customEventName ?: this.forProject.toEventName(),
             eventTimestamp = System.currentTimeMillis(),
             tasks = this.tasks,
             gradleAction = this.action,
@@ -32,10 +32,7 @@ fun BuildData.toTracksPayload(username: String) = TracksPayload(
 )
 
 private fun TracksExtension.AutomatticProject.toEventName() = when (this) {
-    TracksExtension.AutomatticProject.WooCommerce -> "wc_android_build_finished"
-    TracksExtension.AutomatticProject.WordPress -> "wp_android_build_finished"
-    TracksExtension.AutomatticProject.Simplenote -> "sn_android_build_finished"
-    TracksExtension.AutomatticProject.DayOne -> "do_android_build_finished"
-    TracksExtension.AutomatticProject.PocketCasts -> "pc_android_build_finished"
-    TracksExtension.AutomatticProject.TracksGradle -> "tg_android_build_finished"
+    TracksExtension.AutomatticProject.WooCommerce -> "woocommerceandroid_gradle_build_finished"
+    TracksExtension.AutomatticProject.WordPress -> "wpandroid_gradle_build_finished"
+    TracksExtension.AutomatticProject.DayOne -> "dayone_gradle_build_finished"
 }

@@ -10,18 +10,18 @@ class BuildReporter(
 ) {
 
     @Suppress("TooGenericExceptionCaught")
-    fun report(buildData: BuildData, username: String, debug: Boolean) {
+    fun report(buildData: BuildData, username: String, customEventName: String?, debug: Boolean) {
         try {
-            reportMeasured(buildData, username, debug)
+            reportMeasured(buildData, username, customEventName, debug)
         } catch (ex: Exception) {
             println("$FAILURE_ICON Build time reporting failed: $ex")
         }
     }
 
-    private fun reportMeasured(buildData: BuildData, username: String, debug: Boolean) {
+    private fun reportMeasured(buildData: BuildData, username: String, customEventName: String?, debug: Boolean) {
         val start = nowMillis()
 
-        reportInternal(buildData, username, debug)
+        reportInternal(buildData, username, customEventName, debug)
 
         val reportingOverhead = nowMillis() - start
         if (debug) {
@@ -31,9 +31,14 @@ class BuildReporter(
         }
     }
 
-    private fun reportInternal(buildData: BuildData, username: String, debug: Boolean) {
+    private fun reportInternal(
+        buildData: BuildData,
+        username: String,
+        customEventName: String?,
+        debug: Boolean
+    ) {
         runBlocking {
-            analyticsReporter.report(buildData, username, debug)
+            analyticsReporter.report(buildData, username, customEventName, debug)
         }
     }
 

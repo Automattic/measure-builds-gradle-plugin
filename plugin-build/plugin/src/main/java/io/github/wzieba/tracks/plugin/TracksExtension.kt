@@ -21,7 +21,10 @@ abstract class TracksExtension @Inject constructor(project: Project) {
     @Optional
     val username: Property<String> = objects.property(String::class.java)
 
+    @Optional
+    val customEventName: Property<String> = objects.property(String::class.java)
+
     enum class AutomatticProject {
-        WooCommerce, WordPress, Simplenote, DayOne, PocketCasts, TracksGradle
+        WooCommerce, WordPress, DayOne
     }
 }
