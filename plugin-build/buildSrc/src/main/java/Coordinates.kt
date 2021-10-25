@@ -1,8 +1,8 @@
 object PluginCoordinates {
-    const val ID = "com.automattic.kotlin.gradle.tracks.plugin"
-    const val GROUP = "com.automattic.kotlin.gradle.tracks"
-    const val VERSION = "0.0.1-SNAPSHOT"
-    const val IMPLEMENTATION_CLASS = "com.automattic.kotlin.gradle.tracks.plugin.BuildTimePlugin"
+    const val ID = "io.github.wzieba.tracks.plugin"
+    const val GROUP = "io.github.wzieba.tracks"
+    const val VERSION = "0.0.1"
+    const val IMPLEMENTATION_CLASS = "io.github.wzieba.tracks.plugin.BuildTimePlugin"
 }
 
 object PluginBundle {

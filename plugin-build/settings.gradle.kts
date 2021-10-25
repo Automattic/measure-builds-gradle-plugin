@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = ("com.automattic.kotlin.gradle.tracks")
+rootProject.name = ("TracksGradle")
 
 include(":plugin")

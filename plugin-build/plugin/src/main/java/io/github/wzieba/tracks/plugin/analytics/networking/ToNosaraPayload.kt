@@ -1,7 +1,7 @@
-package com.automattic.kotlin.gradle.tracks.plugin.analytics.networking
+package io.github.wzieba.tracks.plugin.analytics.networking
 
-import com.automattic.kotlin.gradle.tracks.plugin.BuildData
-import com.automattic.kotlin.gradle.tracks.plugin.TracksExtension
+import io.github.wzieba.tracks.plugin.BuildData
+import io.github.wzieba.tracks.plugin.TracksExtension
 
 fun BuildData.toTracksPayload(username: String) = TracksPayload(
     events = listOf(

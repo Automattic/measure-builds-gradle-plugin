@@ -1,4 +1,4 @@
-package com.automattic.kotlin.gradle.tracks.plugin
+package io.github.wzieba.tracks.plugin
 
 import org.gradle.BuildListener
 import org.gradle.BuildResult

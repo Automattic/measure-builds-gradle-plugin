@@ -1,7 +1,7 @@
-package com.automattic.kotlin.gradle.tracks.plugin
+package io.github.wzieba.tracks.plugin
 
-import com.automattic.kotlin.gradle.tracks.plugin.analytics.AnalyticsReporter
-import com.automattic.kotlin.gradle.tracks.plugin.analytics.Emojis.FAILURE_ICON
+import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
+import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 

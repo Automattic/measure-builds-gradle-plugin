@@ -1,4 +1,4 @@
-package com.automattic.kotlin.gradle.tracks.plugin.analytics
+package io.github.wzieba.tracks.plugin.analytics
 
 object Emojis {
     const val SUCCESS_ICON = "\u2705"

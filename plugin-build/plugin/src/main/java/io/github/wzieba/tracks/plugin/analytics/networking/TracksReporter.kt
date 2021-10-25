@@ -1,9 +1,9 @@
-package com.automattic.kotlin.gradle.tracks.plugin.analytics.networking
+package io.github.wzieba.tracks.plugin.analytics.networking
 
-import com.automattic.kotlin.gradle.tracks.plugin.BuildData
-import com.automattic.kotlin.gradle.tracks.plugin.analytics.AnalyticsReporter
-import com.automattic.kotlin.gradle.tracks.plugin.analytics.Emojis.FAILURE_ICON
-import com.automattic.kotlin.gradle.tracks.plugin.analytics.Emojis.SUCCESS_ICON
+import io.github.wzieba.tracks.plugin.BuildData
+import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
+import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
+import io.github.wzieba.tracks.plugin.analytics.Emojis.SUCCESS_ICON
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature

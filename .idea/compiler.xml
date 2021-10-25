@@ -5,6 +5,9 @@
       <module name="com.automattic.kotlin.gradle.template.plugin" target="1.8" />
       <module name="com.automattic.kotlin.gradle.template.plugin.main" target="1.8" />
       <module name="com.automattic.kotlin.gradle.template.plugin.test" target="1.8" />
+      <module name="com.automattic.kotlin.gradle.tracks.plugin" target="1.8" />
+      <module name="com.automattic.kotlin.gradle.tracks.plugin.main" target="1.8" />
+      <module name="com.automattic.kotlin.gradle.tracks.plugin.test" target="1.8" />
       <module name="com.ncorti.kotlin.gradle.template.plugin" target="1.8" />
       <module name="com.ncorti.kotlin.gradle.template.plugin.main" target="1.8" />
       <module name="com.ncorti.kotlin.gradle.template.plugin.test" target="1.8" />
