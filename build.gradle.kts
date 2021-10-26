@@ -12,7 +12,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
+        gradlePluginPortal()
     }
 }
 
