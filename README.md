@@ -12,7 +12,7 @@ Configure plugin in `build.gradle` file:
 
 ```groovy
 plugins {
-    id "io.github.wzieba.tracks.plugin" version "0.0.2"
+    id "io.github.wzieba.tracks.plugin" version "latest_tag"
 }
 
 tracks {
@@ -32,7 +32,7 @@ initscript {
     }
 
     dependencies {
-        classpath "io.github.wzieba.tracks:io.github.wzieba.tracks.plugin:0.0.2"
+        classpath "io.github.wzieba.tracks:io.github.wzieba.tracks.plugin:latest_tag"
     }
 }
 
