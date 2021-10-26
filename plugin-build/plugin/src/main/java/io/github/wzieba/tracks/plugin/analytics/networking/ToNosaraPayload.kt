@@ -26,7 +26,8 @@ fun BuildData.toTracksPayload(customEventName: String?, username: String) = Trac
             isConfigureOnDemand = this.isConfigureOnDemand,
             isConfigurationCache = this.isConfigurationCache,
             isBuildCache = this.isBuildCache,
-            maxWorkers = this.maxWorkers
+            maxWorkers = this.maxWorkers,
+            includedBuilds = this.includedBuildsNames
         )
     )
 )

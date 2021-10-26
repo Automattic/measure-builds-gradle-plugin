@@ -48,4 +48,6 @@ data class Event(
     val maxWorkers: Int,
     @SerialName("_ut")
     val userType: String,
+    @SerialName("included_builds")
+    val includedBuilds: List<String>
 )

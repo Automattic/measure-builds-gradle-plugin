@@ -15,7 +15,8 @@ object BuildDataFactory {
     fun buildData(
         result: BuildResult,
         statistics: TaskExecutionStatistics,
-        automatticProject: TracksExtension.AutomatticProject
+        automatticProject: TracksExtension.AutomatticProject,
+        includedBuildsNames: List<String>,
     ): BuildData {
         val start = nowMillis()
 
@@ -50,7 +51,8 @@ object BuildDataFactory {
                 statistics.fromCacheTaskCount,
                 statistics.executedTasksCount
             ),
-            buildDataCollectionOverhead = nowMillis() - start
+            buildDataCollectionOverhead = nowMillis() - start,
+            includedBuildsNames = includedBuildsNames
         )
     }
 

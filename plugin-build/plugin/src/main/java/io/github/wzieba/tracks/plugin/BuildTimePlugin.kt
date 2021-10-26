@@ -12,7 +12,12 @@ abstract class BuildTimePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create(EXTENSION_NAME, TracksExtension::class.java, project)
 
-        val buildTimeListener = BuildTimeListener(BuildDataFactory, BuildReporter(TracksReporter()), extension)
+        val buildTimeListener = BuildTimeListener(
+            buildDataFactory = BuildDataFactory,
+            buildReporter = BuildReporter(TracksReporter()),
+            tracksExtension = extension,
+            includedBuilds = project.gradle.includedBuilds
+        )
         project.gradle.addBuildListener(buildTimeListener)
     }
 }

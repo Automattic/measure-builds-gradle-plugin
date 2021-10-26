@@ -17,7 +17,8 @@ data class BuildData(
     val isBuildCache: Boolean,
     val maxWorkers: Int,
     val taskStatistics: TaskStatistics,
-    val buildDataCollectionOverhead: Long
+    val buildDataCollectionOverhead: Long,
+    val includedBuildsNames: List<String>,
 )
 
 enum class Environment {

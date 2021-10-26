@@ -2,6 +2,7 @@ package io.github.wzieba.tracks.plugin
 
 import org.gradle.BuildListener
 import org.gradle.BuildResult
+import org.gradle.api.initialization.IncludedBuild
 import org.gradle.api.initialization.Settings
 import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatisticsEventAdapter
 import org.gradle.api.invocation.Gradle
@@ -9,7 +10,8 @@ import org.gradle.api.invocation.Gradle
 internal class BuildTimeListener(
     private val buildDataFactory: BuildDataFactory,
     private val buildReporter: BuildReporter,
-    private val tracksExtension: TracksExtension
+    private val tracksExtension: TracksExtension,
+    private val includedBuilds: Collection<IncludedBuild>,
 ) : BuildListener {
     private val taskExecutionStatisticsEventAdapter = TaskExecutionStatisticsEventAdapter()
 
@@ -23,7 +25,8 @@ internal class BuildTimeListener(
         val buildData = buildDataFactory.buildData(
             result,
             taskExecutionStatisticsEventAdapter.statistics,
-            tracksExtension.automatticProject.get()
+            tracksExtension.automatticProject.get(),
+            includedBuilds.map(IncludedBuild::getName)
         )
 
         if (tracksExtension.uploadEnabled.getOrElse(true)) {
