@@ -52,5 +52,7 @@ data class Event(
     val userType: String,
     @SerialName("included_builds")
     @Serializable(with = StringListSerializer::class)
-    val includedBuilds: List<String>
+    val includedBuilds: List<String>,
+    @SerialName("userid")
+    val userId: Long,
 )
