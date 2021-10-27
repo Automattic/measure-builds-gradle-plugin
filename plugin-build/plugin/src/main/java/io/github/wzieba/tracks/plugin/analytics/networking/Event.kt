@@ -46,7 +46,7 @@ data class Event(
     val isConfigurationCache: Boolean,
     @SerialName("is_build_cache")
     val isBuildCache: Boolean,
-    @SerialName("maxWorkers")
+    @SerialName("max_workers")
     val maxWorkers: Int,
     @SerialName("_ut")
     val userType: String,
