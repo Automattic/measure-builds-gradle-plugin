@@ -1,6 +1,7 @@
 package io.github.wzieba.tracks.plugin.analytics.networking
 
 import io.github.wzieba.tracks.plugin.Environment
+import io.github.wzieba.tracks.plugin.analytics.json.StringListSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,6 +10,7 @@ data class Event(
     @SerialName("_en")
     val eventName: String,
     @SerialName("tasks")
+    @Serializable(with = StringListSerializer::class)
     val tasks: List<String>,
     @SerialName("_ts")
     val eventTimestamp: Long,
@@ -44,10 +46,13 @@ data class Event(
     val isConfigurationCache: Boolean,
     @SerialName("is_build_cache")
     val isBuildCache: Boolean,
-    @SerialName("maxWorkers")
+    @SerialName("max_workers")
     val maxWorkers: Int,
     @SerialName("_ut")
     val userType: String,
     @SerialName("included_builds")
-    val includedBuilds: List<String>
+    @Serializable(with = StringListSerializer::class)
+    val includedBuilds: List<String>,
+    @SerialName("_ui")
+    val userId: Long,
 )
