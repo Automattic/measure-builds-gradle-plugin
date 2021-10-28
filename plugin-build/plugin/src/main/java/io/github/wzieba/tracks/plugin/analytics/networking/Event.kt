@@ -55,4 +55,6 @@ data class Event(
     val includedBuilds: List<String>,
     @SerialName("_ui")
     val userId: Long,
+    @SerialName("username")
+    val username: String?,
 )
