@@ -3,7 +3,7 @@ package io.github.wzieba.tracks.plugin.analytics.networking
 import io.github.wzieba.tracks.plugin.BuildData
 import io.github.wzieba.tracks.plugin.TracksExtension
 
-fun BuildData.toTracksPayload(customEventName: String?, username: String) = TracksPayload(
+fun BuildData.toTracksPayload(customEventName: String?, username: String?) = TracksPayload(
     events = listOf(
         Event(
             eventName = customEventName ?: this.forProject.toEventName(),
@@ -18,7 +18,6 @@ fun BuildData.toTracksPayload(customEventName: String?, username: String) = Trac
             gradleVersion = this.gradleVersion,
             operatingSystem = this.operatingSystem,
             environment = this.environment,
-            userType = username,
             tasksTotal = this.taskStatistics.total,
             tasksUpToDate = this.taskStatistics.upToDate,
             tasksFromCache = this.taskStatistics.fromCache,
@@ -28,7 +27,9 @@ fun BuildData.toTracksPayload(customEventName: String?, username: String) = Trac
             isBuildCache = this.isBuildCache,
             maxWorkers = this.maxWorkers,
             includedBuilds = this.includedBuildsNames,
-            userId = -1 // Tracks require a non-null user id
+            userType = "anon",
+            userId = -1, // Tracks require a non-null user id
+            username = username,
         )
     )
 )

@@ -29,7 +29,7 @@ class TracksReporter : AnalyticsReporter {
 
     override suspend fun report(
         event: BuildData,
-        username: String,
+        username: String?,
         customEventName: String?,
         debug: Boolean
     ) {

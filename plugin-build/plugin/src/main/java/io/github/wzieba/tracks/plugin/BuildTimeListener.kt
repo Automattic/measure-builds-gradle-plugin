@@ -32,14 +32,10 @@ internal class BuildTimeListener(
         if (tracksExtension.uploadEnabled.getOrElse(true)) {
             buildReporter.report(
                 buildData,
-                tracksExtension.username.getOrElse(ANONYMOUS_TRACKS_USER),
+                tracksExtension.username.orNull,
                 tracksExtension.customEventName.orNull,
                 tracksExtension.debug.getOrElse(false)
             )
         }
-    }
-
-    companion object {
-        private const val ANONYMOUS_TRACKS_USER = "anon"
     }
 }
