@@ -52,7 +52,8 @@ object BuildDataFactory {
                 statistics.executedTasksCount
             ),
             buildDataCollectionOverhead = nowMillis() - start,
-            includedBuildsNames = includedBuildsNames
+            includedBuildsNames = includedBuildsNames,
+            architecture = architecture(),
         )
     }
 
@@ -62,6 +63,13 @@ object BuildDataFactory {
             System.getenv("CI") != null -> Environment.CI
             else -> Environment.CMD
         }
+    }
+
+    private fun architecture(): String {
+        val exec = Runtime.getRuntime().exec("uname -m")
+        val inputStream = exec.inputStream
+        exec.waitFor()
+        return inputStream.bufferedReader().readText().trim()
     }
 
     private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
