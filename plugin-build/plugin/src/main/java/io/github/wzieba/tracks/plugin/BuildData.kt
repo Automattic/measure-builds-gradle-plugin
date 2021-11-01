@@ -19,6 +19,7 @@ data class BuildData(
     val taskStatistics: TaskStatistics,
     val buildDataCollectionOverhead: Long,
     val includedBuildsNames: List<String>,
+    val architecture: String,
 )
 
 enum class Environment {
