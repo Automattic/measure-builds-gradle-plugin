@@ -67,9 +67,9 @@ object BuildDataFactory {
 
     private fun architecture(): String {
         val exec = Runtime.getRuntime().exec("uname -m")
-        val outputStream = exec.inputStream
+        val inputStream = exec.inputStream
         exec.waitFor()
-        return outputStream.bufferedReader().readText().strip()
+        return inputStream.bufferedReader().readText().strip()
     }
 
     private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
