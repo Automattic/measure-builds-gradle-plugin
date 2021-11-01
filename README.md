@@ -4,6 +4,8 @@
 
 Gradle Plugin for reporting build time results into Tracks system.
 
+Inspired [by work](https://github.com/jraska/github-client/tree/master/plugins/src/main/java/com/jraska/gradle/buildtime) of [@jraska](https://github.com/jraska). 
+
 ## How to use 
 
 ### Directly in project
@@ -16,12 +18,12 @@ plugins {
 }
 
 tracks {
-    automatticProject = io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce
+    automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
     debug.set(true)
 }
 ```
 
-### Gradle Initialization Script
+### or by gradle Initialization Script
 
 If you don't want to edit project files, you can use [initialization script](https://docs.gradle.org/current/userguide/init_scripts.html), e.g.
 
