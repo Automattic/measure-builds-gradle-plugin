@@ -69,7 +69,7 @@ object BuildDataFactory {
         val exec = Runtime.getRuntime().exec("uname -m")
         val inputStream = exec.inputStream
         exec.waitFor()
-        return inputStream.bufferedReader().readText().strip()
+        return inputStream.bufferedReader().readText().trim()
     }
 
     private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
