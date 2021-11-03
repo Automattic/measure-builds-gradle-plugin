@@ -30,6 +30,7 @@ fun BuildData.toTracksPayload(customEventName: String?, username: String?) = Tra
             userType = "anon",
             userId = -1, // Tracks require a non-null user id
             username = username,
+            architecture = this.architecture,
         )
     )
 )

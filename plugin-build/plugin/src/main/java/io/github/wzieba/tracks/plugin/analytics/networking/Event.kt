@@ -57,4 +57,6 @@ data class Event(
     val userId: Long,
     @SerialName("username")
     val username: String?,
+    @SerialName("architecture")
+    val architecture: String,
 )
