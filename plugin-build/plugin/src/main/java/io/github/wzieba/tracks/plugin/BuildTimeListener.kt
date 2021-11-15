@@ -24,17 +24,19 @@ internal class BuildTimeListener(
     }
 
     override fun buildFinished(result: BuildResult) {
-        val buildData = buildDataFactory.buildData(
-            result,
-            taskExecutionStatisticsEventAdapter.statistics,
-            tracksExtension.automatticProject.get(),
-            includedBuilds.map(IncludedBuild::getName)
-        )
+        if (tracksExtension.enabled.get()) {
+            val buildData = buildDataFactory.buildData(
+                result,
+                taskExecutionStatisticsEventAdapter.statistics,
+                tracksExtension.automatticProject.get(),
+                includedBuilds.map(IncludedBuild::getName)
+            )
 
-        buildReporter.report(
-            buildData,
-            tracksExtension.username.orNull,
-            tracksExtension.customEventName.orNull,
-        )
+            buildReporter.report(
+                buildData,
+                tracksExtension.username.orNull,
+                tracksExtension.customEventName.orNull,
+            )
+        }
     }
 }
