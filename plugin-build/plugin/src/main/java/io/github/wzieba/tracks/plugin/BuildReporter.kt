@@ -3,42 +3,39 @@ package io.github.wzieba.tracks.plugin
 import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
 import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
 import kotlinx.coroutines.runBlocking
+import org.gradle.api.logging.Logger
 import java.util.concurrent.TimeUnit
 
 class BuildReporter(
+    private val logger: Logger,
     private val analyticsReporter: AnalyticsReporter
 ) {
 
     @Suppress("TooGenericExceptionCaught")
-    fun report(buildData: BuildData, username: String?, customEventName: String?, debug: Boolean) {
+    fun report(buildData: BuildData, username: String?, customEventName: String?) {
         try {
-            reportMeasured(buildData, username, customEventName, debug)
+            reportMeasured(buildData, username, customEventName)
         } catch (ex: Exception) {
-            println("$FAILURE_ICON Build time reporting failed: $ex")
+            logger.warn("$FAILURE_ICON Build time reporting failed: $ex")
         }
     }
 
-    private fun reportMeasured(buildData: BuildData, username: String?, customEventName: String?, debug: Boolean) {
+    private fun reportMeasured(buildData: BuildData, username: String?, customEventName: String?) {
         val start = nowMillis()
 
-        reportInternal(buildData, username, customEventName, debug)
+        reportInternal(buildData, username, customEventName)
 
         val reportingOverhead = nowMillis() - start
-        if (debug) {
-            println(
-                "Reporting overhead: $reportingOverhead ms."
-            )
-        }
+        logger.info("Reporting overhead: $reportingOverhead ms.")
     }
 
     private fun reportInternal(
         buildData: BuildData,
         username: String?,
         customEventName: String?,
-        debug: Boolean
     ) {
         runBlocking {
-            analyticsReporter.report(buildData, username, customEventName, debug)
+            analyticsReporter.report(logger, buildData, username, customEventName)
         }
     }
 

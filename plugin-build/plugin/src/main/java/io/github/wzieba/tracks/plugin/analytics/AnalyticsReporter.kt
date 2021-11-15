@@ -1,7 +1,13 @@
 package io.github.wzieba.tracks.plugin.analytics
 
 import io.github.wzieba.tracks.plugin.BuildData
+import org.gradle.api.logging.Logger
 
 interface AnalyticsReporter {
-    suspend fun report(event: BuildData, username: String?, customEventName: String?, debug: Boolean)
+    suspend fun report(
+        logger: Logger,
+        event: BuildData,
+        username: String?,
+        customEventName: String?,
+    )
 }

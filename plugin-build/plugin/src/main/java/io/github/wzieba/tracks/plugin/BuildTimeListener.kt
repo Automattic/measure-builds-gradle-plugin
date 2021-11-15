@@ -34,7 +34,6 @@ internal class BuildTimeListener(
                 buildData,
                 tracksExtension.username.orNull,
                 tracksExtension.customEventName.orNull,
-                tracksExtension.debug.getOrElse(false)
             )
         }
     }

@@ -14,7 +14,7 @@ abstract class BuildTimePlugin : Plugin<Project> {
 
         val buildTimeListener = BuildTimeListener(
             buildDataFactory = BuildDataFactory,
-            buildReporter = BuildReporter(TracksReporter()),
+            buildReporter = BuildReporter(project.logger, TracksReporter()),
             tracksExtension = extension,
             includedBuilds = project.gradle.includedBuilds
         )
