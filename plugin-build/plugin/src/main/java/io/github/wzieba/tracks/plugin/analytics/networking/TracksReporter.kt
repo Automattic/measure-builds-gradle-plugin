@@ -67,7 +67,7 @@ class TracksReporter : AnalyticsReporter {
                         MILLISECONDS.toMinutes(buildTime),
                         MILLISECONDS.toSeconds(buildTime) - MINUTES.toSeconds(MILLISECONDS.toMinutes(buildTime))
                     )
-                    logger.quiet("$SUCCESS_ICON Build time report of $timeFormatted has been received by Tracks.")
+                    logger.lifecycle("$SUCCESS_ICON Build time report of $timeFormatted has been received by Tracks.")
                 }
                 else -> {
                     logger.warn(
