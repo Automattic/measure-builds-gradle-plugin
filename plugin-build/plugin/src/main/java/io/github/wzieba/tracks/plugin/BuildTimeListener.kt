@@ -18,7 +18,9 @@ internal class BuildTimeListener(
     override fun settingsEvaluated(gradle: Settings) = Unit
     override fun projectsLoaded(gradle: Gradle) = Unit
     override fun projectsEvaluated(gradle: Gradle) {
-        gradle.addListener(taskExecutionStatisticsEventAdapter)
+        if (tracksExtension.enabled.get()) {
+            gradle.addListener(taskExecutionStatisticsEventAdapter)
+        }
     }
 
     override fun buildFinished(result: BuildResult) {
@@ -29,12 +31,10 @@ internal class BuildTimeListener(
             includedBuilds.map(IncludedBuild::getName)
         )
 
-        if (tracksExtension.uploadEnabled.getOrElse(true)) {
-            buildReporter.report(
-                buildData,
-                tracksExtension.username.orNull,
-                tracksExtension.customEventName.orNull,
-            )
-        }
+        buildReporter.report(
+            buildData,
+            tracksExtension.username.orNull,
+            tracksExtension.customEventName.orNull,
+        )
     }
 }
