@@ -5,6 +5,6 @@ plugins {
 
 tracks {
     automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
+    enabled.set(true)
     customEventName.set("test_gradle_plugin")
-    uploadEnabled.set(true)
 }

@@ -12,8 +12,7 @@ abstract class TracksExtension @Inject constructor(project: Project) {
 
     val automatticProject: Property<AutomatticProject> = objects.property(AutomatticProject::class.java)
 
-    @Optional
-    val uploadEnabled: Property<Boolean> = objects.property(Boolean::class.java)
+    val enabled: Property<Boolean> = objects.property(Boolean::class.java)
 
     @Optional
     val username: Property<String> = objects.property(String::class.java)

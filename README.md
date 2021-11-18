@@ -50,13 +50,13 @@ rootProject {
 ```
 
 ## Configuration
-| Property | Default | Optional? | Description |
+| Property | Default | Required? | Description |
 | --- | --- | --- | --- |
-| automatticProject | null | false | Project that will determine event name
-| username | "anon" | true | Username associated with report |
-| uploadEnabled | true | true | Opt-out flag for sending reports to Tracks |
-| customEventName | null | true | Event name that overrides one set by `automatticProject`, should be used for debug purposes. |
-| debug | false | true | Show additional logs
+| automatticProject | null | yes | Project that will determine event name
+| enabled | null | yes | Enable or disable plugin |
+| username | "anon" | no | Username associated with report |
+| customEventName | null | no | Event name that overrides one set by `automatticProject`, should be used for debug purposes. |
+| debug | false | no | Show additional logs
 
 
 ## Result
