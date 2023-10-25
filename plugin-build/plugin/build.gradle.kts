@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
 
     implementation("io.ktor:ktor-client-core:1.6.4")
@@ -30,32 +29,18 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 gradlePlugin {
+    website.set(PluginBundle.WEBSITE)
+    vcsUrl.set(PluginBundle.VCS)
+
     plugins {
         create(PluginCoordinates.ID) {
             id = PluginCoordinates.ID
             implementationClass = PluginCoordinates.IMPLEMENTATION_CLASS
-            version = PluginCoordinates.VERSION
-        }
-    }
-}
-
-// Configuration Block for the Plugin Marker artifact on Plugin Central
-pluginBundle {
-    website = PluginBundle.WEBSITE
-    vcsUrl = PluginBundle.VCS
-    description = PluginBundle.DESCRIPTION
-    tags = PluginBundle.TAGS
-
-    plugins {
-        getByName(PluginCoordinates.ID) {
             displayName = PluginBundle.DISPLAY_NAME
+            version = PluginCoordinates.VERSION
+            description = PluginBundle.DESCRIPTION
+            tags.set(PluginBundle.TAGS)
         }
-    }
-
-    mavenCoordinates {
-        groupId = PluginCoordinates.GROUP
-        artifactId = PluginCoordinates.ID
-        version = PluginCoordinates.VERSION
     }
 }
 
