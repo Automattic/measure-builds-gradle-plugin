@@ -10,11 +10,5 @@ object PluginBundle {
     const val WEBSITE = "https://github.com/wzieba/tracks-gradle/"
     const val DESCRIPTION = "Gradle plugin which reports build times to Tracks."
     const val DISPLAY_NAME = "Gradle plugin which reports build times to Tracks."
-    val TAGS = listOf(
-        "plugin",
-        "gradle",
-        "automattic",
-        "tracks"
-    )
+    val TAGS = listOf("automattic")
 }
-
