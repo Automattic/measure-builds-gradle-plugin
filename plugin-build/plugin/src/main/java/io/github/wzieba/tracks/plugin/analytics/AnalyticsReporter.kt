@@ -7,7 +7,6 @@ interface AnalyticsReporter {
     suspend fun report(
         logger: Logger,
         event: BuildData,
-        username: String?,
-        customEventName: String?,
+        user: String,
     )
 }

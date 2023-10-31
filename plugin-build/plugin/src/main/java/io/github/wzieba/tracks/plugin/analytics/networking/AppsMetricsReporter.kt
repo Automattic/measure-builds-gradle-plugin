@@ -15,21 +15,29 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 
-class TracksReporter : AnalyticsReporter {
+class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
 
     override suspend fun report(
         logger: Logger,
         event: BuildData,
-        username: String?,
-        customEventName: String?,
+        user: String,
     ) {
+        val authToken: String? = project.properties["appsMetricsToken"] as String?
+
+        if (authToken.isNullOrBlank()) {
+            logger.warn("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
+            return
+        }
+
         logger.debug("Reporting $event")
 
         val client = HttpClient(CIO) {
@@ -46,26 +54,34 @@ class TracksReporter : AnalyticsReporter {
             }
         }
 
-        client.post<HttpStatement>("https://public-api.wordpress.com/rest/v1.1/tracks/record") {
+        client.post<HttpStatement>("https://seal-app-e8plp.ondigitalocean.app/api/grouped-metrics") {
             headers {
                 append(HttpHeaders.UserAgent, "Gradle")
+                append(Authorization, "Bearer $authToken")
             }
             contentType(ContentType.Application.Json)
-            body = event.toTracksPayload(customEventName, username)
+            body = event.toAppsInfraPayload(user)
         }.execute { response: HttpResponse ->
             logger.debug(response.toString())
 
             when (response.status) {
-                HttpStatusCode.Accepted -> {
+                HttpStatusCode.Created -> {
                     val buildTime = event.buildTime
                     val timeFormatted = String.format(
                         Locale.US,
                         "%dm %ds",
                         MILLISECONDS.toMinutes(buildTime),
-                        MILLISECONDS.toSeconds(buildTime) - MINUTES.toSeconds(MILLISECONDS.toMinutes(buildTime))
+                        MILLISECONDS.toSeconds(buildTime) - MINUTES.toSeconds(
+                            MILLISECONDS.toMinutes(
+                                buildTime
+                            )
+                        )
                     )
-                    logger.lifecycle("$SUCCESS_ICON Build time report of $timeFormatted has been received by Tracks.")
+                    logger.lifecycle(
+                        "$SUCCESS_ICON Build time report of $timeFormatted has been received by App Metrics."
+                    )
                 }
+
                 else -> {
                     logger.warn(
                         "$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."

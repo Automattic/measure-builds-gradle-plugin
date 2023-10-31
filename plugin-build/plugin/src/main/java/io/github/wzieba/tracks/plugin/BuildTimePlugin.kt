@@ -1,6 +1,6 @@
 package io.github.wzieba.tracks.plugin
 
-import io.github.wzieba.tracks.plugin.analytics.networking.TracksReporter
+import io.github.wzieba.tracks.plugin.analytics.networking.AppsMetricsReporter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import kotlin.time.ExperimentalTime
@@ -14,7 +14,7 @@ abstract class BuildTimePlugin : Plugin<Project> {
 
         val buildTimeListener = BuildTimeListener(
             buildDataFactory = BuildDataFactory,
-            buildReporter = BuildReporter(project.logger, TracksReporter()),
+            buildReporter = BuildReporter(project.logger, AppsMetricsReporter(project)),
             tracksExtension = extension,
             includedBuilds = project.gradle.includedBuilds
         )
