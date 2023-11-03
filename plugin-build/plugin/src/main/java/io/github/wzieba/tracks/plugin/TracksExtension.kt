@@ -14,6 +14,6 @@ abstract class TracksExtension @Inject constructor(project: Project) {
     val enabled: Property<Boolean> = objects.property(Boolean::class.java)
 
     enum class AutomatticProject {
-        WooCommerce, WordPress, DayOne
+        WooCommerce, WordPress, DayOne, PocketCasts, Tumblr, FluxC
     }
 }
