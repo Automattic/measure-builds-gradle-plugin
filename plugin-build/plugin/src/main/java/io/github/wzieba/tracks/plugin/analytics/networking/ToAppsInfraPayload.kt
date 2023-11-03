@@ -33,6 +33,7 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
         "max-workers" to maxWorkers.toString(),
         "build-data-collection-overhead-ms" to buildDataCollectionOverhead.toString(),
         "included-builds" to includedBuildsNames.joinToString(separator = ",").ifEmpty { "none" },
+        "build-finished-at" to buildFinishedTimestamp.toString(),
     )
 
     return GroupedAppsMetrics(

@@ -54,6 +54,7 @@ object BuildDataFactory {
             buildDataCollectionOverhead = nowMillis() - start,
             includedBuildsNames = includedBuildsNames,
             architecture = architecture(),
+            buildFinishedTimestamp = start,
         )
     }
 

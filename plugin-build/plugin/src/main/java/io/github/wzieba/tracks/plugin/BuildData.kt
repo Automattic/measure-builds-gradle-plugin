@@ -20,6 +20,7 @@ data class BuildData(
     val buildDataCollectionOverhead: Long,
     val includedBuildsNames: List<String>,
     val architecture: String,
+    val buildFinishedTimestamp: Long,
 )
 
 enum class Environment {
