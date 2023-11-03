@@ -40,7 +40,8 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
         meta = meta.map { (key, value) -> AppsMetric(name = "$projectKey-$key", value = value) },
         metrics = metrics.map { (key, value) ->
             AppsMetric(
-                name = "$projectKey-$key", value = value
+                name = "$projectKey-$key",
+                value = value
             )
         },
     )

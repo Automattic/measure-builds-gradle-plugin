@@ -1,5 +1,6 @@
 package io.github.wzieba.tracks.plugin
 
+import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.BuildListener
 import org.gradle.BuildResult
 import org.gradle.api.initialization.IncludedBuild
@@ -31,7 +32,13 @@ internal class BuildTimeListener(
                 tracksExtension.automatticProject.get(),
                 includedBuilds.map(IncludedBuild::getName)
             )
-            val encodedUser = System.getProperty("user.name")
+            val encodedUser: String? = System.getProperty("user.name").let {
+                if (tracksExtension.obfuscateUsername.getOrElse(false) == true) {
+                    EncodingGroovyMethods.digest(it, "SHA-1")
+                } else {
+                    it
+                }
+            }
 
             buildReporter.report(
                 buildData,
