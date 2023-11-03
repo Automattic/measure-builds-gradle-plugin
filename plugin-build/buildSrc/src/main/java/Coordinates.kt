@@ -1,7 +1,7 @@
 object PluginCoordinates {
     const val ID = "io.github.wzieba.tracks.plugin"
     const val GROUP = "io.github.wzieba.tracks"
-    const val VERSION = "1.1.0"
+    const val VERSION = "1.2.0"
     const val IMPLEMENTATION_CLASS = "io.github.wzieba.tracks.plugin.BuildTimePlugin"
 }
 
