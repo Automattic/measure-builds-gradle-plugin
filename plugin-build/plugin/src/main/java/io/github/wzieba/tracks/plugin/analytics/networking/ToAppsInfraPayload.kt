@@ -7,7 +7,11 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
     val projectKey = this.forProject.name.lowercase()
 
     val meta = mapOf(
-        "user" to user, "project" to projectKey
+        "user" to user,
+        "project" to projectKey,
+        "environment" to environment.name,
+        "architecture" to this.architecture,
+        "operating-system" to operatingSystem,
     )
 
     val metrics = mapOf(
@@ -19,8 +23,6 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
         "number-of-running-daemons" to daemonsRunning.toString(),
         "daemons-build-count" to thisDaemonBuilds.toString(),
         "gradle-version" to gradleVersion,
-        "operating-system" to operatingSystem,
-        "environment" to environment.name,
         "total-tasks-number" to taskStatistics.total.toString(),
         "up-to-date-tasks" to taskStatistics.upToDate.toString(),
         "cached-tasks" to taskStatistics.fromCache.toString(),
@@ -31,7 +33,6 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
         "max-workers" to maxWorkers.toString(),
         "build-data-collection-overhead-ms" to buildDataCollectionOverhead.toString(),
         "included-builds" to includedBuildsNames.joinToString(separator = ",").ifEmpty { "none" },
-        "architecture" to architecture
     )
 
     return GroupedAppsMetrics(
