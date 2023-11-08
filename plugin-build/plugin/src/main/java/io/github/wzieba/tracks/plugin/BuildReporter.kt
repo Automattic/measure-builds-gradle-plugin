@@ -16,7 +16,7 @@ class BuildReporter(
         try {
             reportMeasured(buildData, username)
         } catch (ex: Exception) {
-            logger.warn("$FAILURE_ICON Build time reporting failed: $ex")
+            logger.warn("\n$FAILURE_ICON Build time reporting failed: $ex")
         }
     }
 

@@ -84,13 +84,13 @@ class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
                         )
                     )
                     logger.lifecycle(
-                        "$SUCCESS_ICON Build time report of $timeFormatted has been received by App Metrics."
+                        "\n$SUCCESS_ICON Build time report of $timeFormatted has been received by App Metrics."
                     )
                 }
 
                 else -> {
                     logger.warn(
-                        "$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
+                        "\n$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
                     )
                 }
             }
