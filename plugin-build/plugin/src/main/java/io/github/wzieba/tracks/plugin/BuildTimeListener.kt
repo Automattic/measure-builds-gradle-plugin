@@ -1,5 +1,6 @@
 package io.github.wzieba.tracks.plugin
 
+import io.github.wzieba.tracks.plugin.analytics.Emojis.WAITING_ICON
 import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.BuildListener
 import org.gradle.BuildResult
@@ -7,12 +8,14 @@ import org.gradle.api.initialization.IncludedBuild
 import org.gradle.api.initialization.Settings
 import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatisticsEventAdapter
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.logging.Logger
 
 internal class BuildTimeListener(
     private val buildDataFactory: BuildDataFactory,
     private val buildReporter: BuildReporter,
     private val tracksExtension: TracksExtension,
     private val includedBuilds: Collection<IncludedBuild>,
+    private val logger: Logger,
 ) : BuildListener {
     private val taskExecutionStatisticsEventAdapter = TaskExecutionStatisticsEventAdapter()
 
@@ -40,6 +43,7 @@ internal class BuildTimeListener(
                 }
             }
 
+            logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
             buildReporter.report(
                 buildData,
                 encodedUser.orEmpty()

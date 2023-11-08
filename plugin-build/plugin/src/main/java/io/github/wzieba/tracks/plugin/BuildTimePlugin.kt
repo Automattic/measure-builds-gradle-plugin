@@ -16,7 +16,8 @@ abstract class BuildTimePlugin : Plugin<Project> {
             buildDataFactory = BuildDataFactory,
             buildReporter = BuildReporter(project.logger, AppsMetricsReporter(project)),
             tracksExtension = extension,
-            includedBuilds = project.gradle.includedBuilds
+            includedBuilds = project.gradle.includedBuilds,
+            logger = project.logger
         )
         project.gradle.addBuildListener(buildTimeListener)
     }
