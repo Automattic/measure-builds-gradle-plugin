@@ -6,9 +6,11 @@ import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
 import io.github.wzieba.tracks.plugin.analytics.Emojis.SUCCESS_ICON
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.Logging
+import io.ktor.client.features.timeout
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
@@ -23,6 +25,7 @@ import org.gradle.api.logging.Logger
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
+import kotlin.time.Duration.Companion.seconds
 
 class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
 
@@ -51,6 +54,9 @@ class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
             }
             install(JsonFeature) {
                 serializer = KotlinxSerializer()
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 5.seconds.inWholeMilliseconds
             }
         }
 
