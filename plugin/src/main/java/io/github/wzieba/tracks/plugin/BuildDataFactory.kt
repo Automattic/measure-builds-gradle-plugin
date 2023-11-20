@@ -40,9 +40,9 @@ object BuildDataFactory {
             tasks = startParameter.taskNames,
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,
-            operatingSystem = System.getProperty("os.name").toLowerCase(),
+            operatingSystem = System.getProperty("os.name").lowercase(),
             isConfigureOnDemand = startParameter.isConfigureOnDemand,
-            isConfigurationCache = startParameter.isConfigurationCache,
+            isConfigurationCache = startParameter.isConfigurationCacheRequested,
             isBuildCache = startParameter.isBuildCacheEnabled,
             maxWorkers = startParameter.maxWorkerCount,
             taskStatistics = TaskStatistics(
