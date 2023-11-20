@@ -37,8 +37,8 @@ gradlePlugin {
     vcsUrl.set("https://github.com/wzieba/tracks-gradle/")
 
     plugins {
-        create("io.github.wzieba.tracks") {
-            id = "io.github.wzieba.tracks"
+        create("tracks.plugin") {
+            id = "io.github.wzieba.tracks.plugin"
             implementationClass = "io.github.wzieba.tracks.plugin.BuildTimePlugin"
             displayName = "Gradle plugin which reports build times to Tracks."
             version = "1.2.1"
