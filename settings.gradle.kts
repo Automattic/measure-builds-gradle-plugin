@@ -5,5 +5,4 @@ pluginManagement {
     }
 }
 
-include(":example")
-includeBuild("plugin-build")
+include(":example", ":plugin")
