@@ -22,49 +22,32 @@ tracks {
 }
 ```
 
-### or by gradle Initialization Script
-
-If you don't want to edit project files, you can use [initialization script](https://docs.gradle.org/current/userguide/init_scripts.html), e.g.
-
-```groovy
-initscript {
-    repositories {
-        gradlePluginPortal()
-    }
-
-    dependencies {
-        classpath "io.github.wzieba.tracks:io.github.wzieba.tracks.plugin:latest_tag"
-    }
-}
-
-rootProject {
-    if (name == "woocommerce-android") {
-        apply plugin: io.github.wzieba.tracks.plugin.BuildTimePlugin
-
-        tracks {
-            automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
-            username.set("wzieba")
-        }
-    }
-}
-```
-
 ## Configuration
 | Property | Default | Required? | Description |
-| --- | --- | --- | --- |
-| automatticProject | null | yes | Project that will determine event name
-| enabled | null | yes | Enable or disable plugin |
-| username | "anon" | no | Username associated with report |
-| customEventName | null | no | Event name that overrides one set by `automatticProject`, should be used for debug purposes. |
-| debug | false | no | Show additional logs
-
+| --- | -- |-----------| --- |
+| automatticProject | null | yes       | Project that will determine event name |
+| enabled | null | no        | Enable plugin |
+| obfuscateUsername | false | no | If true, then username will be SHA-1 obfuscated | 
 
 ## Result
 
 After each build you should see
 
 ```
-✅ Build time report of Xm Ys has been received by Tracks.
+✅ Build time report of 4m 8s has been received by Apps Metrics.
 ```
 
 which confirms received report.
+
+## Discrepancies between Gradle reports and this plugin
+
+This plugin might report different data to what Gradle logs at the end of a build.
+
+### Number of tasks
+
+The reason is that Gradle log filters out [lifecycle tasks](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:lifecycle_tasks), while this plugin, cannot do this as it uses configuration-cache compatible `OperationCompletionListener`.
+
+### Build time
+
+This plugin uses `BuildStartedTime` service, which is precisely what Gradle uses to log build duration at the end of the build.
+The difference is where end of the build is defined - in this plugin, with `FlowAction`. The difference is minor and safe to ignore. 
