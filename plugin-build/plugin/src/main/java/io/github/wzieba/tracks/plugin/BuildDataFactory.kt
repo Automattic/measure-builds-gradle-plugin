@@ -1,6 +1,6 @@
 package io.github.wzieba.tracks.plugin
 
-import org.gradle.BuildResult
+import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
 import org.gradle.api.invocation.Gradle
 import org.gradle.internal.buildevents.BuildStartedTime
@@ -8,19 +8,20 @@ import org.gradle.internal.time.Clock
 import org.gradle.invocation.DefaultGradle
 import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
 import java.util.concurrent.TimeUnit
+import kotlin.jvm.optionals.getOrNull
 
 object BuildDataFactory {
 
     @Suppress("UnstableApiUsage")
     fun buildData(
-        result: BuildResult,
+        result: BuildWorkResult,
+        gradle: DefaultGradle,
         statistics: TaskExecutionStatistics,
         automatticProject: TracksExtension.AutomatticProject,
         includedBuildsNames: List<String>,
     ): BuildData {
         val start = nowMillis()
 
-        val gradle = result.gradle as DefaultGradle
         val services = gradle.services
 
         val startTime = services[BuildStartedTime::class.java].startTime
@@ -31,10 +32,10 @@ object BuildDataFactory {
 
         return BuildData(
             forProject = automatticProject,
-            action = result.action,
+            action = "action",
             buildTime = totalTime,
-            failed = result.failure != null,
-            failure = result.failure,
+            failed = result.failure.isPresent,
+            failure = result.failure.getOrNull(),
             daemonsRunning = daemonInfo.numberOfRunningDaemons,
             thisDaemonBuilds = daemonInfo.numberOfBuilds,
             tasks = startParameter.taskNames,
