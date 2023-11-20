@@ -1,16 +1,3 @@
-plugins {
-    kotlin("jvm") version BuildPluginsVersion.KOTLIN apply false
-    kotlin("plugin.serialization") version BuildPluginsVersion.KOTLIN apply false
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 tasks.register("clean", Delete::class.java) {
     delete(rootProject.buildDir)
 }

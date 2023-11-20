@@ -1,8 +1,12 @@
 plugins {
-    kotlin("jvm") version BuildPluginsVersion.KOTLIN apply false
-    kotlin("plugin.serialization") version BuildPluginsVersion.KOTLIN apply false
-    id("com.gradle.plugin-publish") version BuildPluginsVersion.PLUGIN_PUBLISH
-    id("io.gitlab.arturbosch.detekt") version BuildPluginsVersion.DETEKT
+    kotlin("jvm")
+    kotlin("plugin.serialization")
+    id("com.gradle.plugin-publish")
+    id("io.gitlab.arturbosch.detekt")
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -13,8 +17,6 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:1.6.4")
     implementation("io.ktor:ktor-client-serialization:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
-
-    testImplementation(TestingLib.JUNIT)
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
 }
