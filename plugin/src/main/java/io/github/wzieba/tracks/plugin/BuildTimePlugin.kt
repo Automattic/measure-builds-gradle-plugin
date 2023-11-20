@@ -29,8 +29,9 @@ class BuildTimePlugin @Inject constructor(
 
         val serviceProvider: Provider<BuildTaskService> =
             project.gradle.sharedServices.registerIfAbsent(
-                "taskEvents", BuildTaskService::class.java
-            ) { spec -> }
+                "taskEvents",
+                BuildTaskService::class.java
+            ) { }
         registry.onTaskCompletion(serviceProvider)
 
         val encodedUser: String = System.getProperty("user.name").let {
@@ -52,7 +53,8 @@ class BuildTimePlugin @Inject constructor(
                 buildTaskService.set(serviceProvider.get())
                 buildReporter.set(
                     BuildReporter(
-                        project.logger, AppsMetricsReporter(project)
+                        project.logger,
+                        AppsMetricsReporter(project)
                     )
                 )
                 username.set(encodedUser)

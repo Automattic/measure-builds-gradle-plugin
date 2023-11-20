@@ -15,6 +15,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
     testImplementation(TestingLib.JUNIT)
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
 }
 
 java {
@@ -55,17 +57,5 @@ tasks.create("setupPluginUploadFromEnvironment") {
 
         System.setProperty("gradle.publish.key", key)
         System.setProperty("gradle.publish.secret", secret)
-    }
-}
-
-allprojects {
-    detekt {
-        config = rootProject.files("./config/detekt/detekt.yml")
-        reports {
-            html {
-                enabled = true
-                destination = file("build/reports/detekt.html")
-            }
-        }
     }
 }
