@@ -16,14 +16,12 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
 
     val metrics = mapOf(
         "requested-tasks" to tasks.joinToString(separator = ","),
-        "performed-gradle-action" to action,
         "build-time-ms" to buildTime.toString(),
         "build-status" to if (failed) "Failure" else "Success",
         "failure-message" to failure.toString(),
         "number-of-running-daemons" to daemonsRunning.toString(),
         "daemons-build-count" to thisDaemonBuilds.toString(),
         "gradle-version" to gradleVersion,
-        "total-tasks-number" to taskStatistics.total.toString(),
         "up-to-date-tasks" to taskStatistics.upToDate.toString(),
         "cached-tasks" to taskStatistics.fromCache.toString(),
         "executed-tasks" to taskStatistics.executed.toString(),

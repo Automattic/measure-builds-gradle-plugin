@@ -2,7 +2,6 @@ package io.github.wzieba.tracks.plugin
 
 data class BuildData(
     val forProject: TracksExtension.AutomatticProject,
-    val action: String,
     val buildTime: Long,
     val tasks: List<String>,
     val failed: Boolean,
@@ -30,7 +29,6 @@ enum class Environment {
 }
 
 data class TaskStatistics(
-    val total: Int,
     val upToDate: Int,
     val fromCache: Int,
     val executed: Int

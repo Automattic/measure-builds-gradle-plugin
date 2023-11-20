@@ -32,7 +32,6 @@ object BuildDataFactory {
 
         return BuildData(
             forProject = automatticProject,
-            action = "action",
             buildTime = totalTime,
             failed = result.failure.isPresent,
             failure = result.failure.getOrNull(),
@@ -47,7 +46,6 @@ object BuildDataFactory {
             isBuildCache = startParameter.isBuildCacheEnabled,
             maxWorkers = startParameter.maxWorkerCount,
             taskStatistics = TaskStatistics(
-                statistics.totalTaskCount,
                 statistics.upToDateTaskCount,
                 statistics.fromCacheTaskCount,
                 statistics.executedTasksCount
