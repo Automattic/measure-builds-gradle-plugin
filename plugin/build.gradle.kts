@@ -33,17 +33,17 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 gradlePlugin {
-    website.set(PluginBundle.WEBSITE)
-    vcsUrl.set(PluginBundle.VCS)
+    website.set("https://github.com/wzieba/tracks-gradle/")
+    vcsUrl.set("https://github.com/wzieba/tracks-gradle/")
 
     plugins {
-        create(PluginCoordinates.ID) {
-            id = PluginCoordinates.ID
-            implementationClass = PluginCoordinates.IMPLEMENTATION_CLASS
-            displayName = PluginBundle.DISPLAY_NAME
-            version = PluginCoordinates.VERSION
-            description = PluginBundle.DESCRIPTION
-            tags.set(PluginBundle.TAGS)
+        create("io.github.wzieba.tracks") {
+            id = "io.github.wzieba.tracks"
+            implementationClass = "io.github.wzieba.tracks.plugin.BuildTimePlugin"
+            displayName = "Gradle plugin which reports build times to Tracks."
+            version = "1.2.1"
+            description = "Gradle plugin which reports build times to Tracks."
+            tags.set(listOf("automattic"))
         }
     }
 }
