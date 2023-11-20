@@ -13,9 +13,8 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.invocation.DefaultGradle
-import javax.inject.Inject
 
-class BuildFinishedFlowAction @Inject constructor() :
+class BuildFinishedFlowAction :
     FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
         @get:Input
@@ -35,6 +34,9 @@ class BuildFinishedFlowAction @Inject constructor() :
 
         @get:Input
         val enabled: Property<Boolean?>
+
+        @get:Input
+        val automatticProject: Property<TracksExtension.AutomatticProject>
     }
 
     override fun execute(parameters: Parameters) {
@@ -43,7 +45,7 @@ class BuildFinishedFlowAction @Inject constructor() :
             parameters.buildWorkResult.get().get(),
             parameters.gradle.get(),
             parameters.buildTaskService.get().taskStatistics,
-            TracksExtension.AutomatticProject.WooCommerce,
+            parameters.automatticProject.get(),
             parameters.gradle.get().includedBuilds.toList().map { it.name }
         )
         parameters.buildReporter.get().report(buildData, parameters.username.get())

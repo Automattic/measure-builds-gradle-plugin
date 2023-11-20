@@ -58,6 +58,7 @@ class BuildTimePlugin @Inject constructor(
                     )
                 )
                 username.set(encodedUser)
+                automatticProject.set(extension.automatticProject)
             }
         }
     }
