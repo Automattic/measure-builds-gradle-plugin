@@ -3,11 +3,11 @@
 package io.github.wzieba.tracks.plugin.analytics
 
 import io.github.wzieba.tracks.plugin.BuildDataFactory.buildData
-import io.github.wzieba.tracks.plugin.BuildTaskService
 import io.github.wzieba.tracks.plugin.TracksExtension
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
 import org.gradle.api.flow.FlowParameters
+import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -26,7 +26,7 @@ class BuildFinishedFlowAction :
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
         @get:Input
-        val buildTaskService: Property<BuildTaskService>
+        val taskStatistics: Property<TaskExecutionStatistics>
     }
 
     override fun execute(parameters: Parameters) {
@@ -36,7 +36,7 @@ class BuildFinishedFlowAction :
         val buildData = buildData(
             parameters.buildWorkResult.get().get(),
             gradle,
-            parameters.buildTaskService.get().taskStatistics,
+            parameters.taskStatistics.get(),
             extension.automatticProject.get(),
             gradle.includedBuilds.toList().map { it.name }
         )

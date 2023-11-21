@@ -45,7 +45,7 @@ class BuildTimePlugin @Inject constructor(
             spec.parameters.apply {
                 buildWorkResult.set(flowProviders.buildWorkResult)
                 gradle.set(project.gradle as DefaultGradle)
-                buildTaskService.set(serviceProvider.get())
+                taskStatistics.set(serviceProvider.get().taskStatistics)
                 ext.set(extension)
             }
         }
