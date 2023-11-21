@@ -3,7 +3,6 @@
 package io.github.wzieba.tracks.plugin.analytics
 
 import io.github.wzieba.tracks.plugin.BuildDataFactory.buildData
-import io.github.wzieba.tracks.plugin.BuildReporter
 import io.github.wzieba.tracks.plugin.BuildTaskService
 import io.github.wzieba.tracks.plugin.TracksExtension
 import org.gradle.api.flow.BuildWorkResult
@@ -18,6 +17,9 @@ class BuildFinishedFlowAction :
     FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
         @get:Input
+        val ext: Property<TracksExtension>
+
+        @get:Input
         val gradle: Property<DefaultGradle>
 
         @get:Input
@@ -25,29 +27,24 @@ class BuildFinishedFlowAction :
 
         @get:Input
         val buildTaskService: Property<BuildTaskService>
-
-        @get:Input
-        val buildReporter: Property<BuildReporter>
-
-        @get:Input
-        val username: Property<String>
-
-        @get:Input
-        val enabled: Property<Boolean?>
-
-        @get:Input
-        val automatticProject: Property<TracksExtension.AutomatticProject>
     }
 
     override fun execute(parameters: Parameters) {
-        if (parameters.enabled.orNull != true) return
+        val extension = parameters.ext.get()
+        val gradle = parameters.gradle.get()
+
         val buildData = buildData(
             parameters.buildWorkResult.get().get(),
-            parameters.gradle.get(),
+            gradle,
             parameters.buildTaskService.get().taskStatistics,
-            parameters.automatticProject.get(),
-            parameters.gradle.get().includedBuilds.toList().map { it.name }
+            extension.automatticProject.get(),
+            gradle.includedBuilds.toList().map { it.name }
         )
-        parameters.buildReporter.get().report(buildData, parameters.username.get())
+
+        gradle.extensions.add("automattic_build_data", buildData)
+
+        if (extension.sendMetricsOnBuildFinished.get()) {
+            extension.reportBuild(null)
+        }
     }
 }

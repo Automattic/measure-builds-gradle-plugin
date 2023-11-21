@@ -8,5 +8,6 @@ interface AnalyticsReporter {
         logger: Logger,
         event: BuildData,
         user: String,
+        gradleScanId: String?
     )
 }

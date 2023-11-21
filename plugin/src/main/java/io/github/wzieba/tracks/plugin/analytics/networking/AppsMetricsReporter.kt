@@ -32,6 +32,7 @@ class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
         logger: Logger,
         event: BuildData,
         user: String,
+        gradleScanId: String?,
     ) {
         val authToken: String? = project.properties["appsMetricsToken"] as String?
 
@@ -65,7 +66,7 @@ class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
                 append(Authorization, "Bearer $authToken")
             }
             contentType(ContentType.Application.Json)
-            body = event.toAppsInfraPayload(user)
+            body = event.toAppsInfraPayload(user, gradleScanId ?: "none")
         }.execute { response: HttpResponse ->
             logger.debug(response.toString())
 

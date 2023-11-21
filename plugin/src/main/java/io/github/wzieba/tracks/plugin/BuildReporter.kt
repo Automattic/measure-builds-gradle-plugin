@@ -12,26 +12,26 @@ class BuildReporter(
 ) {
 
     @Suppress("TooGenericExceptionCaught")
-    fun report(buildData: BuildData, username: String) {
+    fun report(buildData: BuildData, username: String, gradleScanUrl: String?) {
         try {
-            reportMeasured(buildData, username)
+            reportMeasured(buildData, username, gradleScanUrl)
         } catch (ex: Exception) {
             logger.warn("\n$FAILURE_ICON Build time reporting failed: $ex")
         }
     }
 
-    private fun reportMeasured(buildData: BuildData, username: String) {
+    private fun reportMeasured(buildData: BuildData, username: String, gradleScanUrl: String?) {
         val start = nowMillis()
 
-        reportInternal(buildData, username)
+        reportInternal(buildData, username, gradleScanUrl)
 
         val reportingOverhead = nowMillis() - start
         logger.info("Reporting overhead: $reportingOverhead ms.")
     }
 
-    private fun reportInternal(buildData: BuildData, username: String) {
+    private fun reportInternal(buildData: BuildData, username: String, gradleScanId: String?) {
         runBlocking {
-            analyticsReporter.report(logger, buildData, username)
+            analyticsReporter.report(logger, buildData, username, gradleScanId)
         }
     }
 

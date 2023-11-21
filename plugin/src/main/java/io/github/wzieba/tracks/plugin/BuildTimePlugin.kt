@@ -2,7 +2,6 @@ package io.github.wzieba.tracks.plugin
 
 import io.github.wzieba.tracks.plugin.analytics.BuildFinishedFlowAction
 import io.github.wzieba.tracks.plugin.analytics.networking.AppsMetricsReporter
-import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.flow.FlowActionSpec
@@ -25,7 +24,12 @@ class BuildTimePlugin @Inject constructor(
 ) : Plugin<Project> {
     override fun apply(project: Project) {
         val extension =
-            project.extensions.create(EXTENSION_NAME, TracksExtension::class.java, project)
+            project.extensions.create(
+                EXTENSION_NAME,
+                TracksExtension::class.java,
+                project,
+                BuildReporter(project.logger, AppsMetricsReporter(project))
+            )
 
         val serviceProvider: Provider<BuildTaskService> =
             project.gradle.sharedServices.registerIfAbsent(
@@ -34,31 +38,15 @@ class BuildTimePlugin @Inject constructor(
             ) { }
         registry.onTaskCompletion(serviceProvider)
 
-        val encodedUser: String = System.getProperty("user.name").let {
-            if (extension.obfuscateUsername.getOrElse(false) == true) {
-                EncodingGroovyMethods.digest(it, "SHA-1")
-            } else {
-                it
-            }
-        }
-
         flowScope.always(
             BuildFinishedFlowAction::class.java
         ) { spec: FlowActionSpec<BuildFinishedFlowAction.Parameters> ->
 
             spec.parameters.apply {
-                enabled.set(extension.enabled)
                 buildWorkResult.set(flowProviders.buildWorkResult)
                 gradle.set(project.gradle as DefaultGradle)
                 buildTaskService.set(serviceProvider.get())
-                buildReporter.set(
-                    BuildReporter(
-                        project.logger,
-                        AppsMetricsReporter(project)
-                    )
-                )
-                username.set(encodedUser)
-                automatticProject.set(extension.automatticProject)
+                ext.set(extension)
             }
         }
     }

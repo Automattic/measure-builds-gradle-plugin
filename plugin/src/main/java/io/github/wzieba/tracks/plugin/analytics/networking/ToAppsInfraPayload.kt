@@ -3,7 +3,7 @@ package io.github.wzieba.tracks.plugin.analytics.networking
 import io.github.wzieba.tracks.plugin.BuildData
 
 @Suppress("LongMethod")
-fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
+fun BuildData.toAppsInfraPayload(user: String, gradleScanId: String): GroupedAppsMetrics {
     val projectKey = this.forProject.name.lowercase()
 
     val meta = mapOf(
@@ -32,6 +32,7 @@ fun BuildData.toAppsInfraPayload(user: String): GroupedAppsMetrics {
         "build-data-collection-overhead-ms" to buildDataCollectionOverhead.toString(),
         "included-builds" to includedBuildsNames.joinToString(separator = ",").ifEmpty { "none" },
         "build-finished-at" to buildFinishedTimestamp.toString(),
+        "gradle-scan-id" to gradleScanId,
     )
 
     return GroupedAppsMetrics(

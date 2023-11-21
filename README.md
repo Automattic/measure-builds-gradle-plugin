@@ -19,6 +19,13 @@ plugins {
 
 tracks {
     automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
+    sendMetricsOnBuildFinished.set(false) // or `true` and `buildScan` is not required
+}
+
+buildScan {
+    buildScanPublished {
+        tracks.reportBuild(getBuildScanId())
+    }
 }
 ```
 
@@ -26,7 +33,8 @@ tracks {
 | Property | Default | Required? | Description |
 | --- | -- |-----------| --- |
 | automatticProject | null | yes       | Project that will determine event name |
-| enabled | null | no        | Enable plugin |
+| sendMetricsOnBuildFinished | null | yes | If true, metrics will be uploaded automatically. If false, user has to call tracks.reportBuild(gradleScanId) |
+| enabled | false | no        | Enable plugin |
 | obfuscateUsername | false | no | If true, then username will be SHA-1 obfuscated | 
 
 ## Result
