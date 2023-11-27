@@ -35,6 +35,7 @@ class AppsMetricsReporter(
         authToken: String,
         gradleScanId: String?
     ) {
+        @Suppress("TooGenericExceptionCaught")
         try {
             logger.debug("Reporting $report")
             logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
@@ -92,10 +93,11 @@ class AppsMetricsReporter(
                 }
             }
             client.close()
-        } catch (exception: Exception){
+        } catch (exception: Exception) {
             logger.warn(
                 "\n$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
             )
+            logger.debug(exception.stackTraceToString())
         }
     }
 }

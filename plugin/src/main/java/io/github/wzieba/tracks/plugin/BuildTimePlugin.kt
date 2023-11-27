@@ -19,6 +19,10 @@ import kotlin.time.ExperimentalTime
 
 const val EXTENSION_NAME = "tracks"
 
+@Suppress("MaxLineLength")
+private const val NO_GRADLE_ENTERPRISE_PLUGIN_MESSAGE =
+    "The project has no Gradle Enterprise plugin enabled and `attachGradleScanId` option enabled. No metric will be send in this configuration."
+
 @Suppress("UnstableApiUsage")
 @ExperimentalTime
 class BuildTimePlugin @Inject constructor(
@@ -27,11 +31,10 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-
-        val start = (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
+        val start =
+            (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
 
         val authToken: String? = project.properties["appsMetricsToken"] as String?
-
         if (authToken.isNullOrBlank()) {
             project.logger.warn("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
             return
@@ -40,12 +43,75 @@ class BuildTimePlugin @Inject constructor(
         val analyticsReporter = AppsMetricsReporter(project.logger)
 
         val extension =
-            project.extensions.create(
-                EXTENSION_NAME,
-                TracksExtension::class.java,
-                project,
-            )
+            project.extensions.create(EXTENSION_NAME, TracksExtension::class.java, project)
 
+        val encodedUser: String = prepareUser(project, extension)
+
+        project.gradle.projectsEvaluated {
+            prepareBuildScanListener(project, extension, analyticsReporter, authToken, onSuccess = {
+                InMemoryReport.buildDataStore =
+                    BuildDataFactory.buildData(
+                        project,
+                        extension.automatticProject.get(),
+                        encodedUser
+                    )
+                prepareBuildTaskService(project)
+                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+            })
+        }
+    }
+
+    private fun prepareBuildScanListener(
+        project: Project,
+        extension: TracksExtension,
+        analyticsReporter: AppsMetricsReporter,
+        authToken: String,
+        onSuccess: () -> Unit,
+    ) {
+        val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
+        if (buildScanExtension != null && extension.attachGradleScanId.get() == true) {
+            buildScanExtension.buildScanPublished {
+                runBlocking {
+                    analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
+                }
+            }
+        } else if (extension.attachGradleScanId.get() == true) {
+            project.logger.warn(NO_GRADLE_ENTERPRISE_PLUGIN_MESSAGE)
+            return
+        }
+        onSuccess.invoke()
+    }
+
+    private fun prepareBuildFinishedAction(
+        extension: TracksExtension,
+        analyticsReporter: AppsMetricsReporter,
+        authToken: String?,
+        start: Long
+    ) {
+        flowScope.always(
+            BuildFinishedFlowAction::class.java
+        ) { spec: FlowActionSpec<BuildFinishedFlowAction.Parameters> ->
+            spec.parameters.apply {
+                this.buildWorkResult.set(flowProviders.buildWorkResult)
+                this.attachGradleScanId.set(extension.attachGradleScanId)
+                this.analyticsReporter.set(analyticsReporter)
+                this.authToken.set(authToken)
+                this.startTime.set(start)
+            }
+        }
+    }
+
+    private fun prepareBuildTaskService(project: Project) {
+        val serviceProvider: Provider<BuildTaskService> =
+            project.gradle.sharedServices.registerIfAbsent(
+                "taskEvents",
+                BuildTaskService::class.java
+            ) {
+            }
+        registry.onTaskCompletion(serviceProvider)
+    }
+
+    private fun prepareUser(project: Project, extension: TracksExtension): String {
         val user = project.providers.systemProperty("user.name").get()
 
         val encodedUser: String = user.let {
@@ -56,45 +122,6 @@ class BuildTimePlugin @Inject constructor(
             }
         }
 
-        project.gradle.projectsEvaluated {
-            val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
-            if (buildScanExtension != null && extension.attachGradleScanId.get() == true) {
-                buildScanExtension.buildScanPublished {
-                    runBlocking {
-                        analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
-                    }
-                }
-            } else if (extension.attachGradleScanId.get() == true) {
-                project.logger.warn(
-                    "The project has no Gradle Enterprise plugin enabled " +
-                            "and `attachGradleScanId` option enabled. " +
-                            "No metric will be send in this configuration."
-                )
-                return@projectsEvaluated
-            }
-
-            InMemoryReport.buildDataStore =
-                BuildDataFactory.buildData(project, extension.automatticProject.get(), encodedUser)
-
-            val serviceProvider: Provider<BuildTaskService> =
-                project.gradle.sharedServices.registerIfAbsent(
-                    "taskEvents",
-                    BuildTaskService::class.java
-                ) {
-                }
-            registry.onTaskCompletion(serviceProvider)
-
-            flowScope.always(
-                BuildFinishedFlowAction::class.java
-            ) { spec: FlowActionSpec<BuildFinishedFlowAction.Parameters> ->
-                spec.parameters.apply {
-                    this.buildWorkResult.set(flowProviders.buildWorkResult)
-                    this.attachGradleScanId.set(extension.attachGradleScanId)
-                    this.analyticsReporter.set(analyticsReporter)
-                    this.authToken.set(authToken)
-                    this.startTime.set(start)
-                }
-            }
-        }
+        return encodedUser
     }
 }
