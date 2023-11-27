@@ -36,17 +36,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 gradlePlugin {
-    website.set("https://github.com/wzieba/tracks-gradle/")
-    vcsUrl.set("https://github.com/wzieba/tracks-gradle/")
-
     plugins {
-        create("tracks.plugin") {
-            id = "io.github.wzieba.tracks.plugin"
+        create("measure-builds") {
+            id = "com.automattic.android.measure-builds"
             implementationClass = "io.github.wzieba.tracks.plugin.BuildTimePlugin"
-            displayName = "Gradle plugin which reports build times to Tracks."
-            version = "1.2.1"
-            description = "Gradle plugin which reports build times to Tracks."
-            tags.set(listOf("automattic"))
         }
     }
 }

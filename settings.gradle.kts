@@ -22,4 +22,5 @@ pluginManagement {
     }
 }
 
-include(":example", ":plugin")
+rootProject.name = "measure-builds-gradle-plugin"
+include(":plugin")
