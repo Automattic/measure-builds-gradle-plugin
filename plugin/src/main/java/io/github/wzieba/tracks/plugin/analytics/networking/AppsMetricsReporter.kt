@@ -1,6 +1,6 @@
 package io.github.wzieba.tracks.plugin.analytics.networking
 
-import io.github.wzieba.tracks.plugin.BuildData
+import io.github.wzieba.tracks.plugin.Report
 import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
 import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
 import io.github.wzieba.tracks.plugin.analytics.Emojis.SUCCESS_ICON
@@ -19,35 +19,28 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.time.Duration.Companion.seconds
 
-class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
+class AppsMetricsReporter(
+    private val logger: Logger,
+) : AnalyticsReporter {
 
     override suspend fun report(
-        logger: Logger,
-        event: BuildData,
-        user: String,
-        gradleScanId: String?,
+        report: Report,
+        authToken: String,
+        gradleScanId: String?
     ) {
-        val authToken: String? = project.properties["appsMetricsToken"] as String?
-
-        if (authToken.isNullOrBlank()) {
-            logger.warn("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
-            return
-        }
-
-        logger.debug("Reporting $event")
+        logger.debug("Reporting $report")
 
         val client = HttpClient(CIO) {
             install(Logging) {
                 this.logger = object : io.ktor.client.features.logging.Logger {
                     override fun log(message: String) {
-                        logger.debug(message)
+                        this@AppsMetricsReporter.logger.debug(message)
                     }
                 }
                 level = io.ktor.client.features.logging.LogLevel.ALL
@@ -66,13 +59,13 @@ class AppsMetricsReporter(private val project: Project) : AnalyticsReporter {
                 append(Authorization, "Bearer $authToken")
             }
             contentType(ContentType.Application.Json)
-            body = event.toAppsInfraPayload(user, gradleScanId ?: "none")
+            body = report.toAppsInfraPayload(gradleScanId)
         }.execute { response: HttpResponse ->
             logger.debug(response.toString())
 
             when (response.status) {
                 HttpStatusCode.Created -> {
-                    val buildTime = event.buildTime
+                    val buildTime = report.executionData.buildTime
                     val timeFormatted = String.format(
                         Locale.US,
                         "%dm %ds",

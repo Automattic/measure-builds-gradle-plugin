@@ -1,46 +1,53 @@
 package io.github.wzieba.tracks.plugin.analytics.networking
 
-import io.github.wzieba.tracks.plugin.BuildData
+import io.github.wzieba.tracks.plugin.Report
 
-@Suppress("LongMethod")
-fun BuildData.toAppsInfraPayload(user: String, gradleScanId: String): GroupedAppsMetrics {
-    val projectKey = this.forProject.name.lowercase()
+fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
+    val projectKey = buildData.forProject.name.lowercase()
 
     val meta = mapOf(
-        "user" to user,
+        "user" to buildData.user,
         "project" to projectKey,
-        "environment" to environment.name,
-        "architecture" to this.architecture,
-        "operating-system" to operatingSystem,
+        "environment" to buildData.environment.name,
+        "architecture" to buildData.architecture,
+        "operating-system" to buildData.operatingSystem,
     )
 
     val metrics = mapOf(
-        "requested-tasks" to tasks.joinToString(separator = ","),
-        "build-time-ms" to buildTime.toString(),
-        "build-status" to if (failed) "Failure" else "Success",
-        "failure-message" to failure.toString(),
-        "number-of-running-daemons" to daemonsRunning.toString(),
-        "daemons-build-count" to thisDaemonBuilds.toString(),
-        "gradle-version" to gradleVersion,
-        "up-to-date-tasks" to taskStatistics.upToDate.toString(),
-        "cached-tasks" to taskStatistics.fromCache.toString(),
-        "executed-tasks" to taskStatistics.executed.toString(),
-        "configure-on-demand" to isConfigureOnDemand.toString(),
-        "configuration-cache" to isConfigurationCache.toString(),
-        "build-cache" to isBuildCache.toString(),
-        "max-workers" to maxWorkers.toString(),
-        "build-data-collection-overhead-ms" to buildDataCollectionOverhead.toString(),
-        "included-builds" to includedBuildsNames.joinToString(separator = ",").ifEmpty { "none" },
-        "build-finished-at" to buildFinishedTimestamp.toString(),
-        "gradle-scan-id" to gradleScanId,
+        "requested-tasks" to buildData.tasks.joinToString(separator = ","),
+        "build-time-ms" to executionData.buildTime.toString(),
+        "build-status" to if (executionData.failed) "Failure" else "Success",
+        "failure-message" to executionData.failure.toString(),
+        "number-of-running-daemons" to buildData.daemonsRunning.toString(),
+        "daemons-build-count" to buildData.thisDaemonBuilds.toString(),
+        "gradle-version" to buildData.gradleVersion,
+        "up-to-date-tasks" to executionData.taskStatistics.upToDate.toString(),
+        "cached-tasks" to executionData.taskStatistics.fromCache.toString(),
+        "executed-tasks" to executionData.taskStatistics.executed.toString(),
+        "configure-on-demand" to buildData.isConfigureOnDemand.toString(),
+        "configuration-cache" to buildData.isConfigurationCache.toString(),
+        "build-cache" to buildData.isBuildCache.toString(),
+        "max-workers" to buildData.maxWorkers.toString(),
+        "build-data-collection-overhead-ms" to buildData.buildDataCollectionOverhead.toString(),
+        "included-builds" to buildData.includedBuildsNames.joinToString(separator = ",")
+            .ifEmpty { "none" },
+        "build-finished-at" to executionData.buildFinishedTimestamp.toString(),
+        "gradle-scan-id" to gradleScanId.orEmpty(),
     )
 
     return GroupedAppsMetrics(
-        meta = meta.map { (key, value) -> AppsMetric(name = "$projectKey-$key", value = value) },
+        meta = meta.map { (key, value) ->
+            AppsMetric(
+                name = "$projectKey-$key",
+                // Apps Metrics doesn't allow metric value to be empty
+                value = value.ifBlank { "null" }
+            )
+        },
         metrics = metrics.map { (key, value) ->
             AppsMetric(
                 name = "$projectKey-$key",
-                value = value
+                // Apps Metrics doesn't allow metric value to be empty
+                value = value.ifBlank { "null" }
             )
         },
     )

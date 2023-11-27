@@ -1,40 +1,29 @@
 package io.github.wzieba.tracks.plugin
 
-import org.gradle.api.flow.BuildWorkResult
-import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
+import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
-import org.gradle.internal.buildevents.BuildStartedTime
-import org.gradle.internal.time.Clock
 import org.gradle.invocation.DefaultGradle
 import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
 import java.util.concurrent.TimeUnit
-import kotlin.jvm.optionals.getOrNull
 
 object BuildDataFactory {
 
-    @Suppress("UnstableApiUsage")
     fun buildData(
-        result: BuildWorkResult,
-        gradle: DefaultGradle,
-        statistics: TaskExecutionStatistics,
+        project: Project,
         automatticProject: TracksExtension.AutomatticProject,
-        includedBuildsNames: List<String>,
+        username: String,
     ): BuildData {
         val start = nowMillis()
+        val gradle = project.gradle
 
-        val services = gradle.services
-
-        val startTime = services[BuildStartedTime::class.java].startTime
-        val totalTime = services[Clock::class.java].currentTime - startTime
+        val services = (gradle as DefaultGradle).services
 
         val daemonInfo = services[DaemonScanInfo::class.java]
         val startParameter = gradle.startParameter
 
+        @Suppress("UnstableApiUsage")
         return BuildData(
             forProject = automatticProject,
-            buildTime = totalTime,
-            failed = result.failure.isPresent,
-            failure = result.failure.getOrNull(),
             daemonsRunning = daemonInfo.numberOfRunningDaemons,
             thisDaemonBuilds = daemonInfo.numberOfBuilds,
             tasks = startParameter.taskNames,
@@ -45,15 +34,10 @@ object BuildDataFactory {
             isConfigurationCache = startParameter.isConfigurationCacheRequested,
             isBuildCache = startParameter.isBuildCacheEnabled,
             maxWorkers = startParameter.maxWorkerCount,
-            taskStatistics = TaskStatistics(
-                statistics.upToDateTaskCount,
-                statistics.fromCacheTaskCount,
-                statistics.executedTasksCount
-            ),
             buildDataCollectionOverhead = nowMillis() - start,
-            includedBuildsNames = includedBuildsNames,
-            architecture = architecture(),
-            buildFinishedTimestamp = start,
+            includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
+            architecture = architecture(project),
+            user = username
         )
     }
 
@@ -65,11 +49,11 @@ object BuildDataFactory {
         }
     }
 
-    private fun architecture(): String {
-        val exec = Runtime.getRuntime().exec("uname -m")
-        val inputStream = exec.inputStream
-        exec.waitFor()
-        return inputStream.bufferedReader().readText().trim()
+    private fun architecture(project: Project): String {
+        val exec = project.providers.exec {
+            it.commandLine("uname", "-m")
+        }.standardOutput.asText.get()
+        return exec.trim()
     }
 
     private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())

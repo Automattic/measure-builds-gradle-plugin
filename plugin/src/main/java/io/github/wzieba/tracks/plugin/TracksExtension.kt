@@ -1,17 +1,22 @@
 package io.github.wzieba.tracks.plugin
 
-import org.codehaus.groovy.runtime.EncodingGroovyMethods
+import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
+import io.ktor.utils.io.printStack
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
-abstract class TracksExtension constructor(
-    private val project: Project,
-    private val buildReporter: BuildReporter
+abstract class TracksExtension(
+    project: Project,
+    private val report: Report,
+    private val analyticsReporter: AnalyticsReporter,
+    private val authToken: String,
 ) {
 
     private val objects = project.objects
 
-    val automatticProject: Property<AutomatticProject> = objects.property(AutomatticProject::class.java)
+    val automatticProject: Property<AutomatticProject> =
+        objects.property(AutomatticProject::class.java)
 
     val enabled: Property<Boolean> = objects.property(Boolean::class.java)
 
@@ -28,19 +33,19 @@ abstract class TracksExtension constructor(
      */
     val sendMetricsOnBuildFinished: Property<Boolean> = objects.property(Boolean::class.java)
 
-    fun reportBuild(gradleScanId: String?) {
+    fun reportBuild(gradleScanId: String) {
+        return TODO("Not yet implemented")
+
         if (enabled.orNull != true) return
 
-        val encodedUser: String = System.getProperty("user.name").let {
-            if (obfuscateUsername.getOrElse(false) == true) {
-                EncodingGroovyMethods.digest(it, "SHA-1")
-            } else {
-                it
+        val runCatching = kotlin.runCatching {
+            runBlocking {
+                analyticsReporter.report(report, authToken, gradleScanId)
             }
         }
-        val buildData = project.gradle.extensions.getByType(BuildData::class.java)
+        println(gradleScanId)
 
-        buildReporter.report(buildData, encodedUser, gradleScanId)
+        print(runCatching.exceptionOrNull()?.printStack())
     }
 
     enum class AutomatticProject {

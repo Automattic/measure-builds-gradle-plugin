@@ -2,49 +2,64 @@
 
 package io.github.wzieba.tracks.plugin.analytics
 
-import io.github.wzieba.tracks.plugin.BuildDataFactory.buildData
-import io.github.wzieba.tracks.plugin.TracksExtension
+import io.github.wzieba.tracks.plugin.BuildTaskService
+import io.github.wzieba.tracks.plugin.ExecutionData
+import io.github.wzieba.tracks.plugin.InMemoryReport
+import io.github.wzieba.tracks.plugin.TaskStatistics
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
 import org.gradle.api.flow.FlowParameters
-import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
-import org.gradle.invocation.DefaultGradle
+import kotlin.jvm.optionals.getOrNull
 
-class BuildFinishedFlowAction :
-    FlowAction<BuildFinishedFlowAction.Parameters> {
+class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
-        @get:Input
-        val ext: Property<TracksExtension>
-
-        @get:Input
-        val gradle: Property<DefaultGradle>
-
         @get:Input
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
         @get:Input
-        val taskStatistics: Property<TaskExecutionStatistics>
+        val analyticsReporter: Property<AnalyticsReporter>
+
+        @get:Input
+        val authToken: Property<String>
+
+        @get:Input
+        val sendMetricsOnBuildFinished: Property<Boolean>
+
+        @get:ServiceReference
+        val buildTaskService: Property<BuildTaskService>
     }
 
     override fun execute(parameters: Parameters) {
-        val extension = parameters.ext.get()
-        val gradle = parameters.gradle.get()
+        val result = parameters.buildWorkResult.get().get()
+        val statistics = parameters.buildTaskService.get().taskStatistics
 
-        val buildData = buildData(
-            parameters.buildWorkResult.get().get(),
-            gradle,
-            parameters.taskStatistics.get(),
-            extension.automatticProject.get(),
-            gradle.includedBuilds.toList().map { it.name }
+        val executionData = ExecutionData(
+            buildTime = 0,
+            failed = result.failure.isPresent,
+            failure = result.failure.getOrNull(),
+            taskStatistics = TaskStatistics(
+                statistics.upToDateTaskCount,
+                statistics.fromCacheTaskCount,
+                statistics.executedTasksCount
+            ),
+            buildFinishedTimestamp = System.currentTimeMillis()
         )
 
-        gradle.extensions.add("automattic_build_data", buildData)
+        InMemoryReport.executionDataStore = executionData
 
-        if (extension.sendMetricsOnBuildFinished.get()) {
-            extension.reportBuild(null)
+        if (parameters.sendMetricsOnBuildFinished.get()) {
+            runBlocking {
+                parameters.analyticsReporter.get().report(
+                    report = InMemoryReport,
+                    authToken = parameters.authToken.get(),
+                    gradleScanId = null
+                )
+            }
         }
     }
 }
