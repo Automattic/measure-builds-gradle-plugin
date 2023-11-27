@@ -19,6 +19,9 @@ import kotlin.jvm.optionals.getOrNull
 class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
         @get:Input
+        val startTime: Property<Long>
+
+        @get:Input
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
         @get:Input
@@ -35,11 +38,15 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
     }
 
     override fun execute(parameters: Parameters) {
+        val finish = System.currentTimeMillis()
+
         val result = parameters.buildWorkResult.get().get()
         val statistics = parameters.buildTaskService.get().taskStatistics
 
+        val buildTime = finish - parameters.startTime.get()
+
         val executionData = ExecutionData(
-            buildTime = 0,
+            buildTime = buildTime,
             failed = result.failure.isPresent,
             failure = result.failure.getOrNull(),
             taskStatistics = TaskStatistics(
@@ -47,7 +54,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
                 statistics.fromCacheTaskCount,
                 statistics.executedTasksCount
             ),
-            buildFinishedTimestamp = System.currentTimeMillis()
+            buildFinishedTimestamp = finish
         )
 
         InMemoryReport.executionDataStore = executionData

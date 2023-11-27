@@ -12,6 +12,8 @@ import org.gradle.api.flow.FlowProviders
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.provider.Provider
 import org.gradle.build.event.BuildEventsListenerRegistry
+import org.gradle.internal.buildevents.BuildStartedTime
+import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -25,6 +27,9 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
+
+        val start = (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
+
         val authToken: String? = project.properties["appsMetricsToken"] as String?
 
         if (authToken.isNullOrBlank()) {
@@ -87,6 +92,7 @@ class BuildTimePlugin @Inject constructor(
                     this.attachGradleScanId.set(extension.attachGradleScanId)
                     this.analyticsReporter.set(analyticsReporter)
                     this.authToken.set(authToken)
+                    this.startTime.set(start)
                 }
             }
         }
