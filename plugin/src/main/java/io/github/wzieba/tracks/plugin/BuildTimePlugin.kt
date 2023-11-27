@@ -1,7 +1,9 @@
 package io.github.wzieba.tracks.plugin
 
+import com.gradle.scan.plugin.BuildScanExtension
 import io.github.wzieba.tracks.plugin.analytics.BuildFinishedFlowAction
 import io.github.wzieba.tracks.plugin.analytics.networking.AppsMetricsReporter
+import kotlinx.coroutines.runBlocking
 import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,9 +39,6 @@ class BuildTimePlugin @Inject constructor(
                 EXTENSION_NAME,
                 TracksExtension::class.java,
                 project,
-                InMemoryReport,
-                analyticsReporter,
-                authToken
             )
 
         val user = project.providers.systemProperty("user.name").get()
@@ -53,6 +52,22 @@ class BuildTimePlugin @Inject constructor(
         }
 
         project.gradle.projectsEvaluated {
+            val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
+            if (buildScanExtension != null && extension.attachGradleScanId.get() == true) {
+                buildScanExtension.buildScanPublished {
+                    runBlocking {
+                        analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
+                    }
+                }
+            } else if (extension.attachGradleScanId.get() == true) {
+                project.logger.warn(
+                    "The project has no Gradle Enterprise plugin enabled " +
+                            "and `attachGradleScanId` option enabled. " +
+                            "No metric will be send in this configuration."
+                )
+                return@projectsEvaluated
+            }
+
             InMemoryReport.buildDataStore =
                 BuildDataFactory.buildData(project, extension.automatticProject.get(), encodedUser)
 
@@ -69,7 +84,7 @@ class BuildTimePlugin @Inject constructor(
             ) { spec: FlowActionSpec<BuildFinishedFlowAction.Parameters> ->
                 spec.parameters.apply {
                     this.buildWorkResult.set(flowProviders.buildWorkResult)
-                    this.sendMetricsOnBuildFinished.set(extension.sendMetricsOnBuildFinished)
+                    this.attachGradleScanId.set(extension.attachGradleScanId)
                     this.analyticsReporter.set(analyticsReporter)
                     this.authToken.set(authToken)
                 }

@@ -28,7 +28,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val authToken: Property<String>
 
         @get:Input
-        val sendMetricsOnBuildFinished: Property<Boolean>
+        val attachGradleScanId: Property<Boolean>
 
         @get:ServiceReference
         val buildTaskService: Property<BuildTaskService>
@@ -52,7 +52,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
 
         InMemoryReport.executionDataStore = executionData
 
-        if (parameters.sendMetricsOnBuildFinished.get()) {
+        if (parameters.attachGradleScanId.get() == false) {
             runBlocking {
                 parameters.analyticsReporter.get().report(
                     report = InMemoryReport,

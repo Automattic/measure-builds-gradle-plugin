@@ -7,10 +7,12 @@ plugins {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
     implementation(gradleApi())
+    implementation("com.gradle:gradle-enterprise-gradle-plugin:3.15.1")
 
     implementation("io.ktor:ktor-client-core:1.6.4")
     implementation("io.ktor:ktor-client-cio:1.6.4")
