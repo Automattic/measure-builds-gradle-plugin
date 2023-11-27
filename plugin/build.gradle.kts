@@ -39,7 +39,7 @@ gradlePlugin {
     plugins {
         create("measure-builds") {
             id = "com.automattic.android.measure-builds"
-            implementationClass = "com.automattic.android.publish"
+            implementationClass = "com.automattic.android.measure.BuildTimePlugin"
         }
     }
 }
