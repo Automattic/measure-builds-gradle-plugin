@@ -1,0 +1,37 @@
+# Nodes with values to reuse in the pipeline.
+common_params:
+  # Common plugin settings to use with the `plugins` key.
+  - &common_plugins
+    - automattic/a8c-ci-toolkit#2.15.0
+
+agents:
+  queue: "android"
+
+steps:
+  ############################
+  # Gradle Wrapper Validation
+  ############################
+  - label: "Gradle Wrapper Validation"
+    command: |
+      validate_gradle_wrapper
+    plugins: *common_plugins
+    notify:
+      - github_commit_status:
+          context: "Gradle Wrapper Validation"
+
+  - wait: ~
+    if: build.branch == "trunk" || build.tag != null
+
+  ############################
+  # Publish artefacts to S3
+  ############################
+  - group: 🚀 Publish to S3
+    key: publish-to-s3
+    steps:
+      - label: "🚀 Publish :plugin"
+        key: "publish-plugin"
+        command: .buildkite/publish.sh
+        plugins: *common_plugins
+        notify:
+          - github_commit_status:
+              context: "Publish :plugin"
