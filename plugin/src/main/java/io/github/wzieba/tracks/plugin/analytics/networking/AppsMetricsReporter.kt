@@ -37,6 +37,7 @@ class AppsMetricsReporter(
     ) {
         try {
             logger.debug("Reporting $report")
+            logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
 
             val client = HttpClient(CIO) {
                 install(Logging) {
