@@ -58,6 +58,8 @@ compatible `OperationCompletionListener`.
 
 ### Build time
 
-Gradle uses `BuildStartedTime` internal service to define where the build starts and ends. Those
-moments are slightly different comparing to this plugin definitions. The discrepancy is minor, a few
-seconds at most and still shows how long user waited for build to finish.
+This plugin uses `BuildStartedTime` internal service to determine start of the build, the same as
+Gradle. The end of the build though is defined
+by [FlowAction](https://docs.gradle.org/current/userguide/dataflow_actions.html)
+and might be slightly different than what Gradle uses. The discrepancy is minor, close to
+irrelevant.
