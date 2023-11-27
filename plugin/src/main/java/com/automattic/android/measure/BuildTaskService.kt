@@ -1,4 +1,4 @@
-package io.github.wzieba.tracks.plugin
+package com.automattic.android.measure
 
 import org.gradle.api.internal.tasks.execution.statistics.TaskExecutionStatistics
 import org.gradle.api.services.BuildService

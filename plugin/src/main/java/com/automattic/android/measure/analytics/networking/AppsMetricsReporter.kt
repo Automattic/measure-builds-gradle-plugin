@@ -1,10 +1,10 @@
-package io.github.wzieba.tracks.plugin.analytics.networking
+package com.automattic.android.measure.analytics.networking
 
-import io.github.wzieba.tracks.plugin.Report
-import io.github.wzieba.tracks.plugin.analytics.AnalyticsReporter
-import io.github.wzieba.tracks.plugin.analytics.Emojis.FAILURE_ICON
-import io.github.wzieba.tracks.plugin.analytics.Emojis.SUCCESS_ICON
-import io.github.wzieba.tracks.plugin.analytics.Emojis.WAITING_ICON
+import com.automattic.android.measure.Report
+import com.automattic.android.measure.analytics.AnalyticsReporter
+import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
+import com.automattic.android.measure.analytics.Emojis.SUCCESS_ICON
+import com.automattic.android.measure.analytics.Emojis.WAITING_ICON
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.HttpTimeout

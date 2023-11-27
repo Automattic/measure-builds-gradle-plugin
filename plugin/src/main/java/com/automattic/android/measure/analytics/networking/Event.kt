@@ -1,7 +1,7 @@
-package io.github.wzieba.tracks.plugin.analytics.networking
+package com.automattic.android.measure.analytics.networking
 
-import io.github.wzieba.tracks.plugin.Environment
-import io.github.wzieba.tracks.plugin.analytics.json.StringListSerializer
+import com.automattic.android.measure.Environment
+import com.automattic.android.measure.analytics.json.StringListSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

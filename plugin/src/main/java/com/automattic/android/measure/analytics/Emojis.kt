@@ -1,4 +1,4 @@
-package io.github.wzieba.tracks.plugin.analytics
+package com.automattic.android.measure.analytics
 
 object Emojis {
     const val SUCCESS_ICON = "\u2705"

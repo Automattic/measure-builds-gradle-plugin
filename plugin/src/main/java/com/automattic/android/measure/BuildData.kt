@@ -1,4 +1,4 @@
-package io.github.wzieba.tracks.plugin
+package com.automattic.android.measure
 
 data class BuildData(
     val forProject: TracksExtension.AutomatticProject,

@@ -1,8 +1,8 @@
-package io.github.wzieba.tracks.plugin
+package com.automattic.android.measure
 
+import com.automattic.android.measure.analytics.BuildFinishedFlowAction
+import com.automattic.android.measure.analytics.networking.AppsMetricsReporter
 import com.gradle.scan.plugin.BuildScanExtension
-import io.github.wzieba.tracks.plugin.analytics.BuildFinishedFlowAction
-import io.github.wzieba.tracks.plugin.analytics.networking.AppsMetricsReporter
 import kotlinx.coroutines.runBlocking
 import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.api.Plugin

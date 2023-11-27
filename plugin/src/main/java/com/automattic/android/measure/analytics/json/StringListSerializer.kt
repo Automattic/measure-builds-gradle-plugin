@@ -1,4 +1,4 @@
-package io.github.wzieba.tracks.plugin.analytics.json
+package com.automattic.android.measure.analytics.json
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

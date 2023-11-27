@@ -1,6 +1,6 @@
-package io.github.wzieba.tracks.plugin.analytics
+package com.automattic.android.measure.analytics
 
-import io.github.wzieba.tracks.plugin.Report
+import com.automattic.android.measure.Report
 
 interface AnalyticsReporter {
     suspend fun report(

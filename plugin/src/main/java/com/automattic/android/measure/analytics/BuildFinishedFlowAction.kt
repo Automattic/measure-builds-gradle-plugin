@@ -1,11 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
-package io.github.wzieba.tracks.plugin.analytics
+package com.automattic.android.measure.analytics
 
-import io.github.wzieba.tracks.plugin.BuildTaskService
-import io.github.wzieba.tracks.plugin.ExecutionData
-import io.github.wzieba.tracks.plugin.InMemoryReport
-import io.github.wzieba.tracks.plugin.TaskStatistics
+import com.automattic.android.measure.BuildTaskService
+import com.automattic.android.measure.ExecutionData
+import com.automattic.android.measure.InMemoryReport
+import com.automattic.android.measure.TaskStatistics
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction

@@ -1,4 +1,4 @@
-package io.github.wzieba.tracks.plugin.analytics.networking
+package com.automattic.android.measure.analytics.networking
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

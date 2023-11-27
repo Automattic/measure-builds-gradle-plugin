@@ -1,6 +1,6 @@
-package io.github.wzieba.tracks.plugin.analytics.networking
+package com.automattic.android.measure.analytics.networking
 
-import io.github.wzieba.tracks.plugin.Report
+import com.automattic.android.measure.Report
 
 fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
     val projectKey = buildData.forProject.name.lowercase()
