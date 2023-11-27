@@ -1,41 +1,39 @@
-# Tracks Gradle
+# Measure-build-times Gradle Plugin [![Pre Merge Checks](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Pre%20Merge%20Checks/badge.svg)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Pre+Merge+Checks%22)
 
- [![Pre Merge Checks](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Pre%20Merge%20Checks/badge.svg)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Pre+Merge+Checks%22) 
+Gradle Plugin for reporting build time results into internal Automattic systems.
 
-Gradle Plugin for reporting build time results into Tracks system.
-
-Inspired [by work](https://github.com/jraska/github-client/tree/master/plugins/src/main/java/com/jraska/gradle/buildtime) of [@jraska](https://github.com/jraska). 
-
-## How to use 
+## Setup
 
 ### Directly in project
 
 Configure plugin in `build.gradle` file:
 
 ```groovy
+// settings.gradle
+plugins {
+    id "com.gradle.enterprise" version "latest_version" // optional
+}
+
+// build.gradle
 plugins {
     id "io.github.wzieba.tracks.plugin" version "latest_tag"
 }
 
 tracks {
     automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
-    sendMetricsOnBuildFinished.set(false) // or `true` and `buildScan` is not required
-}
-
-buildScan {
-    buildScanPublished {
-        tracks.reportBuild(getBuildScanId())
-    }
+    attachGradleScanId.set(true)
+    // `false`, if no Enterprise plugin applied OR don't want to attach build scan id 
 }
 ```
 
 ## Configuration
-| Property | Default | Required? | Description |
-| --- | -- |-----------| --- |
-| automatticProject | null | yes       | Project that will determine event name |
-| sendMetricsOnBuildFinished | null | yes | If true, metrics will be uploaded automatically. If false, user has to call tracks.reportBuild(gradleScanId) |
-| enabled | false | no        | Enable plugin |
-| obfuscateUsername | false | no | If true, then username will be SHA-1 obfuscated | 
+
+| Property           | Required? | Description                                                                                                                                                       |
+|--------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| automatticProject  | yes       | Project that will determine event name                                                                                                                            |
+| attachGradleScanId | yes       | Upload metrics after build scan is published, with build scan id attached. If `false`, metrics will be uploaded upon build finish, without build scan id attached |
+| enabled            | no        | Enable plugin (def: `false`)                                                                                                                                      |
+| obfuscateUsername  | no        | Obfuscate system username with SHA-1 (def: `false`)                                                                                                               | 
 
 ## Result
 
@@ -53,9 +51,13 @@ This plugin might report different data to what Gradle logs at the end of a buil
 
 ### Number of tasks
 
-The reason is that Gradle log filters out [lifecycle tasks](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:lifecycle_tasks), while this plugin, cannot do this as it uses configuration-cache compatible `OperationCompletionListener`.
+The reason is that Gradle log filters
+out [lifecycle tasks](https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:lifecycle_tasks),
+while this plugin, cannot do this as it uses configuration-cache
+compatible `OperationCompletionListener`.
 
 ### Build time
 
-This plugin uses `BuildStartedTime` service, which is precisely what Gradle uses to log build duration at the end of the build.
-The difference is where end of the build is defined - in this plugin, with `FlowAction`. The difference is minor and safe to ignore. 
+Gradle uses `BuildStartedTime` internal service to define where the build starts and ends. Those
+moments are slightly different comparing to this plugin definitions. The discrepancy is minor, a few
+seconds at most and still shows how long user waited for build to finish.
