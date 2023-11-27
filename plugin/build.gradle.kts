@@ -35,25 +35,23 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     }
 }
 
-gradlePlugin {
-    plugins {
-        create("measure-builds") {
-            id = "com.automattic.android.measure-builds"
-            implementationClass = "com.automattic.android.measure.BuildTimePlugin"
+group = "com.automattic.android"
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["kotlin"])
+                group = "com.automattic"
+                artifactId = "measure-builds"
+            }
         }
     }
 }
 
-tasks.create("setupPluginUploadFromEnvironment") {
-    doLast {
-        val key = System.getenv("GRADLE_PUBLISH_KEY")
-        val secret = System.getenv("GRADLE_PUBLISH_SECRET")
-
-        if (key == null || secret == null) {
-            throw GradleException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
-        }
-
-        System.setProperty("gradle.publish.key", key)
-        System.setProperty("gradle.publish.secret", secret)
+gradlePlugin {
+    plugins.register("measure-builds") {
+        id = "com.automattic.android.measure-builds"
+        implementationClass = "com.automattic.android.measure.BuildTimePlugin"
     }
 }
