@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.gradle.plugin-publish")
     id("io.gitlab.arturbosch.detekt")
+    id("com.automattic.android.publish-to-s3")
 }
 
 repositories {
