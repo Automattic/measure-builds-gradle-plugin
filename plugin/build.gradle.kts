@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("java-gradle-plugin")
     id("io.gitlab.arturbosch.detekt")
-    id("maven-publish")
+    id("com.automattic.android.publish-to-s3")
 }
 
 repositories {
@@ -36,25 +36,22 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 group = "com.automattic.android"
-version = "2.0.0-RC1"
+
+project.afterEvaluate{
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["kotlin"])
+                group = "com.automattic"
+                artifactId = "measure-builds"
+            }
+        }
+    }
+}
 
 gradlePlugin {
     plugins.register("measure-builds") {
         id = "com.automattic.android.measure-builds"
         implementationClass = "com.automattic.android.measure.BuildTimePlugin"
-    }
-}
-
-val awsAccessKey: String? by project
-val awsSecretKey: String? by project
-publishing {
-    repositories {
-        maven {
-            url = uri("s3://a8c-libs.s3.amazonaws.com/android")
-            credentials(AwsCredentials::class) {
-                accessKey = awsAccessKey ?: System.getenv("AWS_ACCESS_KEY")
-                secretKey = awsSecretKey ?: System.getenv("AWS_SECRET_KEY")
-            }
-        }
     }
 }
