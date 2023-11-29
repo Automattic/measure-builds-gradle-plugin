@@ -37,18 +37,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 
 group = "com.automattic.android"
 
-project.afterEvaluate{
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["kotlin"])
-                group = "com.automattic"
-                artifactId = "measure-builds"
-            }
-        }
-    }
-}
-
 gradlePlugin {
     plugins.register("measure-builds") {
         id = "com.automattic.android.measure-builds"
