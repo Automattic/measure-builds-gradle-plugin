@@ -3,7 +3,7 @@ package com.automattic.android.measure.analytics.networking
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
-import com.automattic.android.measure.analytics.Emojis.INFO_ICON
+import com.automattic.android.measure.analytics.Emojis.TURTLE_ICON
 import com.automattic.android.measure.analytics.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.analytics.Emojis.WAITING_ICON
 import io.ktor.client.HttpClient
@@ -113,13 +113,13 @@ class AppsMetricsReporter(
         val slowTasks =
             report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
                 .first()
-        logger.lifecycle("\n$INFO_ICON ${slowTasks.size} slowest tasks were: ")
+        logger.lifecycle("\n$TURTLE_ICON ${slowTasks.size} slowest tasks were: ")
         slowTasks.forEach {
             @Suppress("MagicNumber")
             logger.lifecycle(
-                "\n- ${it.name} " +
-                    "(${(it.duration.inWholeMilliseconds / report.executionData.buildTime * 100).toInt()}% " +
-                    "of build"
+                "${it.name} " +
+                    "(${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}%" +
+                    "of build)"
             )
         }
     }

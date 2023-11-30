@@ -28,7 +28,7 @@ abstract class BuildTaskService :
 
                 measuredTasks.add(
                     MeasuredTask(
-                        name = event.displayName,
+                        name = event.descriptor?.name.toString(),
                         duration = (event.result.endTime - event.result.startTime).milliseconds,
                         state = when {
                             result.isFromCache -> IS_FROM_CACHE
