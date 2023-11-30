@@ -3,6 +3,7 @@ package com.automattic.android.measure.analytics.networking
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
+import com.automattic.android.measure.analytics.Emojis.INFO_ICON
 import com.automattic.android.measure.analytics.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.analytics.Emojis.WAITING_ICON
 import io.ktor.client.HttpClient
@@ -10,6 +11,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
@@ -38,24 +40,10 @@ class AppsMetricsReporter(
         @Suppress("TooGenericExceptionCaught")
         try {
             logger.debug("Reporting $report")
+            logSlowTasks(report)
             logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
 
-            val client = HttpClient(CIO) {
-                install(Logging) {
-                    this.logger = object : io.ktor.client.features.logging.Logger {
-                        override fun log(message: String) {
-                            this@AppsMetricsReporter.logger.debug(message)
-                        }
-                    }
-                    level = io.ktor.client.features.logging.LogLevel.ALL
-                }
-                install(JsonFeature) {
-                    serializer = KotlinxSerializer()
-                }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 5.seconds.inWholeMilliseconds
-                }
-            }
+            val client = httpClient()
 
             client.post<HttpStatement>("https://seal-app-e8plp.ondigitalocean.app/api/grouped-metrics") {
                 headers {
@@ -99,5 +87,44 @@ class AppsMetricsReporter(
             )
             logger.debug(exception.stackTraceToString())
         }
+    }
+
+    private fun httpClient(): HttpClient {
+        val client = HttpClient(CIO) {
+            install(Logging) {
+                this.logger = object : io.ktor.client.features.logging.Logger {
+                    override fun log(message: String) {
+                        this@AppsMetricsReporter.logger.debug(message)
+                    }
+                }
+                level = LogLevel.ALL
+            }
+            install(JsonFeature) {
+                serializer = KotlinxSerializer()
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 5.seconds.inWholeMilliseconds
+            }
+        }
+        return client
+    }
+
+    private fun logSlowTasks(report: Report) {
+        val slowTasks =
+            report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
+                .first()
+        logger.lifecycle("\n$INFO_ICON ${slowTasks.size} slowest tasks were: ")
+        slowTasks.forEach {
+            @Suppress("MagicNumber")
+            logger.lifecycle(
+                "\n- ${it.name} " +
+                    "(${(it.duration.inWholeMilliseconds / report.executionData.buildTime * 100).toInt()}% " +
+                    "of build"
+            )
+        }
+    }
+
+    companion object {
+        private const val atMostLoggedTasks = 5
     }
 }
