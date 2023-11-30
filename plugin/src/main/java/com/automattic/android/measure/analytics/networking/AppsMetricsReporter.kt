@@ -118,7 +118,7 @@ class AppsMetricsReporter(
             @Suppress("MagicNumber")
             logger.lifecycle(
                 "${it.name} " +
-                    "(${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}%" +
+                    "(${it.duration.inWholeSeconds}s ${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}% " +
                     "of build)"
             )
         }
