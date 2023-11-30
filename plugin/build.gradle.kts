@@ -43,3 +43,10 @@ gradlePlugin {
         implementationClass = "com.automattic.android.measure.BuildTimePlugin"
     }
 }
+
+tasks.register("preMerge") {
+    description = "Runs all the verification tasks."
+
+    dependsOn(":check")
+    dependsOn(":validatePlugins")
+}
