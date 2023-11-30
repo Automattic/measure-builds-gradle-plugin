@@ -22,7 +22,7 @@ data class ExecutionData(
     val buildTime: Long,
     val failed: Boolean,
     val failure: Throwable?,
-    val taskStatistics: TaskStatistics,
+    val tasks: List<MeasuredTask>,
     val buildFinishedTimestamp: Long,
 )
 
@@ -31,9 +31,3 @@ enum class Environment {
     CI,
     CMD
 }
-
-data class TaskStatistics(
-    val upToDate: Int,
-    val fromCache: Int,
-    val executed: Int
-)

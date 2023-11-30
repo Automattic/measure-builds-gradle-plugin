@@ -1,5 +1,8 @@
 package com.automattic.android.measure.analytics.networking
 
+import com.automattic.android.measure.MeasuredTask.State.EXECUTED
+import com.automattic.android.measure.MeasuredTask.State.IS_FROM_CACHE
+import com.automattic.android.measure.MeasuredTask.State.UP_TO_DATE
 import com.automattic.android.measure.Report
 
 fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
@@ -13,6 +16,8 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
         "operating-system" to buildData.operatingSystem,
     )
 
+    val taskGroups = executionData.tasks.groupBy { it.state }
+
     val metrics = mapOf(
         "requested-tasks" to buildData.tasks.joinToString(separator = ","),
         "build-time-ms" to executionData.buildTime.toString(),
@@ -21,9 +26,9 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
         "number-of-running-daemons" to buildData.daemonsRunning.toString(),
         "daemons-build-count" to buildData.thisDaemonBuilds.toString(),
         "gradle-version" to buildData.gradleVersion,
-        "up-to-date-tasks" to executionData.taskStatistics.upToDate.toString(),
-        "cached-tasks" to executionData.taskStatistics.fromCache.toString(),
-        "executed-tasks" to executionData.taskStatistics.executed.toString(),
+        "up-to-date-tasks" to taskGroups[UP_TO_DATE].sizeOrZero(),
+        "cached-tasks" to taskGroups[IS_FROM_CACHE].sizeOrZero(),
+        "executed-tasks" to taskGroups[EXECUTED].sizeOrZero(),
         "configure-on-demand" to buildData.isConfigureOnDemand.toString(),
         "configuration-cache" to buildData.isConfigurationCache.toString(),
         "build-cache" to buildData.isBuildCache.toString(),
@@ -35,6 +40,10 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
         "gradle-scan-id" to gradleScanId.orEmpty(),
     )
 
+    val tasks = executionData.tasks.map {
+        "task-${it.name}" to it.duration.inWholeMilliseconds.toString()
+    }
+
     return GroupedAppsMetrics(
         meta = meta.map { (key, value) ->
             AppsMetric(
@@ -43,7 +52,7 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
                 value = value.ifBlank { "null" }
             )
         },
-        metrics = metrics.map { (key, value) ->
+        metrics = (metrics + tasks).map { (key, value) ->
             AppsMetric(
                 name = "$projectKey-$key",
                 // Apps Metrics doesn't allow metric value to be empty
@@ -52,3 +61,5 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
         },
     )
 }
+
+private fun <K> Collection<K>?.sizeOrZero() = "${this?.size ?: 0}"
