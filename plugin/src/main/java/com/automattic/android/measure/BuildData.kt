@@ -1,7 +1,7 @@
 package com.automattic.android.measure
 
 data class BuildData(
-    val forProject: TracksExtension.AutomatticProject,
+    val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
     val tasks: List<String>,
     val daemonsRunning: Int,

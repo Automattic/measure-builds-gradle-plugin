@@ -10,7 +10,7 @@ object BuildDataFactory {
 
     fun buildData(
         project: Project,
-        automatticProject: TracksExtension.AutomatticProject,
+        automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,
     ): BuildData {
         val start = nowMillis()
