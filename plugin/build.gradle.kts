@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.gradle.plugin-publish")
+    id("java-gradle-plugin")
     id("io.gitlab.arturbosch.detekt")
     id("com.automattic.android.publish-to-s3")
 }
@@ -35,25 +35,18 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     }
 }
 
+group = "com.automattic.android"
+
 gradlePlugin {
-    plugins {
-        create("measure-builds") {
-            id = "com.automattic.android.measure-builds"
-            implementationClass = "com.automattic.android.measure.BuildTimePlugin"
-        }
+    plugins.register("measure-builds") {
+        id = "com.automattic.android.measure-builds"
+        implementationClass = "com.automattic.android.measure.BuildTimePlugin"
     }
 }
 
-tasks.create("setupPluginUploadFromEnvironment") {
-    doLast {
-        val key = System.getenv("GRADLE_PUBLISH_KEY")
-        val secret = System.getenv("GRADLE_PUBLISH_SECRET")
+tasks.register("preMerge") {
+    description = "Runs all the verification tasks."
 
-        if (key == null || secret == null) {
-            throw GradleException("gradlePublishKey and/or gradlePublishSecret are not defined environment variables")
-        }
-
-        System.setProperty("gradle.publish.key", key)
-        System.setProperty("gradle.publish.secret", secret)
-    }
+    dependsOn(":check")
+    dependsOn(":validatePlugins")
 }
