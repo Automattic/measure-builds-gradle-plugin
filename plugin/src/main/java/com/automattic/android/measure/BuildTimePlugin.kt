@@ -17,8 +17,6 @@ import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
-const val EXTENSION_NAME = "tracks"
-
 @Suppress("MaxLineLength")
 private const val NO_GRADLE_ENTERPRISE_PLUGIN_MESSAGE =
     "The project has no Gradle Enterprise plugin enabled and `attachGradleScanId` option enabled. No metric will be send in this configuration."
@@ -43,7 +41,7 @@ class BuildTimePlugin @Inject constructor(
         val analyticsReporter = AppsMetricsReporter(project.logger)
 
         val extension =
-            project.extensions.create(EXTENSION_NAME, MeasureBuildsExtension::class.java, project)
+            project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val encodedUser: String = prepareUser(project, extension)
 
