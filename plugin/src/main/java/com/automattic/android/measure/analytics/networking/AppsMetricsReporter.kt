@@ -1,5 +1,6 @@
 package com.automattic.android.measure.analytics.networking
 
+import com.automattic.android.measure.MeasuredTask
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
@@ -115,18 +116,34 @@ class AppsMetricsReporter(
                 .first()
         logger.lifecycle("\n$TURTLE_ICON ${slowTasks.size} slowest tasks were: ")
 
-        logger.lifecycle(String.format("%-15s %-15s %s", "Duration", "% of build", "Task"))
+        logger.lifecycle(
+            String.format(
+                Locale.US,
+                "%-15s %-15s %s",
+                "Duration",
+                "% of build",
+                "Task"
+            )
+        )
         slowTasks.forEach {
             @Suppress("MagicNumber")
             logger.lifecycle(
                 "%-15s %-15s %s".format(
-                    if (it.duration < 1.seconds) "${it.duration.inWholeMilliseconds}ms" else "${it.duration.inWholeSeconds}s",
+                    Locale.US,
+                    readableDuration(it),
                     "${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}%",
                     it.name,
                 )
             )
         }
     }
+
+    private fun readableDuration(it: MeasuredTask) =
+        if (it.duration < 1.seconds) {
+            "${it.duration.inWholeMilliseconds}ms"
+        } else {
+            "${it.duration.inWholeSeconds}s"
+        }
 
     companion object {
         private const val atMostLoggedTasks = 5
