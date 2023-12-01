@@ -3,7 +3,7 @@ package com.automattic.android.measure
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
-abstract class TracksExtension(project: Project) {
+abstract class MeasureBuildsExtension(project: Project) {
 
     private val objects = project.objects
 

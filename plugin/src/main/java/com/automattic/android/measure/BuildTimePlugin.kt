@@ -43,7 +43,7 @@ class BuildTimePlugin @Inject constructor(
         val analyticsReporter = AppsMetricsReporter(project.logger)
 
         val extension =
-            project.extensions.create(EXTENSION_NAME, TracksExtension::class.java, project)
+            project.extensions.create(EXTENSION_NAME, MeasureBuildsExtension::class.java, project)
 
         val encodedUser: String = prepareUser(project, extension)
 
@@ -63,7 +63,7 @@ class BuildTimePlugin @Inject constructor(
 
     private fun prepareBuildScanListener(
         project: Project,
-        extension: TracksExtension,
+        extension: MeasureBuildsExtension,
         analyticsReporter: AppsMetricsReporter,
         authToken: String,
         onSuccess: () -> Unit,
@@ -83,7 +83,7 @@ class BuildTimePlugin @Inject constructor(
     }
 
     private fun prepareBuildFinishedAction(
-        extension: TracksExtension,
+        extension: MeasureBuildsExtension,
         analyticsReporter: AppsMetricsReporter,
         authToken: String?,
         start: Long
@@ -111,7 +111,7 @@ class BuildTimePlugin @Inject constructor(
         registry.onTaskCompletion(serviceProvider)
     }
 
-    private fun prepareUser(project: Project, extension: TracksExtension): String {
+    private fun prepareUser(project: Project, extension: MeasureBuildsExtension): String {
         val user = project.providers.systemProperty("user.name").get()
 
         val encodedUser: String = user.let {

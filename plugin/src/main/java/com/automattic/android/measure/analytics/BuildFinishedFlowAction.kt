@@ -5,7 +5,6 @@ package com.automattic.android.measure.analytics
 import com.automattic.android.measure.BuildTaskService
 import com.automattic.android.measure.ExecutionData
 import com.automattic.android.measure.InMemoryReport
-import com.automattic.android.measure.TaskStatistics
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
@@ -41,19 +40,13 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val finish = System.currentTimeMillis()
 
         val result = parameters.buildWorkResult.get().get()
-        val statistics = parameters.buildTaskService.get().taskStatistics
-
         val buildTime = finish - parameters.startTime.get()
 
         val executionData = ExecutionData(
             buildTime = buildTime,
             failed = result.failure.isPresent,
             failure = result.failure.getOrNull(),
-            taskStatistics = TaskStatistics(
-                statistics.upToDateTaskCount,
-                statistics.fromCacheTaskCount,
-                statistics.executedTasksCount
-            ),
+            tasks = parameters.buildTaskService.get().tasks,
             buildFinishedTimestamp = finish
         )
 
