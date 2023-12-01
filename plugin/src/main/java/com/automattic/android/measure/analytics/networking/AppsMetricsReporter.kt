@@ -3,8 +3,8 @@ package com.automattic.android.measure.analytics.networking
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
-import com.automattic.android.measure.analytics.Emojis.TURTLE_ICON
 import com.automattic.android.measure.analytics.Emojis.SUCCESS_ICON
+import com.automattic.android.measure.analytics.Emojis.TURTLE_ICON
 import com.automattic.android.measure.analytics.Emojis.WAITING_ICON
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -117,9 +117,11 @@ class AppsMetricsReporter(
         slowTasks.forEach {
             @Suppress("MagicNumber")
             logger.lifecycle(
-                "${it.name} " +
-                    "(${it.duration.inWholeSeconds}s ${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}% " +
-                    "of build)"
+                "%s \t\t\t\t %d\t%d of build".format(
+                    it.name,
+                    if (it.duration < 1.seconds) it.duration.inWholeMilliseconds else it.duration.inWholeSeconds,
+                    (it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()
+                )
             )
         }
     }
