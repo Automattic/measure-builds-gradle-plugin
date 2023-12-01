@@ -17,10 +17,6 @@ import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
-@Suppress("MaxLineLength")
-private const val NO_GRADLE_ENTERPRISE_PLUGIN_MESSAGE =
-    "The project has no Gradle Enterprise plugin enabled and `attachGradleScanId` option enabled. No metric will be send in this configuration."
-
 @Suppress("UnstableApiUsage")
 @ExperimentalTime
 class BuildTimePlugin @Inject constructor(
@@ -45,18 +41,18 @@ class BuildTimePlugin @Inject constructor(
 
         val encodedUser: String = prepareUser(project, extension)
 
-        project.gradle.projectsEvaluated {
-            prepareBuildScanListener(project, extension, analyticsReporter, authToken, onSuccess = {
-                InMemoryReport.buildDataStore =
-                    BuildDataFactory.buildData(
-                        project,
-                        extension.automatticProject.get(),
-                        encodedUser
-                    )
-                prepareBuildTaskService(project)
-                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
-            })
+        project.afterEvaluate {
+            InMemoryReport.buildDataStore =
+                BuildDataFactory.buildData(
+                    project,
+                    extension.automatticProject.get(),
+                    encodedUser
+                )
+            prepareBuildTaskService(project)
+            prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
         }
+
+        prepareBuildScanListener(project, extension, analyticsReporter, authToken)
     }
 
     private fun prepareBuildScanListener(
@@ -64,20 +60,15 @@ class BuildTimePlugin @Inject constructor(
         extension: MeasureBuildsExtension,
         analyticsReporter: AppsMetricsReporter,
         authToken: String,
-        onSuccess: () -> Unit,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
-        if (buildScanExtension != null && extension.attachGradleScanId.get() == true) {
-            buildScanExtension.buildScanPublished {
-                runBlocking {
+        buildScanExtension?.buildScanPublished {
+            runBlocking {
+                if (extension.attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
                 }
             }
-        } else if (extension.attachGradleScanId.get() == true) {
-            project.logger.warn(NO_GRADLE_ENTERPRISE_PLUGIN_MESSAGE)
-            return
         }
-        onSuccess.invoke()
     }
 
     private fun prepareBuildFinishedAction(

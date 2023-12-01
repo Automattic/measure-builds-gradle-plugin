@@ -21,7 +21,16 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(gradleTestKit())
+    testImplementation("org.assertj:assertj-core:3.24.2")
+
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
 java {
