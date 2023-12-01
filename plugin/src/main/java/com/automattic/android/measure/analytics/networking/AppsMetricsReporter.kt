@@ -114,13 +114,15 @@ class AppsMetricsReporter(
             report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
                 .first()
         logger.lifecycle("\n$TURTLE_ICON ${slowTasks.size} slowest tasks were: ")
+
+        logger.lifecycle(String.format("%-15s %-15s %s", "Duration", "% of build", "Task"))
         slowTasks.forEach {
             @Suppress("MagicNumber")
             logger.lifecycle(
-                "%s \t\t\t\t %d\t%d of build".format(
+                "%-15s %-15s %s".format(
+                    if (it.duration < 1.seconds) "${it.duration.inWholeMilliseconds}ms" else "${it.duration.inWholeSeconds}s",
+                    "${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}%",
                     it.name,
-                    if (it.duration < 1.seconds) it.duration.inWholeMilliseconds else it.duration.inWholeSeconds,
-                    (it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()
                 )
             )
         }
