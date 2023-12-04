@@ -66,7 +66,7 @@ class BuildTimePlugin @Inject constructor(
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         buildScanExtension?.buildScanPublished {
             runBlocking {
-                if (extension.attachGradleScanId.get()) {
+                if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
                 }
             }
