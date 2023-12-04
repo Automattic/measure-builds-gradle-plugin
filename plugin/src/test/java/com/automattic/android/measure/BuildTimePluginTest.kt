@@ -12,10 +12,14 @@ class BuildTimePluginTest {
     @Test
     fun `given a project that attaches gradle scan id, when executing a task with configuration from cache, then send the report with attached gradle scan id`() {
         // given
-        val runner = functionalTestRunner()
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = true
+        )
 
         // when
-        val prepareConfigurationCache = runner.withArguments("--configuration-cache", "help").build()
+        val prepareConfigurationCache =
+            runner.withArguments("--configuration-cache", "help").build()
 
         // then
         assertThat(prepareConfigurationCache.output)
@@ -23,7 +27,8 @@ class BuildTimePluginTest {
             .contains("Configuration cache entry stored")
 
         // when
-        val buildUsingConfigurationCache = runner.withArguments("--configuration-cache", "help", "--debug").build()
+        val buildUsingConfigurationCache =
+            runner.withArguments("--configuration-cache", "help", "--debug").build()
 
         // then
         assertThat(buildUsingConfigurationCache.output)
@@ -33,13 +38,34 @@ class BuildTimePluginTest {
             .doesNotContain("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":\"null\"}")
     }
 
+    @Test
+    fun `given a project that disabled build measurements and does not attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = false,
+            attachGradleScanId = false,
+
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        assertThat(run.output)
+            .doesNotContain("Reporting build data to Apps Metrics...")
+    }
+
     @BeforeEach
     fun clearCache() {
         val projectDir = File("build/tmp/test/work/.gradle-test-kit/caches")
         projectDir.deleteRecursively()
     }
 
-    private fun functionalTestRunner(vararg arguments: String): GradleRunner {
+    private fun functionalTestRunner(
+        enable: Boolean,
+        attachGradleScanId: Boolean,
+        vararg arguments: String
+    ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
         projectDir.resolve("settings.gradle.kts").writeText(
@@ -62,10 +88,11 @@ class BuildTimePluginTest {
                 id("com.automattic.android.measure-builds")
             }
             measureBuilds {
-                attachGradleScanId.set(true)
+                enable.set($enable)
+                attachGradleScanId.set($attachGradleScanId)
                 automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
             }
-        """
+        """.trimIndent()
         )
         projectDir.resolve("gradle.properties").writeText("appsMetricsToken=token")
 
