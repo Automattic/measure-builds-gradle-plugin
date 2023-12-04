@@ -1,4 +1,4 @@
-package com.automattic.android.measure.analytics.networking
+package com.automattic.android.measure.networking
 
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED

@@ -1,4 +1,4 @@
-package com.automattic.android.measure.analytics.networking
+package com.automattic.android.measure.networking
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

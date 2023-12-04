@@ -1,4 +1,4 @@
-package com.automattic.android.measure.analytics
+package com.automattic.android.measure.networking
 
 import com.automattic.android.measure.Report
 

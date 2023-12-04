@@ -1,4 +1,4 @@
-package com.automattic.android.measure.analytics.json
+package com.automattic.android.measure.networking.json
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

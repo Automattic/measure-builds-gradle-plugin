@@ -1,4 +1,4 @@
-package com.automattic.android.measure.analytics
+package com.automattic.android.measure
 
 object Emojis {
     const val SUCCESS_ICON = "\u2705"

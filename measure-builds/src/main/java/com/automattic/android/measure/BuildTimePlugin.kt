@@ -1,7 +1,7 @@
 package com.automattic.android.measure
 
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
-import com.automattic.android.measure.analytics.networking.AppsMetricsReporter
+import com.automattic.android.measure.networking.AppsMetricsReporter
 import com.automattic.android.measure.lifecycle.BuildTaskService
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
