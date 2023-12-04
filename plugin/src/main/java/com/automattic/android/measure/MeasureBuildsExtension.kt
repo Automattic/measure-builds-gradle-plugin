@@ -10,7 +10,7 @@ abstract class MeasureBuildsExtension(project: Project) {
     val automatticProject: Property<AutomatticProject> =
         objects.property(AutomatticProject::class.java)
 
-    val enabled: Property<Boolean> = objects.property(Boolean::class.java)
+    val enable: Property<Boolean> = objects.property(Boolean::class.java)
 
     val obfuscateUsername: Property<Boolean> = objects.property(Boolean::class.java)
 
