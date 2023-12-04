@@ -1,4 +1,4 @@
-package com.automattic.android.measure
+package com.automattic.android.measure.lifecycle
 
 import com.automattic.android.measure.models.MeasuredTask
 import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED

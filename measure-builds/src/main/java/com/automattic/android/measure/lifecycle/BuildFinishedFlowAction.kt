@@ -1,9 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
-package com.automattic.android.measure.analytics
+package com.automattic.android.measure.lifecycle
 
-import com.automattic.android.measure.BuildTaskService
 import com.automattic.android.measure.InMemoryReport
+import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.models.ExecutionData
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
