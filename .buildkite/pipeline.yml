@@ -25,13 +25,11 @@ steps:
   ############################
   # Publish artefacts to S3
   ############################
-  - group: 🚀 Publish to S3
-    key: publish-to-s3
-    steps:
-      - label: "🚀 Publish :plugin"
-        key: "publish-plugin"
-        command: .buildkite/publish.sh
-        plugins: *common_plugins
-        notify:
-          - github_commit_status:
-              context: "Publish :plugin"
+  - label: "🚀 Publish :plugin"
+    key: "publish-plugin"
+    command: .buildkite/publish.sh
+    plugins: *common_plugins
+    notify:
+      - github_commit_status:
+        context: "Publish :plugin"
+        

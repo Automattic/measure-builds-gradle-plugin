@@ -1,8 +1,9 @@
-package com.automattic.android.measure
+package com.automattic.android.measure.lifecycle
 
-import com.automattic.android.measure.MeasuredTask.State.EXECUTED
-import com.automattic.android.measure.MeasuredTask.State.IS_FROM_CACHE
-import com.automattic.android.measure.MeasuredTask.State.UP_TO_DATE
+import com.automattic.android.measure.models.MeasuredTask
+import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED
+import com.automattic.android.measure.models.MeasuredTask.State.IS_FROM_CACHE
+import com.automattic.android.measure.models.MeasuredTask.State.UP_TO_DATE
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import org.gradle.tooling.events.FinishEvent

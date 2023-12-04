@@ -1,10 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
-package com.automattic.android.measure.analytics
+package com.automattic.android.measure.lifecycle
 
-import com.automattic.android.measure.BuildTaskService
-import com.automattic.android.measure.ExecutionData
 import com.automattic.android.measure.InMemoryReport
+import com.automattic.android.measure.models.ExecutionData
+import com.automattic.android.measure.networking.MetricsReporter
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
@@ -24,10 +24,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
         @get:Input
-        val analyticsReporter: Property<AnalyticsReporter>
-
-        @get:Input
-        val authToken: Property<String>
+        val analyticsReporter: Property<MetricsReporter>
 
         @get:Input
         val attachGradleScanId: Property<Boolean>
@@ -56,7 +53,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
             runBlocking {
                 parameters.analyticsReporter.get().report(
                     report = InMemoryReport,
-                    authToken = parameters.authToken.get(),
                     gradleScanId = null
                 )
             }

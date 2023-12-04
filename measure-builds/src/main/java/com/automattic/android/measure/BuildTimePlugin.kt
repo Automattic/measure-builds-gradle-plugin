@@ -1,10 +1,13 @@
 package com.automattic.android.measure
 
-import com.automattic.android.measure.analytics.BuildFinishedFlowAction
-import com.automattic.android.measure.analytics.networking.AppsMetricsReporter
+import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
+import com.automattic.android.measure.lifecycle.BuildTaskService
+import com.automattic.android.measure.networking.MetricsReporter
+import com.automattic.android.measure.providers.AuthTokenProvider
+import com.automattic.android.measure.providers.BuildDataProvider
+import com.automattic.android.measure.providers.UsernameProvider
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
-import org.codehaus.groovy.runtime.EncodingGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.flow.FlowActionSpec
@@ -25,49 +28,56 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val start =
+        val startTime =
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
 
-        val authToken: String? = project.properties["appsMetricsToken"] as String?
+        val authToken = AuthTokenProvider.provide(project)
         if (authToken.isNullOrBlank()) {
             project.logger.warn("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
             return
         }
 
-        val analyticsReporter = AppsMetricsReporter(project.logger)
+        val analyticsReporter = MetricsReporter(project.logger, authToken)
 
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
-        val encodedUser: String = prepareUser(project, extension)
+        val encodedUser: String = UsernameProvider.provide(project, extension)
 
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
-                InMemoryReport.buildDataStore =
-                    BuildDataFactory.buildData(
-                        project,
-                        extension.automatticProject.get(),
-                        encodedUser
-                    )
+                prepareBuildData(project, extension, encodedUser)
                 prepareBuildTaskService(project)
-                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+                prepareBuildFinishedAction(extension, analyticsReporter, startTime)
             }
         }
 
-        prepareBuildScanListener(project, extension, analyticsReporter, authToken)
+        prepareBuildScanListener(project, extension, analyticsReporter)
+    }
+
+    private fun prepareBuildData(
+        project: Project,
+        extension: MeasureBuildsExtension,
+        encodedUser: String
+    ) {
+        InMemoryReport.buildDataStore =
+            BuildDataProvider.provide(
+                project,
+                extension.automatticProject.get(),
+                encodedUser
+            )
     }
 
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
-        analyticsReporter: AppsMetricsReporter,
-        authToken: String,
+        analyticsReporter: MetricsReporter,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         buildScanExtension?.buildScanPublished {
             runBlocking {
                 if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
-                    analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
+                    analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
         }
@@ -75,9 +85,8 @@ class BuildTimePlugin @Inject constructor(
 
     private fun prepareBuildFinishedAction(
         extension: MeasureBuildsExtension,
-        analyticsReporter: AppsMetricsReporter,
-        authToken: String?,
-        start: Long
+        analyticsReporter: MetricsReporter,
+        startTime: Long
     ) {
         flowScope.always(
             BuildFinishedFlowAction::class.java
@@ -86,8 +95,7 @@ class BuildTimePlugin @Inject constructor(
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
                 this.attachGradleScanId.set(extension.attachGradleScanId)
                 this.analyticsReporter.set(analyticsReporter)
-                this.authToken.set(authToken)
-                this.startTime.set(start)
+                this.startTime.set(startTime)
             }
         }
     }
@@ -100,19 +108,5 @@ class BuildTimePlugin @Inject constructor(
             ) {
             }
         registry.onTaskCompletion(serviceProvider)
-    }
-
-    private fun prepareUser(project: Project, extension: MeasureBuildsExtension): String {
-        val user = project.providers.systemProperty("user.name").get()
-
-        val encodedUser: String = user.let {
-            if (extension.obfuscateUsername.getOrElse(false) == true) {
-                EncodingGroovyMethods.digest(it, "SHA-1")
-            } else {
-                it
-            }
-        }
-
-        return encodedUser
     }
 }

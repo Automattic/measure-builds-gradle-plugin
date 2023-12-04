@@ -1,4 +1,4 @@
-package com.automattic.android.measure
+package com.automattic.android.measure.models
 
 import kotlin.time.Duration
 

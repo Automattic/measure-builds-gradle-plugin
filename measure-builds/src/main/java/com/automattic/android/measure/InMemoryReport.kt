@@ -1,5 +1,8 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.models.BuildData
+import com.automattic.android.measure.models.ExecutionData
+
 object InMemoryReport : Report {
     var buildDataStore: BuildData? = null
     var executionDataStore: ExecutionData? = null

@@ -32,6 +32,6 @@ jobs:
           path: ~/.gradle/wrapper/
           key: cache-gradle-wrapper
       - name: Run Gradle tasks
-        run: ./gradlew :plugin:preMerge --continue
+        run: ./gradlew :measure-builds:preMerge --continue
       - name: Stop Gradle
         run: ./gradlew --stop
