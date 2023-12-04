@@ -1,5 +1,6 @@
-package com.automattic.android.measure
+package com.automattic.android.measure.providers
 
+import com.automattic.android.measure.MeasureBuildsExtension
 import com.automattic.android.measure.models.BuildData
 import com.automattic.android.measure.models.Environment
 import org.gradle.api.Project
@@ -8,9 +9,9 @@ import org.gradle.invocation.DefaultGradle
 import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
 import java.util.concurrent.TimeUnit
 
-object BuildDataFactory {
+object BuildDataProvider {
 
-    fun buildData(
+    fun provide(
         project: Project,
         automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,

@@ -1,10 +1,10 @@
 package com.automattic.android.measure.networking
 
+import com.automattic.android.measure.Report
 import com.automattic.android.measure.logging.Emojis.FAILURE_ICON
 import com.automattic.android.measure.logging.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.logging.Emojis.TURTLE_ICON
 import com.automattic.android.measure.logging.Emojis.WAITING_ICON
-import com.automattic.android.measure.Report
 import com.automattic.android.measure.models.MeasuredTask
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
