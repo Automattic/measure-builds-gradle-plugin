@@ -27,9 +27,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val analyticsReporter: Property<MetricsReporter>
 
         @get:Input
-        val authToken: Property<String>
-
-        @get:Input
         val attachGradleScanId: Property<Boolean>
 
         @get:ServiceReference
@@ -56,7 +53,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
             runBlocking {
                 parameters.analyticsReporter.get().report(
                     report = InMemoryReport,
-                    authToken = parameters.authToken.get(),
                     gradleScanId = null
                 )
             }

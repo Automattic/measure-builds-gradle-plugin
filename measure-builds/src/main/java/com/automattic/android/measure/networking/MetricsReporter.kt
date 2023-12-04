@@ -30,10 +30,10 @@ import kotlin.time.Duration.Companion.seconds
 
 class MetricsReporter(
     private val logger: Logger,
+    private val authToken: String,
 ) {
     suspend fun report(
         report: Report,
-        authToken: String,
         gradleScanId: String?
     ) {
         @Suppress("TooGenericExceptionCaught")

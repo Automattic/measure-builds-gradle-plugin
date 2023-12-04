@@ -28,7 +28,7 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val start =
+        val startTime =
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
 
         val authToken = AuthTokenProvider.provide(project)
@@ -37,7 +37,7 @@ class BuildTimePlugin @Inject constructor(
             return
         }
 
-        val analyticsReporter = MetricsReporter(project.logger)
+        val analyticsReporter = MetricsReporter(project.logger, authToken)
 
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
@@ -46,31 +46,38 @@ class BuildTimePlugin @Inject constructor(
 
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
-                InMemoryReport.buildDataStore =
-                    BuildDataProvider.provide(
-                        project,
-                        extension.automatticProject.get(),
-                        encodedUser
-                    )
+                prepareBuildData(project, extension, encodedUser)
                 prepareBuildTaskService(project)
-                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+                prepareBuildFinishedAction(extension, analyticsReporter, startTime)
             }
         }
 
-        prepareBuildScanListener(project, extension, analyticsReporter, authToken)
+        prepareBuildScanListener(project, extension, analyticsReporter)
+    }
+
+    private fun prepareBuildData(
+        project: Project,
+        extension: MeasureBuildsExtension,
+        encodedUser: String
+    ) {
+        InMemoryReport.buildDataStore =
+            BuildDataProvider.provide(
+                project,
+                extension.automatticProject.get(),
+                encodedUser
+            )
     }
 
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
         analyticsReporter: MetricsReporter,
-        authToken: String,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         buildScanExtension?.buildScanPublished {
             runBlocking {
                 if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
-                    analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
+                    analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
         }
@@ -79,8 +86,7 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildFinishedAction(
         extension: MeasureBuildsExtension,
         analyticsReporter: MetricsReporter,
-        authToken: String?,
-        start: Long
+        startTime: Long
     ) {
         flowScope.always(
             BuildFinishedFlowAction::class.java
@@ -89,8 +95,7 @@ class BuildTimePlugin @Inject constructor(
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
                 this.attachGradleScanId.set(extension.attachGradleScanId)
                 this.analyticsReporter.set(analyticsReporter)
-                this.authToken.set(authToken)
-                this.startTime.set(start)
+                this.startTime.set(startTime)
             }
         }
     }
