@@ -67,7 +67,7 @@ class BuildTimePluginTest {
 
     @BeforeEach
     fun clearCache() {
-        val projectDir = File("build/tmp/test/work/.gradle-test-kit/caches")
+        val projectDir = File("build/functionalTest")
         projectDir.deleteRecursively()
     }
 
@@ -96,14 +96,11 @@ class BuildTimePluginTest {
                 id("com.automattic.android.measure-builds")
             }
             measureBuilds {
-                ${
-                if (enable != null) "enable.set($enable)"
-                else ""
-            }
+                ${if (enable != null) "enable.set($enable)" else ""}
                 attachGradleScanId.set($attachGradleScanId)
                 automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
             }
-        """.trimIndent()
+            """.trimIndent()
         )
         projectDir.resolve("gradle.properties").writeText("appsMetricsToken=token")
 
