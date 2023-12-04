@@ -1,9 +1,9 @@
 package com.automattic.android.measure.analytics.networking
 
+import com.automattic.android.measure.Report
 import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED
 import com.automattic.android.measure.models.MeasuredTask.State.IS_FROM_CACHE
 import com.automattic.android.measure.models.MeasuredTask.State.UP_TO_DATE
-import com.automattic.android.measure.Report
 
 fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
     val projectKey = buildData.forProject.name.lowercase()

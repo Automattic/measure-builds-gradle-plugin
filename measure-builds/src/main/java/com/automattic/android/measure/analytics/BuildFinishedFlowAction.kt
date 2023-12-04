@@ -3,8 +3,8 @@
 package com.automattic.android.measure.analytics
 
 import com.automattic.android.measure.BuildTaskService
-import com.automattic.android.measure.models.ExecutionData
 import com.automattic.android.measure.InMemoryReport
+import com.automattic.android.measure.models.ExecutionData
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction

@@ -1,12 +1,12 @@
 package com.automattic.android.measure.analytics.networking
 
-import com.automattic.android.measure.models.MeasuredTask
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON
 import com.automattic.android.measure.analytics.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.analytics.Emojis.TURTLE_ICON
 import com.automattic.android.measure.analytics.Emojis.WAITING_ICON
+import com.automattic.android.measure.models.MeasuredTask
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.HttpTimeout
