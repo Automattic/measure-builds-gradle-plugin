@@ -40,7 +40,6 @@ class AppsMetricsReporter(
     ) {
         @Suppress("TooGenericExceptionCaught")
         try {
-            logger.debug("Reporting $report")
             logSlowTasks(report)
             logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
 

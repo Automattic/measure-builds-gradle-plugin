@@ -42,14 +42,16 @@ class BuildTimePlugin @Inject constructor(
         val encodedUser: String = prepareUser(project, extension)
 
         project.afterEvaluate {
-            InMemoryReport.buildDataStore =
-                BuildDataFactory.buildData(
-                    project,
-                    extension.automatticProject.get(),
-                    encodedUser
-                )
-            prepareBuildTaskService(project)
-            prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+            if (extension.enable.orNull == true) {
+                InMemoryReport.buildDataStore =
+                    BuildDataFactory.buildData(
+                        project,
+                        extension.automatticProject.get(),
+                        encodedUser
+                    )
+                prepareBuildTaskService(project)
+                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+            }
         }
 
         prepareBuildScanListener(project, extension, analyticsReporter, authToken)
@@ -64,7 +66,7 @@ class BuildTimePlugin @Inject constructor(
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         buildScanExtension?.buildScanPublished {
             runBlocking {
-                if (extension.attachGradleScanId.get()) {
+                if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, authToken, it.buildScanId)
                 }
             }
