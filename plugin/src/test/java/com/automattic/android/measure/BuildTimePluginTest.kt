@@ -13,7 +13,8 @@ class BuildTimePluginTest {
     fun `given a project that attaches gradle scan id, when executing a task with configuration from cache, then send the report with attached gradle scan id`() {
         // given
         val runner = functionalTestRunner(
-            enable = true, attachGradleScanId = true
+            enable = true,
+            attachGradleScanId = true
         )
 
         // when
@@ -21,7 +22,9 @@ class BuildTimePluginTest {
             runner.withArguments("--configuration-cache", "help").build()
 
         // then
-        assertThat(prepareConfigurationCache.output).contains("Calculating task graph as no configuration cache is available for tasks")
+        assertThat(
+            prepareConfigurationCache.output
+        ).contains("Calculating task graph as no configuration cache is available for tasks")
             .contains("Configuration cache entry stored")
 
         // when
@@ -65,6 +68,36 @@ class BuildTimePluginTest {
         assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
     }
 
+    @Test
+    fun `given a project that disabled build measurements and does attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = false,
+            attachGradleScanId = true,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
+    }
+
+    @Test
+    fun `given a project that did not enable build measurements and does attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = null,
+            attachGradleScanId = true,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
+    }
+
     @BeforeEach
     fun clearCache() {
         val projectDir = File("build/functionalTest")
@@ -72,7 +105,9 @@ class BuildTimePluginTest {
     }
 
     private fun functionalTestRunner(
-        enable: Boolean?, attachGradleScanId: Boolean, vararg arguments: String
+        enable: Boolean?,
+        attachGradleScanId: Boolean,
+        vararg arguments: String
     ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
@@ -86,6 +121,7 @@ class BuildTimePluginTest {
                     publishAlways()
                     termsOfServiceUrl = "https://gradle.com/terms-of-service"
                     termsOfServiceAgree = "yes"
+                    isUploadInBackground = false
                 }
             }
             """.trimIndent()
