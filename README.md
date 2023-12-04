@@ -12,11 +12,11 @@ plugins {
 
 // build.gradle
 plugins {
-    id "io.github.wzieba.tracks.plugin" version "latest_tag"
+    id "com.automattic.android.measure-builds" version "latest_tag"
 }
 
 measureBuilds {
-    automatticProject.set(io.github.wzieba.tracks.plugin.TracksExtension.AutomatticProject.WooCommerce)
+    automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
     attachGradleScanId.set(true) // `false`, if no Enterprise plugin applied OR don't want to attach build scan id 
 }
 ```
@@ -27,7 +27,7 @@ measureBuilds {
 |--------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | automatticProject  | yes       | Project that will determine event name                                                                                                                            |
 | attachGradleScanId | yes       | Upload metrics after build scan is published, with build scan id attached. If `false`, metrics will be uploaded upon build finish, without build scan id attached |
-| enable            | no        | Enable plugin (def: `false`)                                                                                                                                      |
+| enable             | no        | Enable plugin (def: `false`)                                                                                                                                      |
 | obfuscateUsername  | no        | Obfuscate system username with SHA-1 (def: `false`)                                                                                                               | 
 
 ## Demo
