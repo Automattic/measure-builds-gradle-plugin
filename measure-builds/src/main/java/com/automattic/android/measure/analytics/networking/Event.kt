@@ -1,6 +1,6 @@
 package com.automattic.android.measure.analytics.networking
 
-import com.automattic.android.measure.Environment
+import com.automattic.android.measure.models.Environment
 import com.automattic.android.measure.analytics.json.StringListSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

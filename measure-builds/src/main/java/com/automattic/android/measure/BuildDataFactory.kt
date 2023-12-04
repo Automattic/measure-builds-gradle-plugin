@@ -1,5 +1,7 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.models.BuildData
+import com.automattic.android.measure.models.Environment
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 import org.gradle.invocation.DefaultGradle

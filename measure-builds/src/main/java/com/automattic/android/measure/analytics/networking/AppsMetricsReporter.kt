@@ -1,6 +1,6 @@
 package com.automattic.android.measure.analytics.networking
 
-import com.automattic.android.measure.MeasuredTask
+import com.automattic.android.measure.models.MeasuredTask
 import com.automattic.android.measure.Report
 import com.automattic.android.measure.analytics.AnalyticsReporter
 import com.automattic.android.measure.analytics.Emojis.FAILURE_ICON

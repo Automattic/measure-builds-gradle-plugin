@@ -1,4 +1,6 @@
-package com.automattic.android.measure
+package com.automattic.android.measure.models
+
+import com.automattic.android.measure.MeasureBuildsExtension
 
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
