@@ -1,10 +1,10 @@
 package com.automattic.android.measure.networking
 
-import com.automattic.android.measure.Report
 import com.automattic.android.measure.Emojis.FAILURE_ICON
 import com.automattic.android.measure.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.Emojis.TURTLE_ICON
 import com.automattic.android.measure.Emojis.WAITING_ICON
+import com.automattic.android.measure.Report
 import com.automattic.android.measure.models.MeasuredTask
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -28,11 +28,10 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.time.Duration.Companion.seconds
 
-class AppsMetricsReporter(
+class MetricsReporter(
     private val logger: Logger,
-) : AnalyticsReporter {
-
-    override suspend fun report(
+) {
+    suspend fun report(
         report: Report,
         authToken: String,
         gradleScanId: String?
@@ -93,7 +92,7 @@ class AppsMetricsReporter(
             install(Logging) {
                 this.logger = object : io.ktor.client.features.logging.Logger {
                     override fun log(message: String) {
-                        this@AppsMetricsReporter.logger.debug(message)
+                        this@MetricsReporter.logger.debug(message)
                     }
                 }
                 level = LogLevel.ALL

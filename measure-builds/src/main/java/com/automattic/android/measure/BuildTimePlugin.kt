@@ -1,8 +1,8 @@
 package com.automattic.android.measure
 
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
-import com.automattic.android.measure.networking.AppsMetricsReporter
 import com.automattic.android.measure.lifecycle.BuildTaskService
+import com.automattic.android.measure.networking.MetricsReporter
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
 import org.codehaus.groovy.runtime.EncodingGroovyMethods
@@ -35,7 +35,7 @@ class BuildTimePlugin @Inject constructor(
             return
         }
 
-        val analyticsReporter = AppsMetricsReporter(project.logger)
+        val analyticsReporter = MetricsReporter(project.logger)
 
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
@@ -61,7 +61,7 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
-        analyticsReporter: AppsMetricsReporter,
+        analyticsReporter: MetricsReporter,
         authToken: String,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
@@ -76,7 +76,7 @@ class BuildTimePlugin @Inject constructor(
 
     private fun prepareBuildFinishedAction(
         extension: MeasureBuildsExtension,
-        analyticsReporter: AppsMetricsReporter,
+        analyticsReporter: MetricsReporter,
         authToken: String?,
         start: Long
     ) {

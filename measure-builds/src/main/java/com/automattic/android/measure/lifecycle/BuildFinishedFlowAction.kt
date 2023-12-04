@@ -3,8 +3,8 @@
 package com.automattic.android.measure.lifecycle
 
 import com.automattic.android.measure.InMemoryReport
-import com.automattic.android.measure.networking.AnalyticsReporter
 import com.automattic.android.measure.models.ExecutionData
+import com.automattic.android.measure.networking.MetricsReporter
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
@@ -24,7 +24,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
         @get:Input
-        val analyticsReporter: Property<AnalyticsReporter>
+        val analyticsReporter: Property<MetricsReporter>
 
         @get:Input
         val authToken: Property<String>
