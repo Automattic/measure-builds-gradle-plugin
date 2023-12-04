@@ -42,14 +42,16 @@ class BuildTimePlugin @Inject constructor(
         val encodedUser: String = prepareUser(project, extension)
 
         project.afterEvaluate {
-            InMemoryReport.buildDataStore =
-                BuildDataFactory.buildData(
-                    project,
-                    extension.automatticProject.get(),
-                    encodedUser
-                )
-            prepareBuildTaskService(project)
-            prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+            if (extension.enable.orNull == true) {
+                InMemoryReport.buildDataStore =
+                    BuildDataFactory.buildData(
+                        project,
+                        extension.automatticProject.get(),
+                        encodedUser
+                    )
+                prepareBuildTaskService(project)
+                prepareBuildFinishedAction(extension, analyticsReporter, authToken, start)
+            }
         }
 
         prepareBuildScanListener(project, extension, analyticsReporter, authToken)
