@@ -30,6 +30,8 @@ class BuildTimePlugin @Inject constructor(
     override fun apply(project: Project) {
         val startTime =
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
+        val extension =
+            project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val authToken = AuthTokenProvider.provide(project)
         if (authToken.isNullOrBlank()) {
@@ -38,9 +40,6 @@ class BuildTimePlugin @Inject constructor(
         }
 
         val analyticsReporter = MetricsReporter(project.logger, authToken)
-
-        val extension =
-            project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
