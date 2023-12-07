@@ -43,7 +43,7 @@ class MetricsReporter(
 
             val client = httpClient()
 
-            client.post<HttpStatement>("https://seal-app-e8plp.ondigitalocean.app/api/grouped-metrics") {
+            client.post<HttpStatement>("https://metrics.a8c-ci.services/api/grouped-metrics") {
                 headers {
                     append(HttpHeaders.UserAgent, "Gradle")
                     append(Authorization, "Bearer $authToken")
