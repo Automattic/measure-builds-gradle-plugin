@@ -98,6 +98,24 @@ class BuildTimePluginTest {
         assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
     }
 
+    @Test
+    fun `given a project without apps metrics token, when executing a task, then build does not fail`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = false,
+            applyAppsMetricsToken = false,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        assertThat(run.output)
+            .contains("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
+            .contains("BUILD SUCCESSFUL")
+    }
+
     @BeforeEach
     fun clearCache() {
         val projectDir = File("build/functionalTest")
@@ -107,7 +125,8 @@ class BuildTimePluginTest {
     private fun functionalTestRunner(
         enable: Boolean?,
         attachGradleScanId: Boolean,
-        vararg arguments: String
+        applyAppsMetricsToken: Boolean = true,
+        vararg arguments: String,
     ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
@@ -138,7 +157,9 @@ class BuildTimePluginTest {
             }
             """.trimIndent()
         )
-        projectDir.resolve("gradle.properties").writeText("appsMetricsToken=token")
+        if (applyAppsMetricsToken) {
+            projectDir.resolve("gradle.properties").writeText("appsMetricsToken=token")
+        }
 
         val runner = GradleRunner.create()
         runner.forwardOutput()
