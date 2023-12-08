@@ -112,7 +112,7 @@ class BuildTimePluginTest {
 
         // then
         assertThat(run.output)
-            .contains("Did not find appsMetricsToken in gradle.properties. Skipping reporting.")
+            .contains("No authToken provided. Skipping reporting.")
             .contains("BUILD SUCCESSFUL")
     }
 
@@ -154,12 +154,10 @@ class BuildTimePluginTest {
                 ${if (enable != null) "enable.set($enable)" else ""}
                 attachGradleScanId.set($attachGradleScanId)
                 automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
+                ${if (applyAppsMetricsToken) "authToken.set(\"token\")" else ""}
             }
             """.trimIndent()
         )
-        if (applyAppsMetricsToken) {
-            projectDir.resolve("gradle.properties").writeText("appsMetricsToken=token")
-        }
 
         val runner = GradleRunner.create()
         runner.forwardOutput()
