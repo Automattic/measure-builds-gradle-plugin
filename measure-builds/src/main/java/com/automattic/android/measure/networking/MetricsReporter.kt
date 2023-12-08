@@ -23,6 +23,7 @@ import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import org.gradle.api.logging.Logger
+import org.gradle.api.provider.Provider
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
@@ -30,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class MetricsReporter(
     private val logger: Logger,
-    private val authToken: String,
+    private val authToken: Provider<String>,
 ) {
     suspend fun report(
         report: Report,
@@ -39,6 +40,10 @@ class MetricsReporter(
         @Suppress("TooGenericExceptionCaught")
         try {
             logSlowTasks(report)
+            if (!authToken.isPresent) {
+                logger.lifecycle("\nNo authToken provided. Skipping reporting.")
+                return
+            }
             logger.lifecycle("\n$WAITING_ICON Reporting build data to Apps Metrics...")
 
             val client = httpClient()
@@ -46,7 +51,7 @@ class MetricsReporter(
             client.post<HttpStatement>("https://metrics.a8c-ci.services/api/grouped-metrics") {
                 headers {
                     append(HttpHeaders.UserAgent, "Gradle")
-                    append(Authorization, "Bearer $authToken")
+                    append(Authorization, "Bearer ${authToken.get()}")
                 }
                 contentType(ContentType.Application.Json)
                 body = report.toAppsInfraPayload(gradleScanId)

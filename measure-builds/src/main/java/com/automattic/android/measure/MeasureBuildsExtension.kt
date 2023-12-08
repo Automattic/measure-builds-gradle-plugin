@@ -24,6 +24,8 @@ abstract class MeasureBuildsExtension(project: Project) {
      */
     val attachGradleScanId: Property<Boolean> = objects.property(Boolean::class.java)
 
+    val authToken: Property<String> = objects.property(String::class.java)
+
     enum class AutomatticProject {
         WooCommerce, WordPress, DayOne, PocketCasts, Tumblr, FluxC
     }
