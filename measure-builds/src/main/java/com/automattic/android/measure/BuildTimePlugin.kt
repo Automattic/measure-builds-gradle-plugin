@@ -27,7 +27,7 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val startTime =
+        val buildStartTime =
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
@@ -38,9 +38,9 @@ class BuildTimePlugin @Inject constructor(
 
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
-                prepareBuildData(project, extension, encodedUser)
+                prepareBuildData(project, extension, encodedUser, buildStartTime)
                 prepareBuildTaskService(project)
-                prepareBuildFinishedAction(extension, analyticsReporter, startTime)
+                prepareBuildFinishedAction(extension, analyticsReporter, buildStartTime)
             }
         }
 
@@ -50,13 +50,15 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildData(
         project: Project,
         extension: MeasureBuildsExtension,
-        encodedUser: String
+        encodedUser: String,
+        buildStartTime: Long,
     ) {
         InMemoryReport.buildDataStore =
             BuildDataProvider.provide(
                 project,
                 extension.automatticProject.get(),
-                encodedUser
+                encodedUser,
+                buildStartTime
             )
     }
 
