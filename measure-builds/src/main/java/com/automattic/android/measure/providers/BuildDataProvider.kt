@@ -17,7 +17,7 @@ object BuildDataProvider {
         username: String,
         buildStartTime: Long,
     ): BuildData {
-        val configurationPhaseFinishedTime = nowMillis()
+        val configurationPhaseFinishedTime = System.currentTimeMillis()
         val gradle = project.gradle
 
         val services = (gradle as DefaultGradle).services
