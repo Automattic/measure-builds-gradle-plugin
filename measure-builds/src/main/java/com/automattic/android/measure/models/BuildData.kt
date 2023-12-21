@@ -18,7 +18,6 @@ data class BuildData(
     val buildDataCollectionOverhead: Long,
     val includedBuildsNames: List<String>,
     val architecture: String,
-    val configurationPhaseDuration: Long,
 )
 
 data class ExecutionData(
@@ -27,6 +26,7 @@ data class ExecutionData(
     val failure: Throwable?,
     val tasks: List<MeasuredTask>,
     val buildFinishedTimestamp: Long,
+    val configurationPhaseDuration: Long,
 )
 
 enum class Environment {

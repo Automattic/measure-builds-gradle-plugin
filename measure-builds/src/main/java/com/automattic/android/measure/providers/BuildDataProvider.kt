@@ -15,7 +15,6 @@ object BuildDataProvider {
         project: Project,
         automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,
-        buildStartTime: Long,
     ): BuildData {
         val configurationPhaseFinishedTime = System.currentTimeMillis()
         val gradle = project.gradle
@@ -42,7 +41,6 @@ object BuildDataProvider {
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
             architecture = architecture(project),
             user = username,
-            configurationPhaseDuration = configurationPhaseFinishedTime - buildStartTime
         )
     }
 
