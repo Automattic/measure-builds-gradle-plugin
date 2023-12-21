@@ -44,7 +44,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val buildTime = finish - init
 
         val configurationTime = if (parameters.configurationPhaseExecuted.get().get()) {
-            init - parameters.buildTaskService.get().buildStartTime
+            parameters.buildTaskService.get().buildStartTime - init
         } else {
             0
         }
