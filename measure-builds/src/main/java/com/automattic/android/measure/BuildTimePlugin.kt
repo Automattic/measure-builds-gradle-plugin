@@ -28,8 +28,7 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val buildInitiatedTime =
-            (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
+        val buildInitiatedTime = System.currentTimeMillis()
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
