@@ -15,8 +15,6 @@ import org.gradle.api.flow.FlowProviders
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.provider.Provider
 import org.gradle.build.event.BuildEventsListenerRegistry
-import org.gradle.internal.buildevents.BuildStartedTime
-import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -38,7 +36,9 @@ class BuildTimePlugin @Inject constructor(
 
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
-                val configurationProvider: Provider<Boolean> = project.providers.of(ConfigurationPhaseObserver::class.java) { }
+                val configurationProvider: Provider<Boolean> = project.providers.of(
+                    ConfigurationPhaseObserver::class.java
+                ) { }
                 ConfigurationPhaseObserver.init()
 
                 prepareBuildData(project, extension, encodedUser)
