@@ -2,6 +2,7 @@ package com.automattic.android.measure
 
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
 import com.automattic.android.measure.lifecycle.BuildTaskService
+import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
 import com.automattic.android.measure.networking.MetricsReporter
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
@@ -27,7 +28,7 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val startTime =
+        val buildInitiatedTime =
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
@@ -38,9 +39,14 @@ class BuildTimePlugin @Inject constructor(
 
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
+                val configurationProvider: Provider<Boolean> = project.providers.of(
+                    ConfigurationPhaseObserver::class.java
+                ) { }
+                ConfigurationPhaseObserver.init()
+
                 prepareBuildData(project, extension, encodedUser)
                 prepareBuildTaskService(project)
-                prepareBuildFinishedAction(extension, analyticsReporter, startTime)
+                prepareBuildFinishedAction(extension, analyticsReporter, buildInitiatedTime, configurationProvider)
             }
         }
 
@@ -50,13 +56,13 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildData(
         project: Project,
         extension: MeasureBuildsExtension,
-        encodedUser: String
+        encodedUser: String,
     ) {
         InMemoryReport.buildDataStore =
             BuildDataProvider.provide(
                 project,
                 extension.automatticProject.get(),
-                encodedUser
+                encodedUser,
             )
     }
 
@@ -78,7 +84,8 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildFinishedAction(
         extension: MeasureBuildsExtension,
         analyticsReporter: MetricsReporter,
-        startTime: Long
+        buildInitiatedTime: Long,
+        configurationPhaseObserver: Provider<Boolean>,
     ) {
         flowScope.always(
             BuildFinishedFlowAction::class.java
@@ -87,7 +94,8 @@ class BuildTimePlugin @Inject constructor(
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
                 this.attachGradleScanId.set(extension.attachGradleScanId)
                 this.analyticsReporter.set(analyticsReporter)
-                this.startTime.set(startTime)
+                this.initiationTime.set(buildInitiatedTime)
+                this.configurationPhaseExecuted.set(configurationPhaseObserver)
             }
         }
     }

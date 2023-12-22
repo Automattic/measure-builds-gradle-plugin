@@ -38,6 +38,7 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
             .ifEmpty { "none" },
         "build-finished-at" to executionData.buildFinishedTimestamp.toString(),
         "gradle-scan-id" to gradleScanId.orEmpty(),
+        "configuration-duration" to executionData.configurationPhaseDuration.toString()
     )
 
     val tasks = executionData.tasks.map {

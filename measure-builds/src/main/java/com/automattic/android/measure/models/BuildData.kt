@@ -26,6 +26,7 @@ data class ExecutionData(
     val failure: Throwable?,
     val tasks: List<MeasuredTask>,
     val buildFinishedTimestamp: Long,
+    val configurationPhaseDuration: Long,
 )
 
 enum class Environment {

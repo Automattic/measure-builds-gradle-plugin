@@ -16,7 +16,7 @@ object BuildDataProvider {
         automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,
     ): BuildData {
-        val start = nowMillis()
+        val configurationPhaseFinishedTime = System.currentTimeMillis()
         val gradle = project.gradle
 
         val services = (gradle as DefaultGradle).services
@@ -37,10 +37,10 @@ object BuildDataProvider {
             isConfigurationCache = startParameter.isConfigurationCacheRequested,
             isBuildCache = startParameter.isBuildCacheEnabled,
             maxWorkers = startParameter.maxWorkerCount,
-            buildDataCollectionOverhead = nowMillis() - start,
+            buildDataCollectionOverhead = nowMillis() - configurationPhaseFinishedTime,
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
             architecture = architecture(project),
-            user = username
+            user = username,
         )
     }
 

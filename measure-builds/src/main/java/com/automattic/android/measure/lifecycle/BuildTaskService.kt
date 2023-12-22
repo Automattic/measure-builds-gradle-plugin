@@ -22,6 +22,8 @@ abstract class BuildTaskService :
     val tasks: List<MeasuredTask>
         get() = measuredTasks
 
+    val buildStartTime: Long = System.currentTimeMillis()
+
     override fun onFinish(event: FinishEvent?) {
         if (event is TaskFinishEvent) {
             if (event.result is SuccessResult) {
