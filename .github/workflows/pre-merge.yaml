@@ -17,16 +17,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Cache Gradle Caches
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches/
-          key: cache-gradle-cache
-      - name: Cache Gradle Wrapper
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/wrapper/
-          key: cache-gradle-wrapper
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Run Gradle tasks
         run: ./gradlew :measure-builds:preMerge --continue
       - name: Stop Gradle
