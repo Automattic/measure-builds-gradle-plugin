@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 import org.gradle.invocation.DefaultGradle
 import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
-import java.util.concurrent.TimeUnit
 
 object BuildDataProvider {
 
@@ -16,7 +15,6 @@ object BuildDataProvider {
         automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,
     ): BuildData {
-        val configurationPhaseFinishedTime = System.currentTimeMillis()
         val gradle = project.gradle
 
         val services = (gradle as DefaultGradle).services
@@ -37,7 +35,6 @@ object BuildDataProvider {
             isConfigurationCache = startParameter.isConfigurationCacheRequested,
             isBuildCache = startParameter.isBuildCacheEnabled,
             maxWorkers = startParameter.maxWorkerCount,
-            buildDataCollectionOverhead = nowMillis() - configurationPhaseFinishedTime,
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
             architecture = architecture(project),
             user = username,
@@ -58,6 +55,4 @@ object BuildDataProvider {
         }.standardOutput.asText.get()
         return exec.trim()
     }
-
-    private fun nowMillis() = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
 }

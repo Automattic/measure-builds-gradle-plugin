@@ -33,7 +33,6 @@ fun Report.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
         "configuration-cache" to buildData.isConfigurationCache.toString(),
         "build-cache" to buildData.isBuildCache.toString(),
         "max-workers" to buildData.maxWorkers.toString(),
-        "build-data-collection-overhead-ms" to buildData.buildDataCollectionOverhead.toString(),
         "included-builds" to buildData.includedBuildsNames.joinToString(separator = ",")
             .ifEmpty { "none" },
         "build-finished-at" to executionData.buildFinishedTimestamp.toString(),

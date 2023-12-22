@@ -15,7 +15,6 @@ data class BuildData(
     val isConfigurationCache: Boolean,
     val isBuildCache: Boolean,
     val maxWorkers: Int,
-    val buildDataCollectionOverhead: Long,
     val includedBuildsNames: List<String>,
     val architecture: String,
 )
