@@ -1,7 +1,9 @@
 package com.automattic.android.measure.models
 
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
+@Serializable
 data class MeasuredTask(
     val name: String,
     val duration: Duration,

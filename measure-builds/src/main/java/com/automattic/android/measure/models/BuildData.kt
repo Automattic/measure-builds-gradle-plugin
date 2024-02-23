@@ -1,7 +1,9 @@
 package com.automattic.android.measure.models
 
 import com.automattic.android.measure.MeasureBuildsExtension
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
@@ -19,10 +21,11 @@ data class BuildData(
     val architecture: String,
 )
 
+@Serializable
 data class ExecutionData(
     val buildTime: Long,
     val failed: Boolean,
-    val failure: Throwable?,
+    val failure: String?,
     val tasks: List<MeasuredTask>,
     val buildFinishedTimestamp: Long,
     val configurationPhaseDuration: Long,

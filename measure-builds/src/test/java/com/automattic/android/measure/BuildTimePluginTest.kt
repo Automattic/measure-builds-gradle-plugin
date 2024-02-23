@@ -1,5 +1,8 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.models.ExecutionData
+import com.automattic.android.measure.models.MeasuredTask
+import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -14,7 +17,8 @@ class BuildTimePluginTest {
         // given
         val runner = functionalTestRunner(
             enable = true,
-            attachGradleScanId = true
+            attachGradleScanId = true,
+            projectWithSendingScans = true
         )
 
         // when
@@ -116,6 +120,30 @@ class BuildTimePluginTest {
             .contains("BUILD SUCCESSFUL")
     }
 
+    @Test
+    fun `given a help task to execute, when finishing the build, the help task is present in report file`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = false,
+            applyAppsMetricsToken = false,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        File("build/reports/measure_builds/execution_data.json").let {
+            val executionData = Json.decodeFromString<ExecutionData>(it.readText())
+
+            assertThat(executionData.tasks).hasSize(1)
+                .first().satisfies({ task ->
+                    assertThat(task.name).isEqualTo(":help")
+                    assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
+                })
+        }
+    }
+
     @BeforeEach
     fun clearCache() {
         val projectDir = File("build/functionalTest")
@@ -124,14 +152,16 @@ class BuildTimePluginTest {
 
     private fun functionalTestRunner(
         enable: Boolean?,
+        projectWithSendingScans: Boolean = false,
         attachGradleScanId: Boolean,
         applyAppsMetricsToken: Boolean = true,
         vararg arguments: String,
     ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
-        projectDir.resolve("settings.gradle.kts").writeText(
-            """
+        if (projectWithSendingScans) {
+            projectDir.resolve("settings.gradle.kts").writeText(
+                """
             plugins {
                 id("com.gradle.enterprise") version "3.15.1"
             }
@@ -143,8 +173,9 @@ class BuildTimePluginTest {
                     isUploadInBackground = false
                 }
             }
-            """.trimIndent()
-        )
+                """.trimIndent()
+            )
+        }
         projectDir.resolve("build.gradle.kts").writeText(
             """
             plugins {

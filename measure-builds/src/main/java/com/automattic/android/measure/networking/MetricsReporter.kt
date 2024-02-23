@@ -1,6 +1,6 @@
 package com.automattic.android.measure.networking
 
-import com.automattic.android.measure.Report
+import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.logging.Emojis.FAILURE_ICON
 import com.automattic.android.measure.logging.Emojis.SUCCESS_ICON
 import com.automattic.android.measure.logging.Emojis.TURTLE_ICON
@@ -22,11 +22,19 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
+import kotlin.io.path.exists
+import kotlin.io.path.writeText
 import kotlin.time.Duration.Companion.seconds
 
 class MetricsReporter(
@@ -34,9 +42,12 @@ class MetricsReporter(
     private val authToken: Provider<String>,
 ) {
     suspend fun report(
-        report: Report,
+        report: InMemoryReport,
         gradleScanId: String?
     ) {
+        reportLocally(report)
+
+        val payload = report.toAppsInfraPayload(gradleScanId)
         @Suppress("TooGenericExceptionCaught")
         try {
             logSlowTasks(report)
@@ -54,7 +65,7 @@ class MetricsReporter(
                     append(Authorization, "Bearer ${authToken.get()}")
                 }
                 contentType(ContentType.Application.Json)
-                body = report.toAppsInfraPayload(gradleScanId)
+                body = payload
             }.execute { response: HttpResponse ->
                 logger.debug(response.toString())
 
@@ -92,6 +103,29 @@ class MetricsReporter(
         }
     }
 
+    private fun reportLocally(report: InMemoryReport) {
+        Path("build/reports/measure_builds")
+            .apply {
+                if (!exists()) {
+                    createDirectories()
+                }
+                resolve("build_data.json").apply {
+                    logger.info("Writing build data to ${absolutePathString()}")
+                    if (!exists()) {
+                        createFile()
+                    }
+                    writeText(Json.encodeToString(report.buildData))
+                }
+                resolve("execution_data.json").apply {
+                    logger.info("Writing execution data to ${absolutePathString()}")
+                    if (!exists()) {
+                        createFile()
+                    }
+                    writeText(Json.encodeToString(report.executionData))
+                }
+            }
+    }
+
     private fun httpClient(): HttpClient {
         val client = HttpClient(CIO) {
             install(Logging) {
@@ -112,7 +146,7 @@ class MetricsReporter(
         return client
     }
 
-    private fun logSlowTasks(report: Report) {
+    private fun logSlowTasks(report: InMemoryReport) {
         val slowTasks =
             report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
                 .first()
