@@ -37,6 +37,8 @@ class BuildTimePlugin @Inject constructor(
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
+        prepareBuildData(project, extension.automatticProject, encodedUser)
+
         project.afterEvaluate {
             if (extension.enable.orNull == true) {
                 val configurationProvider: Provider<Boolean> = project.providers.of(
@@ -44,7 +46,6 @@ class BuildTimePlugin @Inject constructor(
                 ) { }
                 ConfigurationPhaseObserver.init()
 
-                prepareBuildData(project, extension, encodedUser)
                 prepareBuildTaskService(project)
                 prepareBuildFinishedAction(extension, analyticsReporter, buildInitiatedTime, configurationProvider)
             }
@@ -55,13 +56,13 @@ class BuildTimePlugin @Inject constructor(
 
     private fun prepareBuildData(
         project: Project,
-        extension: MeasureBuildsExtension,
+        automatticProject: Provider<MeasureBuildsExtension.AutomatticProject>,
         encodedUser: String,
     ) {
         InMemoryReport.setBuildData(
             BuildDataProvider.provide(
                 project,
-                extension.automatticProject.get(),
+                automatticProject,
                 encodedUser,
             )
         )

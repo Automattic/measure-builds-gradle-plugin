@@ -2,10 +2,11 @@ package com.automattic.android.measure.models
 
 import com.automattic.android.measure.MeasureBuildsExtension
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import org.gradle.api.provider.Provider
 
 @Serializable
 data class BuildData(
-    val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
     val tasks: List<String>,
     val daemonsRunning: Int,
@@ -19,7 +20,13 @@ data class BuildData(
     val maxWorkers: Int,
     val includedBuildsNames: List<String>,
     val architecture: String,
-)
+){
+    @Transient
+    lateinit var projectProvider: Provider<MeasureBuildsExtension.AutomatticProject>
+
+    val forProject: MeasureBuildsExtension.AutomatticProject
+        get() = projectProvider.get()
+}
 
 @Serializable
 data class ExecutionData(

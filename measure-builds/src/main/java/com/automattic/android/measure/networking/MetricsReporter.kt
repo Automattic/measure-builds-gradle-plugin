@@ -37,6 +37,10 @@ import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.io.path.writeText
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
+import org.gradle.api.internal.provider.DefaultProperty
 
 class MetricsReporter(
     private val logger: Logger,

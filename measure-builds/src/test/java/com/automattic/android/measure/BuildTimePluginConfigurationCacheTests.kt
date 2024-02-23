@@ -74,10 +74,10 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     @Test
-    @Disabled(
-        "This test is the reason, why we have to be extra careful with the configuration cache. Build data won't always be invalidated." +
-            "This means that we can have a situation where the build data is, reused what is not expected. "
-    )
+//    @Disabled(
+//        "This test is the reason, why we have to be extra careful with the configuration cache. Build data won't always be invalidated." +
+//            "This means that we can have a situation where the build data is, reused what is not expected. "
+//    )
     fun `given a project utilizes configuration cache, when build finishes twice with the same task, then assert that build data was not reused`() {
         runner("help", "-Dorg.gradle.workers.max=3").build()
         runner("help", "-Dorg.gradle.workers.max=5").build()
@@ -108,7 +108,7 @@ class BuildTimePluginConfigurationCacheTests {
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withPluginClasspath()
-        runner.withArguments(*arguments, "--configuration-cache")
+        runner.withArguments(*arguments, "--configuration-cache", "--stacktrace")
         runner.withProjectDir(projectDir)
         return runner
     }

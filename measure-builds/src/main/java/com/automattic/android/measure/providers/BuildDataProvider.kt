@@ -5,14 +5,14 @@ import com.automattic.android.measure.models.BuildData
 import com.automattic.android.measure.models.Environment
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.provider.Provider
 import org.gradle.invocation.DefaultGradle
 import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
 
 object BuildDataProvider {
-
     fun provide(
         project: Project,
-        automatticProject: MeasureBuildsExtension.AutomatticProject,
+        automatticProject: Provider<MeasureBuildsExtension.AutomatticProject>,
         username: String,
     ): BuildData {
         val gradle = project.gradle
@@ -24,7 +24,6 @@ object BuildDataProvider {
 
         @Suppress("UnstableApiUsage")
         return BuildData(
-            forProject = automatticProject,
             daemonsRunning = daemonInfo.numberOfRunningDaemons,
             thisDaemonBuilds = daemonInfo.numberOfBuilds,
             tasks = startParameter.taskNames,
@@ -38,7 +37,9 @@ object BuildDataProvider {
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
             architecture = architecture(project),
             user = username,
-        )
+        ).apply {
+            projectProvider = automatticProject
+        }
     }
 
     private fun Gradle.environment(): Environment {
