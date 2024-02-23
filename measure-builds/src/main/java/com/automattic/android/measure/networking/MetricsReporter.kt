@@ -30,6 +30,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.exists
@@ -109,12 +110,14 @@ class MetricsReporter(
                     createDirectories()
                 }
                 resolve("build_data.json").apply {
+                    logger.info("Writing build data to ${absolutePathString()}")
                     if (!exists()) {
                         createFile()
                     }
                     writeText(Json.encodeToString(report.buildData))
                 }
                 resolve("execution_data.json").apply {
+                    logger.info("Writing execution data to ${absolutePathString()}")
                     if (!exists()) {
                         createFile()
                     }
