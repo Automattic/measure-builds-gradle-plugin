@@ -16,8 +16,8 @@ object InMemoryReport {
     }
 
     val buildData: BuildData
-        get() = buildDataStore ?: throw NullPointerException("Must not be null")
+        get() = buildDataStore ?: throw NullPointerException("Build data must not be null")
 
     val executionData: ExecutionData
-        get() = executionDataStore ?: throw NullPointerException("Must not be null")
+        get() = executionDataStore ?: throw NullPointerException("Execution data must not be null")
 }
