@@ -29,6 +29,11 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
 }
 
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/detekt.yml")
+}
+
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }
