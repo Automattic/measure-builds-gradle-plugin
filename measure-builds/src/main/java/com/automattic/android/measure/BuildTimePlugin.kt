@@ -33,7 +33,7 @@ class BuildTimePlugin @Inject constructor(
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
-        val analyticsReporter = MetricsReporter(project.logger, extension.authToken)
+        val analyticsReporter = MetricsReporter(project.logger, extension.authToken, project.buildDir)
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
