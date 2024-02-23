@@ -14,7 +14,8 @@ class BuildTimePluginTest {
         // given
         val runner = functionalTestRunner(
             enable = true,
-            attachGradleScanId = true
+            attachGradleScanId = true,
+            projectWithSendingScans = true
         )
 
         // when
@@ -124,14 +125,16 @@ class BuildTimePluginTest {
 
     private fun functionalTestRunner(
         enable: Boolean?,
+        projectWithSendingScans: Boolean = false,
         attachGradleScanId: Boolean,
         applyAppsMetricsToken: Boolean = true,
         vararg arguments: String,
     ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
-        projectDir.resolve("settings.gradle.kts").writeText(
-            """
+        if(projectWithSendingScans) {
+            projectDir.resolve("settings.gradle.kts").writeText(
+                """
             plugins {
                 id("com.gradle.enterprise") version "3.15.1"
             }
@@ -144,7 +147,8 @@ class BuildTimePluginTest {
                 }
             }
             """.trimIndent()
-        )
+            )
+        }
         projectDir.resolve("build.gradle.kts").writeText(
             """
             plugins {
