@@ -34,7 +34,7 @@ class MetricsReporter(
     private val authToken: Provider<String>,
 ) {
     suspend fun report(
-        report: Report,
+        report: InMemoryReport,
         gradleScanId: String?
     ) {
         @Suppress("TooGenericExceptionCaught")
@@ -112,7 +112,7 @@ class MetricsReporter(
         return client
     }
 
-    private fun logSlowTasks(report: Report) {
+    private fun logSlowTasks(report: InMemoryReport) {
         val slowTasks =
             report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
                 .first()

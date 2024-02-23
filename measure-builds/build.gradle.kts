@@ -19,7 +19,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:1.6.4")
     implementation("io.ktor:ktor-client-logging:1.6.4")
     implementation("io.ktor:ktor-client-serialization:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

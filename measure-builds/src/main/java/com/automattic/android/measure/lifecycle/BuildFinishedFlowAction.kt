@@ -52,13 +52,13 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         val executionData = ExecutionData(
             buildTime = buildTime,
             failed = result.failure.isPresent,
-            failure = result.failure.getOrNull(),
+            failure = result.failure.getOrNull()?.message,
             tasks = parameters.buildTaskService.get().tasks,
             buildFinishedTimestamp = finish,
             configurationPhaseDuration = configurationTime
         )
 
-        InMemoryReport.executionDataStore = executionData
+        InMemoryReport.setExecutionData(executionData)
 
         if (parameters.attachGradleScanId.get() == false) {
             runBlocking {

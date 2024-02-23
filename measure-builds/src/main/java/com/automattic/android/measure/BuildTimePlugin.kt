@@ -58,12 +58,13 @@ class BuildTimePlugin @Inject constructor(
         extension: MeasureBuildsExtension,
         encodedUser: String,
     ) {
-        InMemoryReport.buildDataStore =
+        InMemoryReport.setBuildData(
             BuildDataProvider.provide(
                 project,
                 extension.automatticProject.get(),
                 encodedUser,
             )
+        )
     }
 
     private fun prepareBuildScanListener(

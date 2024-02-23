@@ -132,7 +132,7 @@ class BuildTimePluginTest {
     ): GradleRunner {
         val projectDir = File("build/functionalTest")
         projectDir.mkdirs()
-        if(projectWithSendingScans) {
+        if (projectWithSendingScans) {
             projectDir.resolve("settings.gradle.kts").writeText(
                 """
             plugins {
@@ -146,7 +146,7 @@ class BuildTimePluginTest {
                     isUploadInBackground = false
                 }
             }
-            """.trimIndent()
+                """.trimIndent()
             )
         }
         projectDir.resolve("build.gradle.kts").writeText(
