@@ -1,5 +1,8 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.models.ExecutionData
+import com.automattic.android.measure.models.MeasuredTask
+import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -115,6 +118,30 @@ class BuildTimePluginTest {
         assertThat(run.output)
             .contains("No authToken provided. Skipping reporting.")
             .contains("BUILD SUCCESSFUL")
+    }
+
+    @Test
+    fun `given a help task to execute, when finishing the build, the help task is present in report file`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = false,
+            applyAppsMetricsToken = false,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        File("build/reports/measure_builds/execution_data.json").let {
+            val executionData = Json.decodeFromString<ExecutionData>(it.readText())
+
+            assertThat(executionData.tasks).hasSize(1)
+                .first().satisfies({ task ->
+                    assertThat(task.name).isEqualTo(":help")
+                    assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
+                })
+        }
     }
 
     @BeforeEach
