@@ -17,6 +17,9 @@ import kotlin.jvm.optionals.getOrNull
 
 class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
+
+        // This value will NOT update if project re-used configuration cache
+        // Use ONLY for calculating configuration phase duration if it was executed
         @get:Input
         val initiationTime: Property<Long>
 
@@ -38,19 +41,20 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
 
     override fun execute(parameters: Parameters) {
         val init = parameters.initiationTime.get()
+        val buildStart = parameters.buildTaskService.get().buildStartTime
         val finish = System.currentTimeMillis()
 
         val result = parameters.buildWorkResult.get().get()
-        val buildTime = finish - init
+        val buildPhaseDuration = finish - buildStart
 
         val configurationTime = if (parameters.configurationPhaseExecuted.get().get()) {
-            parameters.buildTaskService.get().buildStartTime - init
+            buildStart - init
         } else {
             0
         }
 
         val executionData = ExecutionData(
-            buildTime = buildTime,
+            buildTime = buildPhaseDuration + configurationTime,
             failed = result.failure.isPresent,
             failure = result.failure.getOrNull()?.message,
             tasks = parameters.buildTaskService.get().tasks,

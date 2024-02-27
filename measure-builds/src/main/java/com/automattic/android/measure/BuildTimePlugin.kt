@@ -45,11 +45,11 @@ class BuildTimePlugin @Inject constructor(
                 ConfigurationPhaseObserver.init()
 
                 prepareBuildData(project, extension, encodedUser)
-                prepareBuildTaskService(project)
                 prepareBuildFinishedAction(extension, analyticsReporter, buildInitiatedTime, configurationProvider)
             }
         }
 
+        prepareBuildTaskService(project)
         prepareBuildScanListener(project, extension, analyticsReporter)
     }
 

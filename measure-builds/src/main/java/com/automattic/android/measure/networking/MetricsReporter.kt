@@ -149,6 +149,10 @@ class MetricsReporter(
     }
 
     private fun logSlowTasks(report: InMemoryReport) {
+        if (report.executionData.buildTime == 0L) {
+            return
+        }
+
         val slowTasks =
             report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks)
                 .first()
