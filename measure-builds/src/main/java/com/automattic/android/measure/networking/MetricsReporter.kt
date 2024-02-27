@@ -26,6 +26,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
+import java.io.File
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
@@ -40,6 +41,7 @@ import kotlin.time.Duration.Companion.seconds
 class MetricsReporter(
     private val logger: Logger,
     private val authToken: Provider<String>,
+    private val buildDir: File,
 ) {
     suspend fun report(
         report: InMemoryReport,
@@ -83,7 +85,7 @@ class MetricsReporter(
                             )
                         )
                         logger.lifecycle(
-                            "\n$SUCCESS_ICON Build time report of $timeFormatted has been received by App Metrics."
+                            "\n$SUCCESS_ICON Build time report of $timeFormatted has been received by Apps Metrics."
                         )
                     }
 
@@ -104,7 +106,7 @@ class MetricsReporter(
     }
 
     private fun reportLocally(report: InMemoryReport) {
-        Path("build/reports/measure_builds")
+        Path("${buildDir.path}/reports/measure_builds")
             .apply {
                 if (!exists()) {
                     createDirectories()

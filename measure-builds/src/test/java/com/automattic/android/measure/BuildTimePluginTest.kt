@@ -133,7 +133,7 @@ class BuildTimePluginTest {
         val run = runner.withArguments("help").build()
 
         // then
-        File("build/reports/measure_builds/execution_data.json").let {
+        File("build/functionalTest/build/reports/measure_builds/execution_data.json").let {
             val executionData = Json.decodeFromString<ExecutionData>(it.readText())
 
             assertThat(executionData.tasks).hasSize(1)

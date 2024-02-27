@@ -1,0 +1,7 @@
+formatting:
+  MaximumLineLength:
+    excludes: [ '**/test/**' ]
+
+style:
+  MaxLineLength:
+    excludes: [ '**/test/**' ]
