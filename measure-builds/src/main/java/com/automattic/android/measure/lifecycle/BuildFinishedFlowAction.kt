@@ -19,7 +19,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
     interface Parameters : FlowParameters {
 
         // This value will NOT update if project re-used configuration cache
-        // Use ONLY for calculating configuration phase duration is it was executed
+        // Use ONLY for calculating configuration phase duration if it was executed
         @get:Input
         val initiationTime: Property<Long>
 
