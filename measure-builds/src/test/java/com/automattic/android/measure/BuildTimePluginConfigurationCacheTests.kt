@@ -27,9 +27,6 @@ class BuildTimePluginConfigurationCacheTests {
 
     @Test
     fun `given a project utilizes configuration cache, when build finishes, then report 0 configuration cache duration`() {
-        // given
-        val runner = runner()
-
         // when
         runner("help", "--stacktrace").build()
 
@@ -83,13 +80,11 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     private fun runner(vararg arguments: String): GradleRunner {
-        val projectDir = File("build/functionalTest")
-        projectDir.mkdirs()
-
-        projectDir.resolve("settings.gradle.kts").writeText("")
-
-        projectDir.resolve("build.gradle.kts").writeText(
-            """
+        val projectDir = File("build/functionalTest").apply {
+            mkdirs()
+            resolve("settings.gradle.kts").writeText("")
+            resolve("build.gradle.kts").writeText(
+                """
             plugins {
                 id("com.automattic.android.measure-builds")
             }
@@ -98,15 +93,15 @@ class BuildTimePluginConfigurationCacheTests {
                 attachGradleScanId.set(false)
                 automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
             }
-            """.trimIndent()
-        )
+                """.trimIndent()
+            )
+        }
 
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments(*arguments, "--configuration-cache")
-        runner.withProjectDir(projectDir)
-        return runner
+        return GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments(*arguments, "--configuration-cache")
+            .withProjectDir(projectDir)
     }
 
     private val executionData: ExecutionData

@@ -115,8 +115,7 @@ class BuildTimePluginTest {
         val run = runner.withArguments("help").build()
 
         // then
-        assertThat(run.output)
-            .contains("No authToken provided. Skipping reporting.")
+        assertThat(run.output).contains("No authToken provided. Skipping reporting.")
             .contains("BUILD SUCCESSFUL")
     }
 
@@ -130,17 +129,16 @@ class BuildTimePluginTest {
         )
 
         // when
-        val run = runner.withArguments("help").build()
+        runner.withArguments("help").build()
 
         // then
         File("build/functionalTest/build/reports/measure_builds/execution_data.json").let {
             val executionData = Json.decodeFromString<ExecutionData>(it.readText())
 
-            assertThat(executionData.tasks).hasSize(1)
-                .first().satisfies({ task ->
-                    assertThat(task.name).isEqualTo(":help")
-                    assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
-                })
+            assertThat(executionData.tasks).hasSize(1).first().satisfies({ task ->
+                assertThat(task.name).isEqualTo(":help")
+                assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
+            })
         }
     }
 
@@ -157,44 +155,44 @@ class BuildTimePluginTest {
         applyAppsMetricsToken: Boolean = true,
         vararg arguments: String,
     ): GradleRunner {
-        val projectDir = File("build/functionalTest")
-        projectDir.mkdirs()
-        if (projectWithSendingScans) {
-            projectDir.resolve("settings.gradle.kts").writeText(
+        val projectDir = File("build/functionalTest").apply {
+            mkdirs()
+            if (projectWithSendingScans) {
+                resolve("settings.gradle.kts").writeText(
+                    """
+                        plugins {
+                            id("com.gradle.enterprise") version "3.15.1"
+                        }
+                        gradleEnterprise {
+                            buildScan {
+                                publishAlways()
+                                termsOfServiceUrl = "https://gradle.com/terms-of-service"
+                                termsOfServiceAgree = "yes"
+                                isUploadInBackground = false
+                            }
+                        }
+                    """.trimIndent()
+                )
+            }
+            resolve("build.gradle.kts").writeText(
                 """
-            plugins {
-                id("com.gradle.enterprise") version "3.15.1"
-            }
-            gradleEnterprise {
-                buildScan {
-                    publishAlways()
-                    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-                    termsOfServiceAgree = "yes"
-                    isUploadInBackground = false
-                }
-            }
+                     plugins {
+                         id("com.automattic.android.measure-builds")
+                     }
+                     measureBuilds {
+                         ${if (enable != null) "enable.set($enable)" else ""}
+                         attachGradleScanId.set($attachGradleScanId)
+                         automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
+                         ${if (applyAppsMetricsToken) "authToken.set(\"token\")" else ""}
+                     }
                 """.trimIndent()
             )
         }
-        projectDir.resolve("build.gradle.kts").writeText(
-            """
-            plugins {
-                id("com.automattic.android.measure-builds")
-            }
-            measureBuilds {
-                ${if (enable != null) "enable.set($enable)" else ""}
-                attachGradleScanId.set($attachGradleScanId)
-                automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
-                ${if (applyAppsMetricsToken) "authToken.set(\"token\")" else ""}
-            }
-            """.trimIndent()
-        )
 
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments(arguments.toList())
-        runner.withProjectDir(projectDir)
-        return runner
+        return GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments(arguments.toList())
+            .withProjectDir(projectDir)
     }
 }
