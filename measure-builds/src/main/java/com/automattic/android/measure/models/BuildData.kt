@@ -3,6 +3,13 @@ package com.automattic.android.measure.models
 import com.automattic.android.measure.MeasureBuildsExtension
 import kotlinx.serialization.Serializable
 
+/**
+ * Be extra careful when adding new parameters to build data. It's resolved during configuration
+ * phase, so it's necessary to make sure that changes in those parameters will invalidate
+ * the configuration cache. You can do this in BuildTimePluginConfigurationCacheTests.
+ *
+ * Details: https://discuss.gradle.org/t/is-there-a-way-to-get-up-to-date-gradle-start-parameters-with-configuration-cache/47806/
+ */
 @Serializable
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
