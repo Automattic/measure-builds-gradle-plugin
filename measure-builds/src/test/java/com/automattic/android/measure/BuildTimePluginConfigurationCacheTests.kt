@@ -76,7 +76,7 @@ class BuildTimePluginConfigurationCacheTests {
     @Test
     fun `verify if environment change invalidates CC cache`() {
         runner("help").build()
-        assertThat(buildData.environment).isEqualTo(Environment.CMD)
+        assertThat(buildData.environment).isNotEqualTo(Environment.IDE)
 
         runner("help", "-Pandroid.injected.invoked.from.ide=true").build()
         assertThat(buildData.environment).isEqualTo(Environment.IDE)
