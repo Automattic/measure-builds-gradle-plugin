@@ -5,8 +5,6 @@ import com.automattic.android.measure.models.BuildData
 import com.automattic.android.measure.models.Environment
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
-import org.gradle.invocation.DefaultGradle
-import org.gradle.launcher.daemon.server.scaninfo.DaemonScanInfo
 
 object BuildDataProvider {
 
@@ -16,17 +14,11 @@ object BuildDataProvider {
         username: String,
     ): BuildData {
         val gradle = project.gradle
-
-        val services = (gradle as DefaultGradle).services
-
-        val daemonInfo = services[DaemonScanInfo::class.java]
         val startParameter = gradle.startParameter
 
         @Suppress("UnstableApiUsage")
         return BuildData(
             forProject = automatticProject,
-            daemonsRunning = daemonInfo.numberOfRunningDaemons,
-            thisDaemonBuilds = daemonInfo.numberOfBuilds,
             tasks = startParameter.taskNames,
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,

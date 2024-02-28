@@ -23,8 +23,6 @@ fun InMemoryReport.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics
         "build-time-ms" to executionData.buildTime.toString(),
         "build-status" to if (executionData.failed) "Failure" else "Success",
         "failure-message" to executionData.failure.toString(),
-        "number-of-running-daemons" to buildData.daemonsRunning.toString(),
-        "daemons-build-count" to buildData.thisDaemonBuilds.toString(),
         "gradle-version" to buildData.gradleVersion,
         "up-to-date-tasks" to taskGroups[UP_TO_DATE].sizeOrZero(),
         "cached-tasks" to taskGroups[IS_FROM_CACHE].sizeOrZero(),

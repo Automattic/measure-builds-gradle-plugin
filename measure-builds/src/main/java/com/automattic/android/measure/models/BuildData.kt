@@ -8,8 +8,6 @@ data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
     val tasks: List<String>,
-    val daemonsRunning: Int,
-    val thisDaemonBuilds: Int,
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,
