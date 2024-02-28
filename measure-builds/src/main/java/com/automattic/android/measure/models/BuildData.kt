@@ -11,10 +11,8 @@ data class BuildData(
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,
-    val isConfigureOnDemand: Boolean,
     val isConfigurationCache: Boolean,
     val isBuildCache: Boolean,
-    val maxWorkers: Int,
     val includedBuildsNames: List<String>,
     val architecture: String,
 )
