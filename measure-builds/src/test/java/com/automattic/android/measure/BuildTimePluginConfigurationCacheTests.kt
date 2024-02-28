@@ -1,6 +1,7 @@
 package com.automattic.android.measure
 
 import com.automattic.android.measure.models.BuildData
+import com.automattic.android.measure.models.Environment
 import com.automattic.android.measure.models.ExecutionData
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
@@ -70,6 +71,25 @@ class BuildTimePluginConfigurationCacheTests {
         val timestampB = executionData.buildFinishedTimestamp
 
         assertThat(timestampA).isNotEqualTo(timestampB)
+    }
+
+    @Test
+    //Failing
+    fun `verify if build cache parameter invalidates CC change`() {
+        runner("help", "--build-cache").build()
+        assertThat(buildData.isBuildCache).isTrue()
+
+        runner("help", "--no-build-cache").build()
+        assertThat(buildData.isBuildCache).isFalse()
+    }
+
+    @Test
+    fun `verify if environment change invalidates CC cache`() {
+        runner("help").build()
+        assertThat(buildData.environment).isEqualTo(Environment.CMD)
+
+        runner("help", "-Pandroid.injected.invoked.from.ide=true").build()
+        assertThat(buildData.environment).isEqualTo(Environment.IDE)
     }
 
     private fun runner(vararg arguments: String): GradleRunner {
