@@ -49,7 +49,7 @@ class MetricsReporter(
     ) {
         reportLocally(report)
 
-        val payload = report.toAppsInfraPayload(gradleScanId)
+        val payload = report.toAppsMetricsPayload(gradleScanId)
         @Suppress("TooGenericExceptionCaught")
         try {
             logSlowTasks(report)
