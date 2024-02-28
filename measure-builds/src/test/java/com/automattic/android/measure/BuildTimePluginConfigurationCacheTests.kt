@@ -74,16 +74,6 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     @Test
-    //Failing
-    fun `verify if build cache parameter invalidates CC change`() {
-        runner("help", "--build-cache").build()
-        assertThat(buildData.isBuildCache).isTrue()
-
-        runner("help", "--no-build-cache").build()
-        assertThat(buildData.isBuildCache).isFalse()
-    }
-
-    @Test
     fun `verify if environment change invalidates CC cache`() {
         runner("help").build()
         assertThat(buildData.environment).isEqualTo(Environment.CMD)

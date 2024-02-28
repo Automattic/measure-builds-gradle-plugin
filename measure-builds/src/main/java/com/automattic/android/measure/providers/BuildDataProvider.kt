@@ -24,7 +24,6 @@ object BuildDataProvider {
             gradleVersion = gradle.gradleVersion,
             operatingSystem = System.getProperty("os.name").lowercase(),
             isConfigurationCache = startParameter.isConfigurationCacheRequested,
-            isBuildCache = startParameter.isBuildCacheEnabled,
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
             architecture = architecture(project),
             user = username,

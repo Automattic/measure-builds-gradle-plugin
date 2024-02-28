@@ -12,7 +12,6 @@ data class BuildData(
     val operatingSystem: String,
     val environment: Environment,
     val isConfigurationCache: Boolean,
-    val isBuildCache: Boolean,
     val includedBuildsNames: List<String>,
     val architecture: String,
 )

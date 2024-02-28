@@ -28,7 +28,6 @@ fun InMemoryReport.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics
         "cached-tasks" to taskGroups[IS_FROM_CACHE].sizeOrZero(),
         "executed-tasks" to taskGroups[EXECUTED].sizeOrZero(),
         "configuration-cache" to buildData.isConfigurationCache.toString(),
-        "build-cache" to buildData.isBuildCache.toString(),
         "included-builds" to buildData.includedBuildsNames.joinToString(separator = ",")
             .ifEmpty { "none" },
         "build-finished-at" to executionData.buildFinishedTimestamp.toString(),
