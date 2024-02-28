@@ -5,7 +5,7 @@ import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED
 import com.automattic.android.measure.models.MeasuredTask.State.IS_FROM_CACHE
 import com.automattic.android.measure.models.MeasuredTask.State.UP_TO_DATE
 
-fun InMemoryReport.toAppsInfraPayload(gradleScanId: String?): GroupedAppsMetrics {
+fun InMemoryReport.toAppsMetricsPayload(gradleScanId: String?): GroupedAppsMetrics {
     val projectKey = buildData.forProject.name.lowercase()
 
     val meta = mapOf(
