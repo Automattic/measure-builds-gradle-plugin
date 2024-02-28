@@ -1,12 +1,12 @@
 package com.automattic.android.measure
 
 import com.automattic.android.measure.models.BuildData
+import com.automattic.android.measure.models.Environment
 import com.automattic.android.measure.models.ExecutionData
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -74,16 +74,12 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     @Test
-    @Disabled(
-        "This test is the reason, why we have to be extra careful with the configuration cache. Build data won't always be invalidated." +
-            "This means that we can have a situation where the build data is, reused what is not expected. "
-    )
-    fun `given a project utilizes configuration cache, when build finishes twice with the same task, then assert that build data was not reused`() {
-        runner("help", "-Dorg.gradle.workers.max=3").build()
-        runner("help", "-Dorg.gradle.workers.max=5").build()
-        val maxWorkers = buildData.maxWorkers
+    fun `verify if environment change invalidates CC cache`() {
+        runner("help").build()
+        assertThat(buildData.environment).isNotEqualTo(Environment.IDE)
 
-        assertThat(maxWorkers).isEqualTo(5)
+        runner("help", "-Pandroid.injected.invoked.from.ide=true").build()
+        assertThat(buildData.environment).isEqualTo(Environment.IDE)
     }
 
     private fun runner(vararg arguments: String): GradleRunner {

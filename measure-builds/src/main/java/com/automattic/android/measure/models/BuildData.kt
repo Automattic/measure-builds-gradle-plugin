@@ -3,20 +3,22 @@ package com.automattic.android.measure.models
 import com.automattic.android.measure.MeasureBuildsExtension
 import kotlinx.serialization.Serializable
 
+/**
+ * Be extra careful when adding new parameters to build data. It's resolved during configuration
+ * phase, so it's necessary to make sure that changes in those parameters will invalidate
+ * the configuration cache. You can do this in BuildTimePluginConfigurationCacheTests.
+ *
+ * Details: https://discuss.gradle.org/t/is-there-a-way-to-get-up-to-date-gradle-start-parameters-with-configuration-cache/47806/
+ */
 @Serializable
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
     val tasks: List<String>,
-    val daemonsRunning: Int,
-    val thisDaemonBuilds: Int,
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,
-    val isConfigureOnDemand: Boolean,
     val isConfigurationCache: Boolean,
-    val isBuildCache: Boolean,
-    val maxWorkers: Int,
     val includedBuildsNames: List<String>,
     val architecture: String,
 )
