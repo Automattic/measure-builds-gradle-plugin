@@ -29,6 +29,7 @@ data class ExecutionData(
     val failed: Boolean,
     val failure: String?,
     val tasks: List<MeasuredTask>,
+    val requestedTasks: List<String>,
     val buildFinishedTimestamp: Long,
     val configurationPhaseDuration: Long,
 )

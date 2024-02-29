@@ -81,18 +81,15 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     @Test
-    @Disabled(
-        "Failing, because the configuration cache is not invalidated on second run of help, returning 'outgoingVariants' instead of 'help'"
-    )
     fun `given a task which configuration is cached, when calling it again, then the requested task is correct`() {
         runner("help").build()
-        assertThat(buildData.tasks).contains("help")
+        assertThat(executionData.requestedTasks).contains("help")
 
         runner("outgoingVariants").build()
-        assertThat(buildData.tasks).contains("outgoingVariants")
+        assertThat(executionData.requestedTasks).contains("outgoingVariants")
 
         runner("help").build()
-        assertThat(buildData.tasks).contains("help")
+        assertThat(executionData.requestedTasks).contains("help")
     }
 
     private fun runner(vararg arguments: String): GradleRunner {

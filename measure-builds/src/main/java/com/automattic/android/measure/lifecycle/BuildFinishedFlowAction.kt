@@ -6,6 +6,7 @@ import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.models.ExecutionData
 import com.automattic.android.measure.networking.MetricsReporter
 import kotlinx.coroutines.runBlocking
+import org.gradle.StartParameter
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
 import org.gradle.api.flow.FlowParameters
@@ -37,6 +38,9 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
 
         @get:ServiceReference
         val buildTaskService: Property<BuildTaskService>
+
+        @get:Input
+        val startParameter: Property<StartParameter>
     }
 
     override fun execute(parameters: Parameters) {
@@ -59,7 +63,8 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
             failure = result.failure.getOrNull()?.message,
             tasks = parameters.buildTaskService.get().tasks,
             buildFinishedTimestamp = finish,
-            configurationPhaseDuration = configurationTime
+            configurationPhaseDuration = configurationTime,
+            requestedTasks = parameters.startParameter.get().taskNames.toList()
         )
 
         InMemoryReport.setExecutionData(executionData)
