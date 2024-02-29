@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -79,6 +80,21 @@ class BuildTimePluginConfigurationCacheTests {
         assertThat(buildData.environment).isEqualTo(Environment.IDE)
     }
 
+    @Test
+    @Disabled(
+        "Failing, because the configuration cache is not invalidated on second run of help, returning 'outgoingVariants' instead of 'help'"
+    )
+    fun `given a task which configuration is cached, when calling it again, then the requested task is correct`() {
+        runner("help").build()
+        assertThat(buildData.tasks).contains("help")
+
+        runner("outgoingVariants").build()
+        assertThat(buildData.tasks).contains("outgoingVariants")
+
+        runner("help").build()
+        assertThat(buildData.tasks).contains("help")
+    }
+
     private fun runner(vararg arguments: String): GradleRunner {
         val projectDir = File("build/functionalTest").apply {
             mkdirs()
@@ -97,11 +113,8 @@ class BuildTimePluginConfigurationCacheTests {
             )
         }
 
-        return GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments(*arguments, "--configuration-cache")
-            .withProjectDir(projectDir)
+        return GradleRunner.create().forwardOutput().withPluginClasspath()
+            .withArguments(*arguments, "--configuration-cache").withProjectDir(projectDir)
     }
 
     private val executionData: ExecutionData
