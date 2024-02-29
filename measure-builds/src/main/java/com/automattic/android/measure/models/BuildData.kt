@@ -14,7 +14,6 @@ import kotlinx.serialization.Serializable
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
-    val tasks: List<String>,
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,

@@ -19,7 +19,7 @@ fun InMemoryReport.toAppsMetricsPayload(gradleScanId: String?): GroupedAppsMetri
     val taskGroups = executionData.tasks.groupBy { it.state }
 
     val metrics = mapOf(
-        "requested-tasks" to buildData.tasks.joinToString(separator = ","),
+        "requested-tasks" to executionData.requestedTasks.joinToString(separator = ","),
         "build-time-ms" to executionData.buildTime.toString(),
         "build-status" to if (executionData.failed) "Failure" else "Success",
         "failure-message" to executionData.failure.toString(),
