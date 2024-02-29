@@ -8,6 +8,7 @@ import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
+import org.gradle.StartParameter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.flow.FlowActionSpec
@@ -45,7 +46,13 @@ class BuildTimePlugin @Inject constructor(
                 ConfigurationPhaseObserver.init()
 
                 prepareBuildData(project, extension, encodedUser)
-                prepareBuildFinishedAction(extension, analyticsReporter, buildInitiatedTime, configurationProvider)
+                prepareBuildFinishedAction(
+                    project.gradle.startParameter,
+                    extension,
+                    analyticsReporter,
+                    buildInitiatedTime,
+                    configurationProvider
+                )
             }
         }
 
@@ -83,6 +90,7 @@ class BuildTimePlugin @Inject constructor(
     }
 
     private fun prepareBuildFinishedAction(
+        startParameter: StartParameter,
         extension: MeasureBuildsExtension,
         analyticsReporter: MetricsReporter,
         buildInitiatedTime: Long,
@@ -97,6 +105,7 @@ class BuildTimePlugin @Inject constructor(
                 this.analyticsReporter.set(analyticsReporter)
                 this.initiationTime.set(buildInitiatedTime)
                 this.configurationPhaseExecuted.set(configurationPhaseObserver)
+                this.startParameter.set(startParameter)
             }
         }
     }

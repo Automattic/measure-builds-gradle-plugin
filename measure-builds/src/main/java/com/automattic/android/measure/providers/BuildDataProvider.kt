@@ -19,7 +19,6 @@ object BuildDataProvider {
         @Suppress("UnstableApiUsage")
         return BuildData(
             forProject = automatticProject,
-            tasks = startParameter.taskNames,
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,
             operatingSystem = System.getProperty("os.name").lowercase(),

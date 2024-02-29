@@ -14,7 +14,6 @@ import kotlinx.serialization.Serializable
 data class BuildData(
     val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
-    val tasks: List<String>,
     val gradleVersion: String,
     val operatingSystem: String,
     val environment: Environment,
@@ -28,7 +27,8 @@ data class ExecutionData(
     val buildTime: Long,
     val failed: Boolean,
     val failure: String?,
-    val tasks: List<MeasuredTask>,
+    val executedTasks: List<MeasuredTask>,
+    val requestedTasks: List<String>,
     val buildFinishedTimestamp: Long,
     val configurationPhaseDuration: Long,
 )

@@ -135,7 +135,7 @@ class BuildTimePluginTest {
         File("build/functionalTest/build/reports/measure_builds/execution_data.json").let {
             val executionData = Json.decodeFromString<ExecutionData>(it.readText())
 
-            assertThat(executionData.tasks).hasSize(1).first().satisfies({ task ->
+            assertThat(executionData.executedTasks).hasSize(1).first().satisfies({ task ->
                 assertThat(task.name).isEqualTo(":help")
                 assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
             })
