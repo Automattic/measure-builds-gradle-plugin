@@ -61,7 +61,7 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
             buildTime = buildPhaseDuration + configurationTime,
             failed = result.failure.isPresent,
             failure = result.failure.getOrNull()?.message,
-            tasks = parameters.buildTaskService.get().tasks,
+            executedTasks = parameters.buildTaskService.get().tasks,
             buildFinishedTimestamp = finish,
             configurationPhaseDuration = configurationTime,
             requestedTasks = parameters.startParameter.get().taskNames.toList()

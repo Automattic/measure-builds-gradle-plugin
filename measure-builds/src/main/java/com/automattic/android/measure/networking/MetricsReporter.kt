@@ -153,7 +153,8 @@ class MetricsReporter(
             return
         }
         val slowTasks =
-            report.executionData.tasks.sortedByDescending { it.duration }.chunked(atMostLoggedTasks).firstOrNull()
+            report.executionData.executedTasks.sortedByDescending { it.duration }
+                .chunked(atMostLoggedTasks).firstOrNull()
                 ?: return
 
         logger.lifecycle("\n$TURTLE_ICON ${slowTasks.size} slowest tasks were: ")

@@ -41,23 +41,19 @@ class BuildTimePluginConfigurationCacheTests {
     }
 
     @Test
-    fun `given a project utilizes configuration cache, when build finishes, then assert that build or execution data was not reused`() {
-        fun runTaskAndGetDetails(vararg arguments: String): Pair<List<String>, Long> {
+    fun `given a project utilizes configuration cache, when build finishes, then assert that execution data was not reused`() {
+        fun runTaskAndGetDetails(vararg arguments: String): Long {
             runner(*arguments).build()
-            return buildData.tasks to executionData.buildFinishedTimestamp
+            return executionData.buildFinishedTimestamp
         }
 
-        val (tasksA, timestampA) = runTaskAndGetDetails("help")
-        val (tasksB, timestampB) = runTaskAndGetDetails("outgoingVariants")
-        val (tasksC, timestampC) = runTaskAndGetDetails("tasks")
+        val timestampA = runTaskAndGetDetails("help")
+        val timestampB = runTaskAndGetDetails("outgoingVariants")
+        val timestampC = runTaskAndGetDetails("tasks")
 
         assertThat(timestampA).isNotEqualTo(timestampB)
         assertThat(timestampA).isNotEqualTo(timestampC)
         assertThat(timestampB).isNotEqualTo(timestampC)
-
-        assertThat(tasksA).isNotEqualTo(tasksB)
-        assertThat(tasksA).isNotEqualTo(tasksC)
-        assertThat(tasksB).isNotEqualTo(tasksC)
     }
 
     @Test

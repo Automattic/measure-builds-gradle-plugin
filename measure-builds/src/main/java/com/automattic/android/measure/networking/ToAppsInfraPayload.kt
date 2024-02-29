@@ -16,7 +16,7 @@ fun InMemoryReport.toAppsMetricsPayload(gradleScanId: String?): GroupedAppsMetri
         "operating-system" to buildData.operatingSystem,
     )
 
-    val taskGroups = executionData.tasks.groupBy { it.state }
+    val taskGroups = executionData.executedTasks.groupBy { it.state }
 
     val metrics = mapOf(
         "requested-tasks" to executionData.requestedTasks.joinToString(separator = ","),
@@ -35,7 +35,7 @@ fun InMemoryReport.toAppsMetricsPayload(gradleScanId: String?): GroupedAppsMetri
         "configuration-duration" to executionData.configurationPhaseDuration.toString()
     )
 
-    val tasks = executionData.tasks.map {
+    val tasks = executionData.executedTasks.map {
         "task-${it.name}" to it.duration.inWholeMilliseconds.toString()
     }
 
