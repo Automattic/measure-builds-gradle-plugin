@@ -10,7 +10,6 @@ object BuildDataProvider {
 
     fun provide(
         project: Project,
-        automatticProject: MeasureBuildsExtension.AutomatticProject,
         username: String,
     ): BuildData {
         val gradle = project.gradle
@@ -18,7 +17,6 @@ object BuildDataProvider {
 
         @Suppress("UnstableApiUsage")
         return BuildData(
-            forProject = automatticProject,
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,
             operatingSystem = System.getProperty("os.name").lowercase(),

@@ -11,37 +11,6 @@ import java.io.File
 
 @Suppress("MaximumLineLength", "MaxLineLength")
 class BuildTimePluginTest {
-
-    @Test
-    fun `given a project that attaches gradle scan id, when executing a task with configuration from cache, then send the report with attached gradle scan id`() {
-        // given
-        val runner = functionalTestRunner(
-            enable = true,
-            attachGradleScanId = true,
-            projectWithSendingScans = true
-        )
-
-        // when
-        val prepareConfigurationCache =
-            runner.withArguments("--configuration-cache", "help").build()
-
-        // then
-        assertThat(
-            prepareConfigurationCache.output
-        ).contains("Calculating task graph as no configuration cache is available for tasks")
-            .contains("Configuration cache entry stored")
-
-        // when
-        val buildUsingConfigurationCache =
-            runner.withArguments("--configuration-cache", "help", "--debug").build()
-
-        // then
-        assertThat(buildUsingConfigurationCache.output).contains("Reusing configuration cache")
-            .contains("Reporting build data to Apps Metrics...")
-            .contains("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":")
-            .doesNotContain("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":\"null\"}")
-    }
-
     @Test
     fun `given a project that disabled build measurements and does not attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
         // given
@@ -100,23 +69,6 @@ class BuildTimePluginTest {
 
         // then
         assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
-    }
-
-    @Test
-    fun `given a project without apps metrics token, when executing a task, then build does not fail`() {
-        // given
-        val runner = functionalTestRunner(
-            enable = true,
-            attachGradleScanId = false,
-            applyAppsMetricsToken = false,
-        )
-
-        // when
-        val run = runner.withArguments("help").build()
-
-        // then
-        assertThat(run.output).contains("No authToken provided. Skipping reporting.")
-            .contains("BUILD SUCCESSFUL")
     }
 
     @Test

@@ -3,9 +3,11 @@ package com.automattic.android.measure
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
 import com.automattic.android.measure.lifecycle.BuildTaskService
 import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
-import com.automattic.android.measure.networking.MetricsReporter
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
+import com.automattic.android.measure.repoters.LocalMetricsReporter
+import com.automattic.android.measure.repoters.MetricsDispatcher
+import com.automattic.android.measure.repoters.SlowSlowTasksMetricsReporter
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
 import org.gradle.StartParameter
@@ -33,8 +35,18 @@ class BuildTimePlugin @Inject constructor(
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
+        val reporters = extension.reporters.convention(listOf(LocalMetricsReporter, SlowSlowTasksMetricsReporter))
 
-        val analyticsReporter = MetricsReporter(project.logger, extension.authToken, project.buildDir)
+        val metricsDispatcherProvider = project.gradle.sharedServices.registerIfAbsent(
+            "metricsDispatcher",
+            MetricsDispatcher::class.java
+        ) {
+            it.maxParallelUsages.set(1)
+            it.parameters.authToken.set(extension.authToken)
+            it.parameters.buildDir.set(project.layout.buildDirectory)
+            it.parameters.reporters.set(reporters)
+        }
+        registry.onTaskCompletion(metricsDispatcherProvider)
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
@@ -49,7 +61,6 @@ class BuildTimePlugin @Inject constructor(
                 prepareBuildFinishedAction(
                     project.gradle.startParameter,
                     extension,
-                    analyticsReporter,
                     buildInitiatedTime,
                     configurationProvider
                 )
@@ -57,7 +68,7 @@ class BuildTimePlugin @Inject constructor(
         }
 
         prepareBuildTaskService(project)
-        prepareBuildScanListener(project, extension, analyticsReporter)
+        prepareBuildScanListener(project, extension, metricsDispatcherProvider)
     }
 
     private fun prepareBuildData(
@@ -68,7 +79,6 @@ class BuildTimePlugin @Inject constructor(
         InMemoryReport.setBuildData(
             BuildDataProvider.provide(
                 project,
-                extension.automatticProject.get(),
                 encodedUser,
             )
         )
@@ -77,13 +87,13 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
-        analyticsReporter: MetricsReporter,
+        analyticsReporter: Provider<MetricsDispatcher>,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         buildScanExtension?.buildScanPublished {
             runBlocking {
                 if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
-                    analyticsReporter.report(InMemoryReport, it.buildScanId)
+                    analyticsReporter.get().report(InMemoryReport, it.buildScanId)
                 }
             }
         }
@@ -92,7 +102,6 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildFinishedAction(
         startParameter: StartParameter,
         extension: MeasureBuildsExtension,
-        analyticsReporter: MetricsReporter,
         buildInitiatedTime: Long,
         configurationPhaseObserver: Provider<Boolean>,
     ) {
@@ -102,7 +111,6 @@ class BuildTimePlugin @Inject constructor(
             spec.parameters.apply {
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
                 this.attachGradleScanId.set(extension.attachGradleScanId)
-                this.analyticsReporter.set(analyticsReporter)
                 this.initiationTime.set(buildInitiatedTime)
                 this.configurationPhaseExecuted.set(configurationPhaseObserver)
                 this.startParameter.set(startParameter)
