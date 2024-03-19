@@ -5,9 +5,7 @@ import com.automattic.android.measure.lifecycle.BuildTaskService
 import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
-import com.automattic.android.measure.repoters.LocalMetricsReporter
-import com.automattic.android.measure.repoters.MetricsDispatcher
-import com.automattic.android.measure.repoters.SlowSlowTasksMetricsReporter
+import com.automattic.android.measure.reporters.InMemoryMetricsReporter
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
 import org.gradle.StartParameter
@@ -35,30 +33,21 @@ class BuildTimePlugin @Inject constructor(
             (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
-        val reporters = extension.reporters.convention(listOf(LocalMetricsReporter, SlowSlowTasksMetricsReporter))
 
-        val metricsDispatcherProvider = project.gradle.sharedServices.registerIfAbsent(
-            "metricsDispatcher",
-            MetricsDispatcher::class.java
-        ) {
-            it.maxParallelUsages.set(1)
-            it.parameters.authToken.set(extension.authToken)
-            it.parameters.buildDir.set(project.layout.buildDirectory)
-            it.parameters.reporters.set(reporters)
-        }
-        registry.onTaskCompletion(metricsDispatcherProvider)
+        val metricsDispatcher = InMemoryMetricsReporter
+                metricsDispatcher.reportProperty = extension.reporterProperty
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
         project.afterEvaluate {
-            if (extension.enable.orNull == true) {
+            if (extension.enable.convention(false).get() == true) {
                 val configurationProvider: Provider<Boolean> = project.providers.of(
                     ConfigurationPhaseObserver::class.java
                 ) { }
                 ConfigurationPhaseObserver.init()
 
-                prepareBuildData(project, extension, encodedUser)
-                prepareBuildFinishedAction(
+                prepareBuildData(project, encodedUser)
+                                prepareBuildFinishedAction(
                     project.gradle.startParameter,
                     extension,
                     buildInitiatedTime,
@@ -68,12 +57,11 @@ class BuildTimePlugin @Inject constructor(
         }
 
         prepareBuildTaskService(project)
-        prepareBuildScanListener(project, extension, metricsDispatcherProvider)
+        prepareBuildScanListener(project, extension, metricsDispatcher)
     }
 
     private fun prepareBuildData(
         project: Project,
-        extension: MeasureBuildsExtension,
         encodedUser: String,
     ) {
         InMemoryReport.setBuildData(
@@ -87,13 +75,15 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
-        analyticsReporter: Provider<MetricsDispatcher>,
+        analyticsReporter: InMemoryMetricsReporter,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
-        buildScanExtension?.buildScanPublished {
+        val extensionEnable = extension.enable
+        val attachGradleScanId = extension.attachGradleScanId
+                buildScanExtension?.buildScanPublished {
             runBlocking {
-                if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
-                    analyticsReporter.get().report(InMemoryReport, it.buildScanId)
+                if (extensionEnable.get() == true && attachGradleScanId.get()) {
+                                        analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
         }

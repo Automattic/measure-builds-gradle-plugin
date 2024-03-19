@@ -4,8 +4,7 @@ package com.automattic.android.measure.lifecycle
 
 import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.models.ExecutionData
-import com.automattic.android.measure.repoters.MetricsDispatcher
-import kotlinx.coroutines.runBlocking
+import com.automattic.android.measure.reporters.InMemoryMetricsReporter
 import org.gradle.StartParameter
 import org.gradle.api.flow.BuildWorkResult
 import org.gradle.api.flow.FlowAction
@@ -29,9 +28,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
 
         @get:Input
         val buildWorkResult: Property<Provider<BuildWorkResult>>
-
-        @get:ServiceReference("metricsDispatcher")
-        val metricsDispatcher: Property<MetricsDispatcher>
 
         @get:Input
         val attachGradleScanId: Property<Boolean>
@@ -70,12 +66,10 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         InMemoryReport.setExecutionData(executionData)
 
         if (parameters.attachGradleScanId.get() == false) {
-            runBlocking {
-                parameters.metricsDispatcher.get().report(
-                    report = InMemoryReport,
-                    gradleScanId = null
-                )
-            }
+            InMemoryMetricsReporter.report(
+                report = InMemoryReport,
+                gradleScanId = null
+            )
         }
     }
 }

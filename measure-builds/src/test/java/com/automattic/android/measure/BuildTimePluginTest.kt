@@ -11,6 +11,37 @@ import java.io.File
 
 @Suppress("MaximumLineLength", "MaxLineLength")
 class BuildTimePluginTest {
+
+    @Test
+    fun `given a project that attaches gradle scan id, when executing a task with configuration from cache, then send the report with attached gradle scan id`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = true,
+            projectWithSendingScans = true
+        )
+
+        // when
+        val prepareConfigurationCache =
+            runner.withArguments("--configuration-cache", "help").build()
+
+        // then
+        assertThat(
+            prepareConfigurationCache.output
+        ).contains("Calculating task graph as no configuration cache is available for tasks")
+            .contains("Configuration cache entry stored")
+
+        // when
+        val buildUsingConfigurationCache =
+            runner.withArguments("--configuration-cache", "help", "--debug").build()
+
+        // then
+        assertThat(buildUsingConfigurationCache.output).contains("Reusing configuration cache")
+            .contains("Reporting build data to Apps Metrics...")
+            .contains("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":")
+            .doesNotContain("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":\"null\"}")
+    }
+
     @Test
     fun `given a project that disabled build measurements and does not attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
         // given
@@ -69,6 +100,23 @@ class BuildTimePluginTest {
 
         // then
         assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
+    }
+
+    @Test
+    fun `given a project without apps metrics token, when executing a task, then build does not fail`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = false,
+            applyAppsMetricsToken = false,
+        )
+
+        // when
+        val run = runner.withArguments("help").build()
+
+        // then
+        assertThat(run.output).contains("No authToken provided. Skipping reporting.")
+            .contains("BUILD SUCCESSFUL")
     }
 
     @Test
@@ -131,11 +179,22 @@ class BuildTimePluginTest {
                      plugins {
                          id("com.automattic.android.measure-builds")
                      }
+                    val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
                      measureBuilds {
                          ${if (enable != null) "enable.set($enable)" else ""}
                          attachGradleScanId.set($attachGradleScanId)
-                         automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
-                         ${if (applyAppsMetricsToken) "authToken.set(\"token\")" else ""}
+                         
+//                         reporters.set(listOf(
+//                             com.automattic.android.measure.reporters.LocalMetricsReporter,
+//                             com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter,
+//                             com.automattic.android.measure.reporters.internal.InternalWooCommerceA8cCiReporter,
+//                         ))
+                        buildMetricsReported{
+                             val buildPath = buildPathProperty.get()
+                             com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
+                             com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)
+                             com.automattic.android.measure.reporters.InternalA8cCiReporter.reportBlocking(this, "woocommerce", ${if (applyAppsMetricsToken) "\"token\"" else "\"\""})
+                        }
                      }
                 """.trimIndent()
             )

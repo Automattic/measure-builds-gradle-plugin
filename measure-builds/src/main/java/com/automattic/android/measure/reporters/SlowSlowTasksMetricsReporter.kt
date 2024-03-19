@@ -1,4 +1,4 @@
-package com.automattic.android.measure.repoters
+package com.automattic.android.measure.reporters
 
 import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.logging.Emojis
@@ -7,13 +7,12 @@ import org.gradle.api.logging.Logging
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
-object SlowSlowTasksMetricsReporter : MetricsReporter {
+object SlowSlowTasksMetricsReporter {
     private val logger = Logging.getLogger(SlowSlowTasksMetricsReporter::class.java)
-    override suspend fun report(
-        report: InMemoryReport,
-        gradleScanId: String?,
-        parameters: MetricsDispatcher.Parameters
+    fun report(
+        metricsReport: MetricsReport
     ) {
+        val report = metricsReport.report
         if (report.executionData.buildTime == 0L) {
             return
         }

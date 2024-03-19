@@ -1,6 +1,5 @@
-package com.automattic.android.measure.repoters
+package com.automattic.android.measure.reporters
 
-import com.automattic.android.measure.InMemoryReport
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.gradle.api.logging.Logging
@@ -11,14 +10,14 @@ import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.io.path.writeText
 
-object LocalMetricsReporter : MetricsReporter {
+object LocalMetricsReporter {
     private val logger = Logging.getLogger(LocalMetricsReporter::class.java)
-    override suspend fun report(
-        report: InMemoryReport,
-        gradleScanId: String?,
-        parameters: MetricsDispatcher.Parameters
+    fun report(
+        metricsReport: MetricsReport,
+        buildDirPath: String,
     ) {
-        Path("${parameters.buildDir.get().asFile.get().path}/reports/measure_builds")
+        val report = metricsReport.report
+        Path("${buildDirPath}/reports/measure_builds")
             .apply {
                 if (!exists()) {
                     createDirectories()
