@@ -6,18 +6,18 @@ import org.gradle.api.provider.Property
 
 object InMemoryMetricsReporter {
 
-    lateinit var reportProperty: Property<Action<MetricsReport>>
+    lateinit var buildMetricsPreparedAction: Property<Action<MetricsReport>>
 
     fun report(
         report: InMemoryReport,
         gradleScanId: String?
     ) {
-                val result = object : MetricsReport {
+        val result = object : MetricsReport {
             override val report: InMemoryReport
                 get() = report
             override val gradleScanId: String?
                 get() = gradleScanId
         }
-        reportProperty.get().execute(result)
+        buildMetricsPreparedAction.get().execute(result)
     }
 }

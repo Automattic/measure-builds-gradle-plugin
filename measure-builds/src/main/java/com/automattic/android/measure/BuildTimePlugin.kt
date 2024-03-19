@@ -35,7 +35,7 @@ class BuildTimePlugin @Inject constructor(
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val metricsDispatcher = InMemoryMetricsReporter
-                metricsDispatcher.reportProperty = extension.reporterProperty
+        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsPreparedAction
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
@@ -47,7 +47,7 @@ class BuildTimePlugin @Inject constructor(
                 ConfigurationPhaseObserver.init()
 
                 prepareBuildData(project, encodedUser)
-                                prepareBuildFinishedAction(
+                prepareBuildFinishedAction(
                     project.gradle.startParameter,
                     extension,
                     buildInitiatedTime,
@@ -80,10 +80,10 @@ class BuildTimePlugin @Inject constructor(
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
         val extensionEnable = extension.enable
         val attachGradleScanId = extension.attachGradleScanId
-                buildScanExtension?.buildScanPublished {
+        buildScanExtension?.buildScanPublished {
             runBlocking {
                 if (extensionEnable.get() == true && attachGradleScanId.get()) {
-                                        analyticsReporter.report(InMemoryReport, it.buildScanId)
+                    analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
         }

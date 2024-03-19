@@ -14,10 +14,11 @@ abstract class MeasureBuildsExtension(project: Project) {
     val obfuscateUsername: Property<Boolean> = objects.property(Boolean::class.java)
 
     @Suppress("UNCHECKED_CAST")
-    val reporterProperty: Property<Action<MetricsReport>> = objects.property(Action::class.java) as Property<Action<MetricsReport>>
+    internal val buildMetricsPreparedAction: Property<Action<MetricsReport>> =
+        objects.property(Action::class.java) as Property<Action<MetricsReport>>
 
-    fun buildMetricsReported(action: Action<MetricsReport>) {
-        reporterProperty.set(action)
+    fun buildMetricsPrepared(action: Action<MetricsReport>) {
+        buildMetricsPreparedAction.set(action)
     }
 
     /**

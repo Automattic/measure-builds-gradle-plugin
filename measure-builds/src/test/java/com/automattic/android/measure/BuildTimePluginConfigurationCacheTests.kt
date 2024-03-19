@@ -96,10 +96,15 @@ class BuildTimePluginConfigurationCacheTests {
             plugins {
                 id("com.automattic.android.measure-builds")
             }
+            val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
             measureBuilds {
                 enable.set(true)
                 attachGradleScanId.set(false)
-                automatticProject.set(com.automattic.android.measure.MeasureBuildsExtension.AutomatticProject.WooCommerce)
+                buildMetricsPrepared{
+                    val buildPath = buildPathProperty.get()
+                    com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
+                    com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)
+                }
             }
                 """.trimIndent()
             )

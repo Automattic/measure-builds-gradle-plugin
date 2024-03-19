@@ -37,7 +37,7 @@ object InternalA8cCiReporter {
         projectName: String,
         authToken: String?,
     ) {
-                runBlocking {
+        runBlocking {
             report(metricsReport, projectName, authToken)
         }
     }
@@ -47,7 +47,7 @@ object InternalA8cCiReporter {
         projectName: String,
         authToken: String?,
     ) {
-                val report = metricsReport.report
+        val report = metricsReport.report
         val payload = report.toAppsMetricsPayload(projectName, metricsReport.gradleScanId)
         @Suppress("TooGenericExceptionCaught")
         try {

@@ -179,22 +179,16 @@ class BuildTimePluginTest {
                      plugins {
                          id("com.automattic.android.measure-builds")
                      }
-                    val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
+                     val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
                      measureBuilds {
                          ${if (enable != null) "enable.set($enable)" else ""}
                          attachGradleScanId.set($attachGradleScanId)
-                         
-//                         reporters.set(listOf(
-//                             com.automattic.android.measure.reporters.LocalMetricsReporter,
-//                             com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter,
-//                             com.automattic.android.measure.reporters.internal.InternalWooCommerceA8cCiReporter,
-//                         ))
-                        buildMetricsReported{
-                             val buildPath = buildPathProperty.get()
-                             com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
-                             com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)
-                             com.automattic.android.measure.reporters.InternalA8cCiReporter.reportBlocking(this, "woocommerce", ${if (applyAppsMetricsToken) "\"token\"" else "\"\""})
-                        }
+                         buildMetricsPrepared{
+                              val buildPath = buildPathProperty.get()
+                              com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
+                              com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)
+                              com.automattic.android.measure.reporters.InternalA8cCiReporter.reportBlocking(this, "woocommerce", ${if (applyAppsMetricsToken) "\"token\"" else "\"\""})
+                         }
                      }
                 """.trimIndent()
             )
