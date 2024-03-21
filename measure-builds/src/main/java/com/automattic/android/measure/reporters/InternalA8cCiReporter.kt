@@ -31,6 +31,7 @@ object InternalA8cCiReporter {
     private val logger =
         GradleLogging.getLogger(InternalA8cCiReporter::class.java)
 
+    @JvmStatic
     fun reportBlocking(
         metricsReport: MetricsReport,
         projectName: String,

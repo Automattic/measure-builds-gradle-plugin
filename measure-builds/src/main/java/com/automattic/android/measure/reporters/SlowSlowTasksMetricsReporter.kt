@@ -8,6 +8,8 @@ import kotlin.time.Duration.Companion.seconds
 
 object SlowSlowTasksMetricsReporter {
     private val logger = Logging.getLogger(SlowSlowTasksMetricsReporter::class.java)
+
+    @JvmStatic
     fun report(
         metricsReport: MetricsReport
     ) {
