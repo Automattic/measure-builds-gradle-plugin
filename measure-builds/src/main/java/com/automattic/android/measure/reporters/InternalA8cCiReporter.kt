@@ -21,16 +21,15 @@ import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
-import java.io.File
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.time.Duration.Companion.seconds
-
+import org.gradle.api.logging.Logging as GradleLogging
 
 object InternalA8cCiReporter {
     private val logger =
-        org.gradle.api.logging.Logging.getLogger(InternalA8cCiReporter::class.java)
+        GradleLogging.getLogger(InternalA8cCiReporter::class.java)
 
     fun reportBlocking(
         metricsReport: MetricsReport,

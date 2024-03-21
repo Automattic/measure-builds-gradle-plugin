@@ -1,6 +1,5 @@
 package com.automattic.android.measure.reporters
 
-import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.logging.Emojis
 import com.automattic.android.measure.models.MeasuredTask
 import org.gradle.api.logging.Logging

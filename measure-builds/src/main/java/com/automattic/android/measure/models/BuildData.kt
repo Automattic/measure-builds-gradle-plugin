@@ -1,6 +1,5 @@
 package com.automattic.android.measure.models
 
-import com.automattic.android.measure.MeasureBuildsExtension
 import kotlinx.serialization.Serializable
 
 /**

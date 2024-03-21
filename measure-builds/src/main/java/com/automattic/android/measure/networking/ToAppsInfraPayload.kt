@@ -9,7 +9,6 @@ fun InMemoryReport.toAppsMetricsPayload(
     projectKey: String,
     gradleScanId: String?
 ): GroupedAppsMetrics {
-
     val meta = mapOf(
         "user" to buildData.user,
         "project" to projectKey,

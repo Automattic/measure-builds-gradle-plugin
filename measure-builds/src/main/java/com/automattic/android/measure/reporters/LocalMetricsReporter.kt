@@ -17,7 +17,7 @@ object LocalMetricsReporter {
         buildDirPath: String,
     ) {
         val report = metricsReport.report
-        Path("${buildDirPath}/reports/measure_builds")
+        Path("$buildDirPath/reports/measure_builds")
             .apply {
                 if (!exists()) {
                     createDirectories()

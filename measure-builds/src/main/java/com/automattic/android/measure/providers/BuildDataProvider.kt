@@ -1,6 +1,5 @@
 package com.automattic.android.measure.providers
 
-import com.automattic.android.measure.MeasureBuildsExtension
 import com.automattic.android.measure.models.BuildData
 import com.automattic.android.measure.models.Environment
 import org.gradle.api.Project
