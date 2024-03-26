@@ -1,11 +1,9 @@
-package com.automattic.android.measure.networking
+package com.automattic.android.measure.reporters
 
-import com.automattic.android.measure.InMemoryReport
 import com.automattic.android.measure.logging.Emojis.FAILURE_ICON
 import com.automattic.android.measure.logging.Emojis.SUCCESS_ICON
-import com.automattic.android.measure.logging.Emojis.TURTLE_ICON
 import com.automattic.android.measure.logging.Emojis.WAITING_ICON
-import com.automattic.android.measure.models.MeasuredTask
+import com.automattic.android.measure.networking.toAppsMetricsPayload
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.HttpTimeout
@@ -22,38 +20,37 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.gradle.api.logging.Logger
-import org.gradle.api.provider.Provider
-import java.io.File
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.createDirectories
-import kotlin.io.path.createFile
-import kotlin.io.path.exists
-import kotlin.io.path.writeText
 import kotlin.time.Duration.Companion.seconds
+import org.gradle.api.logging.Logging as GradleLogging
 
-class MetricsReporter(
-    private val logger: Logger,
-    private val authToken: Provider<String>,
-    private val buildDir: File,
-) {
-    suspend fun report(
-        report: InMemoryReport,
-        gradleScanId: String?
+object InternalA8cCiReporter {
+    private val logger =
+        GradleLogging.getLogger(InternalA8cCiReporter::class.java)
+
+    fun reportBlocking(
+        metricsReport: MetricsReport,
+        projectName: String,
+        authToken: String?,
     ) {
-        reportLocally(report)
+        runBlocking {
+            report(metricsReport, projectName, authToken)
+        }
+    }
 
-        val payload = report.toAppsMetricsPayload(gradleScanId)
+    suspend fun report(
+        metricsReport: MetricsReport,
+        projectName: String,
+        authToken: String?,
+    ) {
+        val report = metricsReport.report
+        val payload = report.toAppsMetricsPayload(projectName, metricsReport.gradleScanId)
         @Suppress("TooGenericExceptionCaught")
         try {
-            logSlowTasks(report)
-            if (!authToken.isPresent) {
+            if (authToken.isNullOrBlank()) {
                 logger.lifecycle("\nNo authToken provided. Skipping reporting.")
                 return
             }
@@ -64,7 +61,7 @@ class MetricsReporter(
             client.post<HttpStatement>("https://metrics.a8c-ci.services/api/grouped-metrics") {
                 headers {
                     append(HttpHeaders.UserAgent, "Gradle")
-                    append(Authorization, "Bearer ${authToken.get()}")
+                    append(Authorization, "Bearer $authToken")
                 }
                 contentType(ContentType.Application.Json)
                 body = payload
@@ -105,35 +102,12 @@ class MetricsReporter(
         }
     }
 
-    private fun reportLocally(report: InMemoryReport) {
-        Path("${buildDir.path}/reports/measure_builds")
-            .apply {
-                if (!exists()) {
-                    createDirectories()
-                }
-                resolve("build_data.json").apply {
-                    logger.info("Writing build data to ${absolutePathString()}")
-                    if (!exists()) {
-                        createFile()
-                    }
-                    writeText(Json.encodeToString(report.buildData))
-                }
-                resolve("execution_data.json").apply {
-                    logger.info("Writing execution data to ${absolutePathString()}")
-                    if (!exists()) {
-                        createFile()
-                    }
-                    writeText(Json.encodeToString(report.executionData))
-                }
-            }
-    }
-
     private fun httpClient(): HttpClient {
         val client = HttpClient(CIO) {
             install(Logging) {
                 this.logger = object : io.ktor.client.features.logging.Logger {
                     override fun log(message: String) {
-                        this@MetricsReporter.logger.debug(message)
+                        this@InternalA8cCiReporter.logger.debug(message)
                     }
                 }
                 level = LogLevel.ALL
@@ -146,49 +120,5 @@ class MetricsReporter(
             }
         }
         return client
-    }
-
-    private fun logSlowTasks(report: InMemoryReport) {
-        if (report.executionData.buildTime == 0L) {
-            return
-        }
-        val slowTasks =
-            report.executionData.executedTasks.sortedByDescending { it.duration }
-                .chunked(atMostLoggedTasks).firstOrNull()
-                ?: return
-
-        logger.lifecycle("\n$TURTLE_ICON ${slowTasks.size} slowest tasks were: ")
-
-        logger.lifecycle(
-            String.format(
-                Locale.US,
-                "%-15s %-15s %s",
-                "Duration",
-                "% of build",
-                "Task"
-            )
-        )
-        slowTasks.forEach {
-            @Suppress("MagicNumber")
-            logger.lifecycle(
-                "%-15s %-15s %s".format(
-                    Locale.US,
-                    readableDuration(it),
-                    "${(it.duration.inWholeMilliseconds * 100 / report.executionData.buildTime).toInt()}%",
-                    it.name,
-                )
-            )
-        }
-    }
-
-    private fun readableDuration(it: MeasuredTask) =
-        if (it.duration < 1.seconds) {
-            "${it.duration.inWholeMilliseconds}ms"
-        } else {
-            "${it.duration.inWholeSeconds}s"
-        }
-
-    companion object {
-        private const val atMostLoggedTasks = 5
     }
 }

@@ -1,6 +1,5 @@
 package com.automattic.android.measure.models
 
-import com.automattic.android.measure.MeasureBuildsExtension
 import kotlinx.serialization.Serializable
 
 /**
@@ -12,7 +11,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class BuildData(
-    val forProject: MeasureBuildsExtension.AutomatticProject,
     val user: String,
     val gradleVersion: String,
     val operatingSystem: String,

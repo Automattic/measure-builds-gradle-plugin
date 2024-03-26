@@ -1,5 +1,7 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.reporters.MetricsReport
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
@@ -7,12 +9,17 @@ abstract class MeasureBuildsExtension(project: Project) {
 
     private val objects = project.objects
 
-    val automatticProject: Property<AutomatticProject> =
-        objects.property(AutomatticProject::class.java)
-
     val enable: Property<Boolean> = objects.property(Boolean::class.java)
 
     val obfuscateUsername: Property<Boolean> = objects.property(Boolean::class.java)
+
+    @Suppress("UNCHECKED_CAST")
+    internal val buildMetricsPreparedAction: Property<Action<MetricsReport>> =
+        objects.property(Action::class.java) as Property<Action<MetricsReport>>
+
+    fun buildMetricsPrepared(action: Action<MetricsReport>) {
+        buildMetricsPreparedAction.set(action)
+    }
 
     /**
      * If `true`, then the metrics will be sent at build finish,
@@ -23,10 +30,4 @@ abstract class MeasureBuildsExtension(project: Project) {
      * @see io.github.wzieba.tracks.plugin.analytics.BuildFinishedFlowAction
      */
     val attachGradleScanId: Property<Boolean> = objects.property(Boolean::class.java)
-
-    val authToken: Property<String> = objects.property(String::class.java)
-
-    enum class AutomatticProject {
-        WooCommerce, WordPress, DayOne, PocketCasts, Tumblr, FluxC
-    }
 }

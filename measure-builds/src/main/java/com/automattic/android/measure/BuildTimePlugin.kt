@@ -3,9 +3,9 @@ package com.automattic.android.measure
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
 import com.automattic.android.measure.lifecycle.BuildTaskService
 import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
-import com.automattic.android.measure.networking.MetricsReporter
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
+import com.automattic.android.measure.reporters.InMemoryMetricsReporter
 import com.gradle.scan.plugin.BuildScanExtension
 import kotlinx.coroutines.runBlocking
 import org.gradle.StartParameter
@@ -34,22 +34,22 @@ class BuildTimePlugin @Inject constructor(
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
-        val analyticsReporter = MetricsReporter(project.logger, extension.authToken, project.buildDir)
+        val metricsDispatcher = InMemoryMetricsReporter
+        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsPreparedAction
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
         project.afterEvaluate {
-            if (extension.enable.orNull == true) {
+            if (extension.enable.convention(false).get() == true) {
                 val configurationProvider: Provider<Boolean> = project.providers.of(
                     ConfigurationPhaseObserver::class.java
                 ) { }
                 ConfigurationPhaseObserver.init()
 
-                prepareBuildData(project, extension, encodedUser)
+                prepareBuildData(project, encodedUser)
                 prepareBuildFinishedAction(
                     project.gradle.startParameter,
                     extension,
-                    analyticsReporter,
                     buildInitiatedTime,
                     configurationProvider
                 )
@@ -57,18 +57,16 @@ class BuildTimePlugin @Inject constructor(
         }
 
         prepareBuildTaskService(project)
-        prepareBuildScanListener(project, extension, analyticsReporter)
+        prepareBuildScanListener(project, extension, metricsDispatcher)
     }
 
     private fun prepareBuildData(
         project: Project,
-        extension: MeasureBuildsExtension,
         encodedUser: String,
     ) {
         InMemoryReport.setBuildData(
             BuildDataProvider.provide(
                 project,
-                extension.automatticProject.get(),
                 encodedUser,
             )
         )
@@ -77,12 +75,14 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildScanListener(
         project: Project,
         extension: MeasureBuildsExtension,
-        analyticsReporter: MetricsReporter,
+        analyticsReporter: InMemoryMetricsReporter,
     ) {
         val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
+        val extensionEnable = extension.enable
+        val attachGradleScanId = extension.attachGradleScanId
         buildScanExtension?.buildScanPublished {
             runBlocking {
-                if (extension.enable.orNull == true && extension.attachGradleScanId.get()) {
+                if (extensionEnable.get() == true && attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
@@ -92,7 +92,6 @@ class BuildTimePlugin @Inject constructor(
     private fun prepareBuildFinishedAction(
         startParameter: StartParameter,
         extension: MeasureBuildsExtension,
-        analyticsReporter: MetricsReporter,
         buildInitiatedTime: Long,
         configurationPhaseObserver: Provider<Boolean>,
     ) {
@@ -102,7 +101,6 @@ class BuildTimePlugin @Inject constructor(
             spec.parameters.apply {
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
                 this.attachGradleScanId.set(extension.attachGradleScanId)
-                this.analyticsReporter.set(analyticsReporter)
                 this.initiationTime.set(buildInitiatedTime)
                 this.configurationPhaseExecuted.set(configurationPhaseObserver)
                 this.startParameter.set(startParameter)
