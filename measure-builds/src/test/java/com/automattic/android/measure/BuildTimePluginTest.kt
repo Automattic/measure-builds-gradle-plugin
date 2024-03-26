@@ -1,5 +1,6 @@
 package com.automattic.android.measure
 
+import com.automattic.android.measure.models.BuildData
 import com.automattic.android.measure.models.ExecutionData
 import com.automattic.android.measure.models.MeasuredTask
 import kotlinx.serialization.json.Json
@@ -142,6 +143,27 @@ class BuildTimePluginTest {
         }
     }
 
+    @Test
+    fun `given a help task to execute and using obfuscateUsername, when finishing the build, the user name is obfuscated`() {
+        // given
+        val runner = functionalTestRunner(
+            enable = true,
+            attachGradleScanId = false,
+            applyAppsMetricsToken = false,
+            obfuscateUsername = true,
+        )
+
+        // when
+        runner.withArguments("help").build()
+
+        // then
+        File("build/functionalTest/build/reports/measure_builds/build_data.json").let {
+            val buildData = Json.decodeFromString<BuildData>(it.readText())
+
+            assertThat(buildData.user).hasSize(40)
+        }
+    }
+
     @BeforeEach
     fun clearCache() {
         val projectDir = File("build/functionalTest")
@@ -153,6 +175,7 @@ class BuildTimePluginTest {
         projectWithSendingScans: Boolean = false,
         attachGradleScanId: Boolean,
         applyAppsMetricsToken: Boolean = true,
+        obfuscateUsername: Boolean = false,
         vararg arguments: String,
     ): GradleRunner {
         val projectDir = File("build/functionalTest").apply {
@@ -183,6 +206,7 @@ class BuildTimePluginTest {
                      measureBuilds {
                          ${if (enable != null) "enable.set($enable)" else ""}
                          attachGradleScanId.set($attachGradleScanId)
+                         obfuscateUsername.set($obfuscateUsername)
                          buildMetricsPrepared{
                               val buildPath = buildPathProperty.get()
                               com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)

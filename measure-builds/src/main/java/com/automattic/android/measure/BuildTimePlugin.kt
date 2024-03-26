@@ -37,8 +37,6 @@ class BuildTimePlugin @Inject constructor(
         val metricsDispatcher = InMemoryMetricsReporter
         metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsPreparedAction
 
-        val encodedUser: String = UsernameProvider.provide(project, extension)
-
         project.afterEvaluate {
             if (extension.enable.convention(false).get() == true) {
                 val configurationProvider: Provider<Boolean> = project.providers.of(
@@ -46,6 +44,7 @@ class BuildTimePlugin @Inject constructor(
                 ) { }
                 ConfigurationPhaseObserver.init()
 
+                val encodedUser: String = UsernameProvider.provide(project, extension)
                 prepareBuildData(project, encodedUser)
                 prepareBuildFinishedAction(
                     project.gradle.startParameter,
