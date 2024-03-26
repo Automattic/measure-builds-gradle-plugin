@@ -12,6 +12,8 @@ import kotlin.io.path.writeText
 
 object LocalMetricsReporter {
     private val logger = Logging.getLogger(LocalMetricsReporter::class.java)
+
+    @JvmStatic
     fun report(
         metricsReport: MetricsReport,
         buildDirPath: String,
