@@ -100,7 +100,7 @@ class BuildTimePluginConfigurationCacheTests {
             measureBuilds {
                 enable.set(true)
                 attachGradleScanId.set(false)
-                buildMetricsPrepared{
+                onBuildMetricsReadyListener {
                     val buildPath = buildPathProperty.get()
                     com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
                     com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)

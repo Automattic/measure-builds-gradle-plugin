@@ -183,7 +183,7 @@ class BuildTimePluginTest {
                      measureBuilds {
                          ${if (enable != null) "enable.set($enable)" else ""}
                          attachGradleScanId.set($attachGradleScanId)
-                         buildMetricsPrepared{
+                         onBuildMetricsReadyListener {
                               val buildPath = buildPathProperty.get()
                               com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)
                               com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter.report(this)
