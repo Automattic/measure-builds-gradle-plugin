@@ -60,6 +60,7 @@ gradlePlugin {
     plugins.register("measure-builds") {
         id = "com.automattic.android.measure-builds"
         displayName = "Measure builds"
+        description = "Gradle plugin to measure and report build times and insights."
         implementationClass = "com.automattic.android.measure.BuildTimePlugin"
     }
 }
