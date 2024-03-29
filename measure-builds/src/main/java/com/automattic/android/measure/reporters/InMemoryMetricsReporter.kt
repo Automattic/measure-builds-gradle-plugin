@@ -4,7 +4,7 @@ import com.automattic.android.measure.InMemoryReport
 import org.gradle.api.Action
 import org.gradle.api.provider.Property
 
-object InMemoryMetricsReporter {
+internal object InMemoryMetricsReporter {
 
     lateinit var buildMetricsPreparedAction: Property<Action<MetricsReport>>
 
