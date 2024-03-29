@@ -19,6 +19,7 @@ pluginManagement {
         id("com.gradle.plugin-publish") version "1.2.1"
         id("io.gitlab.arturbosch.detekt") version "1.23.3"
         id("com.automattic.android.publish-to-s3") version "0.10.0-rc-1"
+        id("com.gradle.plugin-publish") version "1.2.1"
     }
 }
 
