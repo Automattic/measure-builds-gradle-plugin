@@ -17,4 +17,4 @@ jobs:
       - name: Run Gradle tasks
         run: ./gradlew :measure-builds:preMerge --continue
       - name: Publish on Plugin Portal
-        run: ./gradlew :measure-builds:setupPluginUploadFromEnvironment :measure-builds:publishPlugins
+        run: ./gradlew :measure-builds:setupPluginUploadFromEnvironment :measure-builds:publishPlugins --exclude-task :measure-builds:prepareToPublishToS3
