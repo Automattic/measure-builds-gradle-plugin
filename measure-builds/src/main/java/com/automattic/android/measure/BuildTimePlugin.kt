@@ -35,7 +35,7 @@ class BuildTimePlugin @Inject constructor(
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val metricsDispatcher = InMemoryMetricsReporter
-        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsPreparedAction
+        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsReadyAction
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 

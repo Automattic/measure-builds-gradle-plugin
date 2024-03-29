@@ -22,7 +22,7 @@ abstract class MeasureBuildsExtension(project: Project) {
         objects.property(Boolean::class.java).convention(false)
 
     @Suppress("UNCHECKED_CAST")
-    internal val buildMetricsPreparedAction: Property<Action<MetricsReport>> =
+    internal val buildMetricsReadyAction: Property<Action<MetricsReport>> =
         (objects.property(Action::class.java) as Property<Action<MetricsReport>>).convention(Action {
             getLogger(MeasureBuildsExtension::class.java).warn(
                     "No action has been set for buildMetricsPrepared. " +
@@ -33,8 +33,8 @@ abstract class MeasureBuildsExtension(project: Project) {
     /**
      * Action to be executed when the build metrics are ready.
      */
-    fun buildMetricsPrepared(action: Action<MetricsReport>) {
-        buildMetricsPreparedAction.set(action)
+    fun onBuildMetricsReadyListener(action: Action<MetricsReport>) {
+        buildMetricsReadyAction.set(action)
     }
 
     /**
