@@ -50,8 +50,12 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     }
 }
 
-// The project version will be used as your plugin version when publishing.
-version = "3.0.0"
+fun getVersionFromGitTag(): String {
+    val process = ProcessBuilder("git", "describe", "--abbrev=0", "--tags").start()
+    return process.inputStream.bufferedReader().readText().trim()
+}
+// The project version will be used as plugin version in Gradle Plugin Portal
+version = getVersionFromGitTag()
 group = "com.automattic.android"
 
 gradlePlugin {
