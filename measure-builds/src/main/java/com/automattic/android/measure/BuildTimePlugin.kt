@@ -35,12 +35,12 @@ class BuildTimePlugin @Inject constructor(
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
         val metricsDispatcher = InMemoryMetricsReporter
-        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsPreparedAction
+        metricsDispatcher.buildMetricsPreparedAction = extension.buildMetricsReadyAction
 
         val encodedUser: String = UsernameProvider.provide(project, extension)
 
         project.afterEvaluate {
-            if (extension.enable.convention(false).get() == true) {
+            if (extension.enable.get() == true) {
                 val configurationProvider: Provider<Boolean> = project.providers.of(
                     ConfigurationPhaseObserver::class.java
                 ) { }
@@ -82,7 +82,7 @@ class BuildTimePlugin @Inject constructor(
         val attachGradleScanId = extension.attachGradleScanId
         buildScanExtension?.buildScanPublished {
             runBlocking {
-                if (extensionEnable.get() == true && attachGradleScanId.get()) {
+                if (extensionEnable.get() && attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, it.buildScanId)
                 }
             }
