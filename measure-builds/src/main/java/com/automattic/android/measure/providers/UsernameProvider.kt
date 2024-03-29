@@ -10,7 +10,7 @@ object UsernameProvider {
         val user = project.providers.systemProperty("user.name").get()
 
         val encodedUser: String = user.let {
-            if (extension.obfuscateUsername.getOrElse(false) == true) {
+            if (extension.obfuscateUsername.get() == true) {
                 EncodingGroovyMethods.digest(it, "SHA-1")
             } else {
                 it

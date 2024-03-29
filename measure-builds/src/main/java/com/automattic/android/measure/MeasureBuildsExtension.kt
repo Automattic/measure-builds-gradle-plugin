@@ -12,12 +12,12 @@ abstract class MeasureBuildsExtension(project: Project) {
     /**
      * Enable or disable the plugin.
      */
-    val enable: Property<Boolean> = objects.property(Boolean::class.java)
+    val enable: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 
     /**
      * Enable or disable obfuscation of the username. If `true`, the username will be obfuscated by SHA-1.
      */
-    val obfuscateUsername: Property<Boolean> = objects.property(Boolean::class.java)
+    val obfuscateUsername: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 
     @Suppress("UNCHECKED_CAST")
     internal val buildMetricsPreparedAction: Property<Action<MetricsReport>> =
@@ -38,5 +38,5 @@ abstract class MeasureBuildsExtension(project: Project) {
      * If `false`, then metrics will be sent at build finish by
      * @see [com.automattic.android.measure.lifecycle.BuildFinishedFlowAction].
      */
-    val attachGradleScanId: Property<Boolean> = objects.property(Boolean::class.java)
+    val attachGradleScanId: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 }
