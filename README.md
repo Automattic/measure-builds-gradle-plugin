@@ -1,4 +1,4 @@
-# measure-builds Gradle Plugin [![Pre Merge Checks](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Pre%20Merge%20Checks/badge.svg)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Pre+Merge+Checks%22)
+# measure-builds Gradle Plugin [![Pre Merge Checks](https://github.com/cortinico/kotlin-gradle-plugin-template/workflows/Pre%20Merge%20Checks/badge.svg)](https://github.com/cortinico/kotlin-gradle-plugin-template/actions?query=workflow%3A%22Pre+Merge+Checks%22) ![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/com.automattic.android.measure-builds?label=Gradle%20Plugin%20Portal)
 
 Gradle Plugin for reporting build metrics at the end of the build.
 
