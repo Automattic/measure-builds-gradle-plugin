@@ -33,6 +33,8 @@ abstract class BuildTaskService :
                     MeasuredTask(
                         name = event.descriptor?.name.toString(),
                         duration = (event.result.endTime - event.result.startTime).milliseconds,
+                        startTimestamp = event.result.startTime,
+                        endTimestamp = event.result.endTime,
                         state = when {
                             result.isFromCache -> IS_FROM_CACHE
                             result.isUpToDate -> UP_TO_DATE
