@@ -8,7 +8,6 @@ data class MeasuredTask(
     val name: String,
     val duration: Duration,
     val startTimestamp: Long,
-    val endTimestamp: Long,
     val state: State
 ) {
     enum class State {
