@@ -138,6 +138,7 @@ class BuildTimePluginTest {
             assertThat(executionData.executedTasks).hasSize(1).first().satisfies({ task ->
                 assertThat(task.name).isEqualTo(":help")
                 assertThat(task.state).isEqualTo(MeasuredTask.State.EXECUTED)
+                assertThat(task.endTimestamp - task.startTimestamp).isEqualTo(task.duration.inWholeMilliseconds)
             })
         }
     }
