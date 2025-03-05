@@ -23,8 +23,6 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.util.Locale
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
@@ -108,17 +106,6 @@ object InternalA8cCiReporter {
 
     private fun httpClient(): HttpClient {
         val client = HttpClient(CIO) {
-            engine {
-                val proxyHost: String? = System.getProperty("https.proxyHost")
-
-                proxyHost?.let {
-                    val proxyPort: Int = System.getProperty("https.proxyPort")?.toIntOrNull() ?: run {
-                        logger.debug("Set up correct https.proxyPort value")
-                        return@engine
-                    }
-                    proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHost, proxyPort))
-                }
-            }
             install(Logging) {
                 this.logger = object : Logger {
                     override fun log(message: String) {
