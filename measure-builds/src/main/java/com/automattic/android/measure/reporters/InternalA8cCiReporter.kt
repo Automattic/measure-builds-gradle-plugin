@@ -6,21 +6,23 @@ import com.automattic.android.measure.logging.Emojis.WAITING_ICON
 import com.automattic.android.measure.networking.toAppsMetricsPayload
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logging
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.HttpStatement
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Locale
@@ -61,42 +63,41 @@ object InternalA8cCiReporter {
 
             val client = httpClient()
 
-            client.post<HttpStatement>("https://metrics.a8c-ci.services/api/grouped-metrics") {
+            val response = client.post(Url("https://metrics.a8c-ci.services/api/grouped-metrics")) {
                 headers {
                     append(HttpHeaders.UserAgent, "Gradle")
                     append(Authorization, "Bearer $authToken")
                 }
                 contentType(ContentType.Application.Json)
-                body = payload
-            }.execute { response: HttpResponse ->
-                logger.debug(response.toString())
+                setBody(payload)
+            }
 
-                when (response.status) {
-                    HttpStatusCode.Created -> {
-                        val buildTime = report.executionData.buildTime
-                        val timeFormatted = String.format(
-                            Locale.US,
-                            "%dm %ds",
-                            MILLISECONDS.toMinutes(buildTime),
-                            MILLISECONDS.toSeconds(buildTime) - MINUTES.toSeconds(
-                                MILLISECONDS.toMinutes(
-                                    buildTime
-                                )
+            logger.debug(response.toString())
+
+            when (response.status) {
+                HttpStatusCode.Created -> {
+                    val buildTime = report.executionData.buildTime
+                    val timeFormatted = String.format(
+                        Locale.US,
+                        "%dm %ds",
+                        MILLISECONDS.toMinutes(buildTime),
+                        MILLISECONDS.toSeconds(buildTime) - MINUTES.toSeconds(
+                            MILLISECONDS.toMinutes(
+                                buildTime
                             )
                         )
-                        logger.lifecycle(
-                            "\n$SUCCESS_ICON Build time report of $timeFormatted has been received by Apps Metrics."
-                        )
-                    }
+                    )
+                    logger.lifecycle(
+                        "\n$SUCCESS_ICON Build time report of $timeFormatted has been received by Apps Metrics."
+                    )
+                }
 
-                    else -> {
-                        logger.warn(
-                            "\n$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
-                        )
-                    }
+                else -> {
+                    logger.warn(
+                        "\n$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
+                    )
                 }
             }
-            client.close()
         } catch (exception: Exception) {
             logger.warn(
                 "\n$FAILURE_ICON Build time has not been uploaded. Add `debug` property to see more logs."
@@ -119,15 +120,20 @@ object InternalA8cCiReporter {
                 }
             }
             install(Logging) {
-                this.logger = object : io.ktor.client.features.logging.Logger {
+                this.logger = object : Logger {
                     override fun log(message: String) {
                         this@InternalA8cCiReporter.logger.debug(message)
                     }
                 }
                 level = LogLevel.ALL
             }
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        prettyPrint = true
+                        isLenient = true
+                    }
+                )
             }
             install(HttpTimeout) {
                 requestTimeoutMillis = 5.seconds.inWholeMilliseconds
