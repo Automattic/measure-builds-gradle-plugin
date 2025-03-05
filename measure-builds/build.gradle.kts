@@ -23,7 +23,6 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:$ktor")
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
