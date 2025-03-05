@@ -16,11 +16,13 @@ dependencies {
     implementation(gradleApi())
     implementation("com.gradle:gradle-enterprise-gradle-plugin:3.15.1")
 
-    implementation("io.ktor:ktor-client-core:1.6.4")
-    implementation("io.ktor:ktor-client-cio:1.6.4")
-    implementation("io.ktor:ktor-client-logging:1.6.4")
-    implementation("io.ktor:ktor-client-serialization:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    val ktor = "3.1.1"
+    implementation("io.ktor:ktor-client-core:$ktor")
+    implementation("io.ktor:ktor-client-cio:$ktor")
+    implementation("io.ktor:ktor-client-logging:$ktor")
+    implementation("io.ktor:ktor-client-serialization:$ktor")
+    implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

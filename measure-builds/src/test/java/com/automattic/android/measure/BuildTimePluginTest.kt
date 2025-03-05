@@ -28,7 +28,7 @@ class BuildTimePluginTest {
         // then
         assertThat(
             prepareConfigurationCache.output
-        ).contains("Calculating task graph as no configuration cache is available for tasks")
+        ).contains("Calculating task graph as no cached configuration is available for tasks")
             .contains("Configuration cache entry stored")
 
         // when
@@ -38,7 +38,7 @@ class BuildTimePluginTest {
         // then
         assertThat(buildUsingConfigurationCache.output).contains("Reusing configuration cache")
             .contains("Reporting build data to Apps Metrics...")
-            .contains("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":")
+            .containsIgnoringWhitespaces("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":")
             .doesNotContain("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":\"null\"}")
     }
 
