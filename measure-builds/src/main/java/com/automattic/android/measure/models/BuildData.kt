@@ -31,6 +31,18 @@ data class ExecutionData(
     val configurationPhaseDuration: Long,
 )
 
+@Serializable
+data class RemoteBuildCacheData(
+    val originExecutions: MutableMap<String, OriginExecutionTaskData> = hashMapOf(),
+    val remoteLoadTimes: MutableMap<String, Long> = hashMapOf()
+)
+
+@Serializable
+data class OriginExecutionTaskData(
+    val name: String,
+    val executionTime: Long
+)
+
 enum class Environment {
     IDE,
     CI,

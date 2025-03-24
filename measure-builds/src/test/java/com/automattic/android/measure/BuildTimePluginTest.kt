@@ -173,6 +173,8 @@ class BuildTimePluginTest {
                         }
                     """.trimIndent()
                 )
+            } else {
+                resolve("settings.gradle.kts").writeText("")
             }
             resolve("build.gradle.kts").writeText(
                 """

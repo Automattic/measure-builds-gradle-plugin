@@ -3,6 +3,7 @@ package com.automattic.android.measure
 import com.automattic.android.measure.lifecycle.BuildFinishedFlowAction
 import com.automattic.android.measure.lifecycle.BuildTaskService
 import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
+import com.automattic.android.measure.lifecycle.RemoteBuildCacheStatsService
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
 import com.automattic.android.measure.reporters.InMemoryMetricsReporter
@@ -16,7 +17,9 @@ import org.gradle.api.flow.FlowProviders
 import org.gradle.api.flow.FlowScope
 import org.gradle.api.provider.Provider
 import org.gradle.build.event.BuildEventsListenerRegistry
+import org.gradle.internal.build.event.BuildEventListenerRegistryInternal
 import org.gradle.internal.buildevents.BuildStartedTime
+import org.gradle.internal.extensions.core.serviceOf
 import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -55,6 +58,11 @@ class BuildTimePlugin @Inject constructor(
                 )
             }
         }
+
+        val listenerService =
+            project.gradle.sharedServices.registerIfAbsent("listener-service", RemoteBuildCacheStatsService::class.java)
+        val buildEventListenerRegistry: BuildEventListenerRegistryInternal = project.serviceOf()
+        buildEventListenerRegistry.onOperationCompletion(listenerService)
 
         prepareBuildTaskService(project)
         prepareBuildScanListener(project, extension, metricsDispatcher)
