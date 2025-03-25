@@ -41,7 +41,7 @@ data class RemoteBuildCacheData(
 
     /**
      * Maps cache keys to avoidance values, representing the estimated time saved by using the remote build cache.
-     * The avoidance value is calculated by subtracting the time required to retrieve the task output from the remote cache
+     * The avoidance value is calculated by subtracting the remote cache retrieval time
      * from the original execution time.
      */
     val avoidances: List<Pair<String, Duration>>

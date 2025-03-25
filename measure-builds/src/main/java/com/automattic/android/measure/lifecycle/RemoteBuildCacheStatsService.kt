@@ -16,24 +16,17 @@ import org.gradle.internal.operations.OperationIdentifier
 import org.gradle.internal.operations.OperationProgressEvent
 import org.gradle.internal.operations.OperationStartEvent
 
-abstract class RemoteBuildCacheStatsService : BuildService<BuildServiceParameters.None>,
+abstract class RemoteBuildCacheStatsService :
+    BuildService<BuildServiceParameters.None>,
     BuildOperationListener {
 
     init {
         InMemoryReport.remoteBuildCacheData = RemoteBuildCacheData()
     }
 
-    override fun started(
-        buildOperation: BuildOperationDescriptor,
-        startEvent: OperationStartEvent,
-    ) {
-    }
+    override fun started(buildOperation: BuildOperationDescriptor, startEvent: OperationStartEvent) = Unit
 
-    override fun progress(
-        operationIdentifier: OperationIdentifier,
-        progressEvent: OperationProgressEvent,
-    ) {
-    }
+    override fun progress(operationIdentifier: OperationIdentifier, progressEvent: OperationProgressEvent) = Unit
 
     override fun finished(
         buildOperation: BuildOperationDescriptor,
