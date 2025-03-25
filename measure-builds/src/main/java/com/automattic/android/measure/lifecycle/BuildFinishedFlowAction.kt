@@ -29,9 +29,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         @get:Input
         val buildWorkResult: Property<Provider<BuildWorkResult>>
 
-        @get:Input
-        val attachGradleScanId: Property<Boolean>
-
         @get:ServiceReference
         val buildTaskService: Property<BuildTaskService>
 
@@ -64,12 +61,6 @@ class BuildFinishedFlowAction : FlowAction<BuildFinishedFlowAction.Parameters> {
         )
 
         InMemoryReport.setExecutionData(executionData)
-
-        if (parameters.attachGradleScanId.get() == false) {
-            InMemoryMetricsReporter.report(
-                report = InMemoryReport,
-                gradleScanId = null
-            )
-        }
+        InMemoryMetricsReporter.report(InMemoryReport)
     }
 }

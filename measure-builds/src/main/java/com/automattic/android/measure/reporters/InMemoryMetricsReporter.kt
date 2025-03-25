@@ -9,15 +9,10 @@ object InMemoryMetricsReporter {
 
     var buildMetricsPreparedAction: Property<Action<MetricsReport>>? = null
 
-    fun report(
-        report: InMemoryReport,
-        gradleScanId: String?
-    ) {
+    fun report(report: InMemoryReport) {
         val result = object : MetricsReport {
             override val report: InMemoryReport
                 get() = report
-            override val gradleScanId: String?
-                get() = gradleScanId
         }
         if (buildMetricsPreparedAction == null) {
             Logging.getLogger(InMemoryMetricsReporter::class.java).warn(

@@ -52,7 +52,7 @@ object InternalA8cCiReporter {
         authToken: String?,
     ) {
         val report = metricsReport.report
-        val payload = report.toAppsMetricsPayload(projectName, metricsReport.gradleScanId)
+        val payload = report.toAppsMetricsPayload(projectName)
         @Suppress("TooGenericExceptionCaught")
         try {
             if (authToken.isNullOrBlank()) {

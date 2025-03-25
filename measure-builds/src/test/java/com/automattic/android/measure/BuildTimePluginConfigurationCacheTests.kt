@@ -99,7 +99,6 @@ class BuildTimePluginConfigurationCacheTests {
             val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
             measureBuilds {
                 enable.set(true)
-                attachGradleScanId.set(false)
                 onBuildMetricsReadyListener {
                     val buildPath = buildPathProperty.get()
                     com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)

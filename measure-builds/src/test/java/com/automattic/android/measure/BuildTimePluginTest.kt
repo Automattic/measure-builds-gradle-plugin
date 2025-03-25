@@ -13,42 +13,9 @@ import java.io.File
 class BuildTimePluginTest {
 
     @Test
-    fun `given a project that attaches gradle scan id, when executing a task with configuration from cache, then send the report with attached gradle scan id`() {
+    fun `given a project that disabled build measurements, when executing a task, then build metrics are not sent`() {
         // given
-        val runner = functionalTestRunner(
-            enable = true,
-            attachGradleScanId = true,
-            projectWithSendingScans = true
-        )
-
-        // when
-        val prepareConfigurationCache =
-            runner.withArguments("--configuration-cache", "help").build()
-
-        // then
-        assertThat(
-            prepareConfigurationCache.output
-        ).contains("Calculating task graph as no cached configuration is available for tasks")
-            .contains("Configuration cache entry stored")
-
-        // when
-        val buildUsingConfigurationCache =
-            runner.withArguments("--configuration-cache", "help", "--debug").build()
-
-        // then
-        assertThat(buildUsingConfigurationCache.output).contains("Reusing configuration cache")
-            .contains("Reporting build data to Apps Metrics...")
-            .containsIgnoringWhitespaces("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":")
-            .doesNotContain("{\"name\":\"woocommerce-gradle-scan-id\",\"value\":\"null\"}")
-    }
-
-    @Test
-    fun `given a project that disabled build measurements and does not attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
-        // given
-        val runner = functionalTestRunner(
-            enable = false,
-            attachGradleScanId = false,
-        )
+        val runner = functionalTestRunner(enable = false)
 
         // when
         val run = runner.withArguments("help").build()
@@ -58,42 +25,9 @@ class BuildTimePluginTest {
     }
 
     @Test
-    fun `given a project that did not enable build measurements and does not attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
+    fun `given a project that did not enable build measurements, when executing a task, then build metrics are not sent`() {
         // given
-        val runner = functionalTestRunner(
-            enable = null,
-            attachGradleScanId = false,
-        )
-
-        // when
-        val run = runner.withArguments("help").build()
-
-        // then
-        assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
-    }
-
-    @Test
-    fun `given a project that disabled build measurements and does attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
-        // given
-        val runner = functionalTestRunner(
-            enable = false,
-            attachGradleScanId = true,
-        )
-
-        // when
-        val run = runner.withArguments("help").build()
-
-        // then
-        assertThat(run.output).doesNotContain("Reporting build data to Apps Metrics...")
-    }
-
-    @Test
-    fun `given a project that did not enable build measurements and does attach Gradle Scan Id, when executing a task, then build metrics are not sent`() {
-        // given
-        val runner = functionalTestRunner(
-            enable = null,
-            attachGradleScanId = true,
-        )
+        val runner = functionalTestRunner(enable = null)
 
         // when
         val run = runner.withArguments("help").build()
@@ -107,7 +41,6 @@ class BuildTimePluginTest {
         // given
         val runner = functionalTestRunner(
             enable = true,
-            attachGradleScanId = false,
             applyAppsMetricsToken = false,
         )
 
@@ -124,7 +57,6 @@ class BuildTimePluginTest {
         // given
         val runner = functionalTestRunner(
             enable = true,
-            attachGradleScanId = false,
             applyAppsMetricsToken = false,
         )
 
@@ -150,30 +82,12 @@ class BuildTimePluginTest {
 
     private fun functionalTestRunner(
         enable: Boolean?,
-        projectWithSendingScans: Boolean = false,
-        attachGradleScanId: Boolean,
         applyAppsMetricsToken: Boolean = true,
         vararg arguments: String,
     ): GradleRunner {
         val projectDir = File("build/functionalTest").apply {
             mkdirs()
-            if (projectWithSendingScans) {
-                resolve("settings.gradle.kts").writeText(
-                    """
-                        plugins {
-                            id("com.gradle.enterprise") version "3.15.1"
-                        }
-                        gradleEnterprise {
-                            buildScan {
-                                publishAlways()
-                                termsOfServiceUrl = "https://gradle.com/terms-of-service"
-                                termsOfServiceAgree = "yes"
-                                isUploadInBackground = false
-                            }
-                        }
-                    """.trimIndent()
-                )
-            }
+            resolve("settings.gradle.kts").writeText("")
             resolve("build.gradle.kts").writeText(
                 """
                      plugins {
@@ -182,7 +96,6 @@ class BuildTimePluginTest {
                      val buildPathProperty = project.layout.buildDirectory.map { it.asFile.path }
                      measureBuilds {
                          ${if (enable != null) "enable.set($enable)" else ""}
-                         attachGradleScanId.set($attachGradleScanId)
                          onBuildMetricsReadyListener {
                               val buildPath = buildPathProperty.get()
                               com.automattic.android.measure.reporters.LocalMetricsReporter.report(this, buildPath)

@@ -24,7 +24,6 @@ class GroovyConfigurationTest {
             
             measureBuilds {
                 enable = true
-                attachGradleScanId = false
                 onBuildMetricsReadyListener { MetricsReport report -> 
                     SlowSlowTasksMetricsReporter.report(report)
                     LocalMetricsReporter.report(report, buildDir.absolutePath)

@@ -6,8 +6,6 @@ import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
 import com.automattic.android.measure.reporters.InMemoryMetricsReporter
-import com.gradle.scan.plugin.BuildScanExtension
-import kotlinx.coroutines.runBlocking
 import org.gradle.StartParameter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -49,7 +47,6 @@ class BuildTimePlugin @Inject constructor(
                 prepareBuildData(project, encodedUser)
                 prepareBuildFinishedAction(
                     project.gradle.startParameter,
-                    extension,
                     buildInitiatedTime,
                     configurationProvider
                 )
@@ -57,7 +54,6 @@ class BuildTimePlugin @Inject constructor(
         }
 
         prepareBuildTaskService(project)
-        prepareBuildScanListener(project, extension, metricsDispatcher)
     }
 
     private fun prepareBuildData(
@@ -72,26 +68,8 @@ class BuildTimePlugin @Inject constructor(
         )
     }
 
-    private fun prepareBuildScanListener(
-        project: Project,
-        extension: MeasureBuildsExtension,
-        analyticsReporter: InMemoryMetricsReporter,
-    ) {
-        val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
-        val extensionEnable = extension.enable
-        val attachGradleScanId = extension.attachGradleScanId
-        buildScanExtension?.buildScanPublished {
-            runBlocking {
-                if (extensionEnable.get() && attachGradleScanId.get()) {
-                    analyticsReporter.report(InMemoryReport, it.buildScanId)
-                }
-            }
-        }
-    }
-
     private fun prepareBuildFinishedAction(
         startParameter: StartParameter,
-        extension: MeasureBuildsExtension,
         buildInitiatedTime: Long,
         configurationPhaseObserver: Provider<Boolean>,
     ) {
@@ -100,7 +78,6 @@ class BuildTimePlugin @Inject constructor(
         ) { spec: FlowActionSpec<BuildFinishedFlowAction.Parameters> ->
             spec.parameters.apply {
                 this.buildWorkResult.set(flowProviders.buildWorkResult)
-                this.attachGradleScanId.set(extension.attachGradleScanId)
                 this.initiationTime.set(buildInitiatedTime)
                 this.configurationPhaseExecuted.set(configurationPhaseObserver)
                 this.startParameter.set(startParameter)

@@ -5,10 +5,7 @@ import com.automattic.android.measure.models.MeasuredTask.State.EXECUTED
 import com.automattic.android.measure.models.MeasuredTask.State.IS_FROM_CACHE
 import com.automattic.android.measure.models.MeasuredTask.State.UP_TO_DATE
 
-fun InMemoryReport.toAppsMetricsPayload(
-    projectKey: String,
-    gradleScanId: String?
-): GroupedAppsMetrics {
+fun InMemoryReport.toAppsMetricsPayload(projectKey: String): GroupedAppsMetrics {
     val meta = mapOf(
         "user" to buildData.user,
         "project" to projectKey,
@@ -32,7 +29,6 @@ fun InMemoryReport.toAppsMetricsPayload(
         "included-builds" to buildData.includedBuildsNames.joinToString(separator = ",")
             .ifEmpty { "none" },
         "build-finished-at" to executionData.buildFinishedTimestamp.toString(),
-        "gradle-scan-id" to gradleScanId.orEmpty(),
         "configuration-duration" to executionData.configurationPhaseDuration.toString()
     )
 

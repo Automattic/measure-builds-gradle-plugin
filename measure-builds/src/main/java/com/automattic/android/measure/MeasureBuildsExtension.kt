@@ -38,15 +38,4 @@ abstract class MeasureBuildsExtension(project: Project) {
     fun onBuildMetricsReadyListener(action: Action<MetricsReport>) {
         buildMetricsReadyAction.set(action)
     }
-
-    /**
-     * If `true`, then the metrics will be sent at build finish,
-     * orchestrated by Gradle Enterprise plugin, attaching
-     * Gradle Build Scan id to metrics.
-     *
-     * If `false`, then metrics will be sent at build finish by
-     * @see [com.automattic.android.measure.lifecycle.BuildFinishedFlowAction].
-     */
-    val attachGradleScanId: Property<Boolean> =
-        objects.property(Boolean::class.java).convention(false)
 }
