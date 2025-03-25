@@ -13,28 +13,22 @@ object RemoteBuildCacheMetricsReporter {
 
     @JvmStatic
     fun report(metricsReporter: MetricsReport) {
-        val (originExecutionTimes, remoteLoadTimes) = metricsReporter.report.remoteBuildCacheData
 
-        val avoidanceMap = originExecutionTimes.mapNotNull {
-            val remoteLoadTime = remoteLoadTimes[it.key]
-            if (remoteLoadTime != null) {
-                val timeAvoidance = it.value.executionTime - remoteLoadTime
-                it.value.name to timeAvoidance.milliseconds
-            } else {
-                null
+        metricsReporter.report.remoteBuildCacheData?.let { data ->
+            val totalSavings = data.totalSavings
+            val avoidances = data.avoidances
+
+            if (totalSavings > LOG_SAVINGS_THRESHOLD) {
+                logger.lifecycle("\n${Emojis.ROCKET_ICON} Sum of estimated remote cache savings: $totalSavings (not actual saved build duration). Top savings:")
+                logger.lifecycle(String.format(Locale.US, "%-15s %s", "Saved", "Task"))
+                avoidances.take(3).forEach { (task, avoidance) ->
+                    logger.lifecycle(String.format("%-15s %s", avoidance, task))
+                }
+            } else if (totalSavings < Duration.ZERO) {
+                logger.lifecycle("\n${Emojis.FAILURE_ICON} It's estimated that remote cache added ${totalSavings.absoluteValue} to the build. Assert you have stable internet connection.")
             }
-        }.sortedByDescending { it.second }
 
-        val totalSavings = avoidanceMap.sumOf { it.second.inWholeMilliseconds }.milliseconds
-
-        if (totalSavings > LOG_SAVINGS_THRESHOLD) {
-            logger.lifecycle("\n${Emojis.ROCKET_ICON} Sum of estimated remote cache savings: $totalSavings (not actual saved build duration). Top savings:")
-            logger.lifecycle(String.format(Locale.US, "%-15s %s", "Saved", "Task"))
-            avoidanceMap.take(3).forEach { (task, avoidance) ->
-                logger.lifecycle(String.format("%-15s %s", avoidance, task))
-            }
-        } else if (totalSavings < Duration.ZERO) {
-            logger.lifecycle("\n${Emojis.FAILURE_ICON} It's estimated that remote cache added ${totalSavings.absoluteValue} to the build. Assert you have stable internet connection.")
         }
+
     }
 }

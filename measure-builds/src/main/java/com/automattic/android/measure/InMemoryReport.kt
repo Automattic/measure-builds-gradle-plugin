@@ -22,5 +22,5 @@ object InMemoryReport {
     val executionData: ExecutionData
         get() = executionDataStore ?: throw NullPointerException("Execution data must not be null")
 
-    var remoteBuildCacheData: RemoteBuildCacheData = RemoteBuildCacheData()
+    var remoteBuildCacheData: RemoteBuildCacheData? = null
 }

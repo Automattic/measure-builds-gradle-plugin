@@ -45,8 +45,10 @@ abstract class RemoteBuildCacheStatsService : BuildService<BuildServiceParameter
         ) {
             val details = buildOperation.details as LoadOperationDetails
 
-            InMemoryReport.remoteBuildCacheData.remoteLoadTimes[details.cacheKey] =
+            InMemoryReport.remoteBuildCacheData?.remoteLoadTimes?.set(
+                details.cacheKey,
                 finishEvent.endTime - finishEvent.startTime
+            )
         }
         if (finishEvent.result is ExecuteTaskBuildOperationType.Result) {
             val result = finishEvent.result as ExecuteTaskBuildOperationType.Result
@@ -56,9 +58,12 @@ abstract class RemoteBuildCacheStatsService : BuildService<BuildServiceParameter
                     ?.toString() to result.originExecutionTime
             }?.let { (cacheKey, executionTime) ->
                 if (cacheKey != null && executionTime != null) {
-                    InMemoryReport.remoteBuildCacheData.originExecutions[cacheKey] = OriginExecutionTaskData(
-                        name = buildOperation.name,
-                        executionTime = executionTime,
+                    InMemoryReport.remoteBuildCacheData?.originExecutions?.set(
+                        cacheKey,
+                        OriginExecutionTaskData(
+                            name = buildOperation.name,
+                            executionTime = executionTime,
+                        )
                     )
                 }
             }
