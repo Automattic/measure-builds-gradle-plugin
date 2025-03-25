@@ -36,7 +36,8 @@ data class ExecutionData(
 @Serializable
 data class RemoteBuildCacheData(
     val originExecutions: MutableMap<String, OriginExecutionTaskData> = hashMapOf(),
-    val remoteLoadTimes: MutableMap<String, Long> = hashMapOf()
+    val remoteLoadTimes: MutableMap<String, Long> = hashMapOf(),
+    val unpackTimes: MutableMap<String, Long> = hashMapOf()
 ) {
 
     /**
@@ -47,8 +48,9 @@ data class RemoteBuildCacheData(
     val avoidances: List<Pair<String, Duration>>
         get() = originExecutions.mapNotNull {
             val remoteLoadTime = remoteLoadTimes[it.key]
-            if (remoteLoadTime != null) {
-                val timeAvoidance = it.value.executionTime - remoteLoadTime
+            val unpackTime = unpackTimes[it.key]
+            if (remoteLoadTime != null && unpackTime != null) {
+                val timeAvoidance = it.value.executionTime - remoteLoadTime - unpackTime
                 it.value.name to timeAvoidance.milliseconds
             } else {
                 null

@@ -7,6 +7,7 @@ import org.gradle.api.internal.tasks.execution.ExecuteTaskBuildOperationType
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import org.gradle.caching.internal.controller.operations.LoadOperationDetails
+import org.gradle.caching.internal.operations.BuildCacheArchiveUnpackBuildOperationType
 import org.gradle.caching.internal.operations.BuildCacheRemoteLoadBuildOperationType
 import org.gradle.internal.hash.HashCode
 import org.gradle.internal.operations.BuildOperationDescriptor
@@ -43,6 +44,16 @@ abstract class RemoteBuildCacheStatsService :
                 finishEvent.endTime - finishEvent.startTime
             )
         }
+
+        if (finishEvent.result is BuildCacheArchiveUnpackBuildOperationType.Result) {
+            val details = buildOperation.details as BuildCacheArchiveUnpackBuildOperationType.Details
+
+            InMemoryReport.remoteBuildCacheData?.unpackTimes?.set(
+                details.cacheKey,
+                finishEvent.endTime - finishEvent.startTime
+            )
+        }
+
         if (finishEvent.result is ExecuteTaskBuildOperationType.Result) {
             val result = finishEvent.result as ExecuteTaskBuildOperationType.Result
 
