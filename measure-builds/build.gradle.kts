@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.gradle:gradle-enterprise-gradle-plugin:3.15.1")
+    implementation("com.gradle:develocity-gradle-plugin:3.19.2")
 
     val ktor = "3.1.1"
     implementation("io.ktor:ktor-client-core:$ktor")
