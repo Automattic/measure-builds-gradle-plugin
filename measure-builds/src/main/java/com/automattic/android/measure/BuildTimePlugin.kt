@@ -6,7 +6,7 @@ import com.automattic.android.measure.lifecycle.ConfigurationPhaseObserver
 import com.automattic.android.measure.providers.BuildDataProvider
 import com.automattic.android.measure.providers.UsernameProvider
 import com.automattic.android.measure.reporters.InMemoryMetricsReporter
-import com.gradle.scan.plugin.BuildScanExtension
+import com.gradle.develocity.agent.gradle.DevelocityConfiguration
 import kotlinx.coroutines.runBlocking
 import org.gradle.StartParameter
 import org.gradle.api.Plugin
@@ -77,10 +77,10 @@ class BuildTimePlugin @Inject constructor(
         extension: MeasureBuildsExtension,
         analyticsReporter: InMemoryMetricsReporter,
     ) {
-        val buildScanExtension = project.extensions.findByType(BuildScanExtension::class.java)
+        val develocityConfiguration = project.extensions.findByType(DevelocityConfiguration::class.java)
         val extensionEnable = extension.enable
         val attachGradleScanId = extension.attachGradleScanId
-        buildScanExtension?.buildScanPublished {
+        develocityConfiguration?.buildScan?.buildScanPublished {
             runBlocking {
                 if (extensionEnable.get() && attachGradleScanId.get()) {
                     analyticsReporter.report(InMemoryReport, it.buildScanId)

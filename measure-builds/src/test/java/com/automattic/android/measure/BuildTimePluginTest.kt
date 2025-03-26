@@ -161,14 +161,13 @@ class BuildTimePluginTest {
                 resolve("settings.gradle.kts").writeText(
                     """
                         plugins {
-                            id("com.gradle.enterprise") version "3.15.1"
+                            id("com.gradle.develocity") version "3.19.2"
                         }
-                        gradleEnterprise {
+                        develocity {
                             buildScan {
-                                publishAlways()
-                                termsOfServiceUrl = "https://gradle.com/terms-of-service"
-                                termsOfServiceAgree = "yes"
-                                isUploadInBackground = false
+                                termsOfUseUrl = "https://gradle.com/terms-of-service"
+                                termsOfUseAgree = "yes"
+                                uploadInBackground = false
                             }
                         }
                     """.trimIndent()
