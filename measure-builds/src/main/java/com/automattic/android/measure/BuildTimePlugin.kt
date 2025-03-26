@@ -59,13 +59,16 @@ class BuildTimePlugin @Inject constructor(
             }
         }
 
+        prepareRemoteBuildCacheListener(project)
+        prepareBuildTaskService(project)
+        prepareBuildScanListener(project, extension, metricsDispatcher)
+    }
+
+    private fun prepareRemoteBuildCacheListener(project: Project) {
         val listenerService =
             project.gradle.sharedServices.registerIfAbsent("listener-service", RemoteBuildCacheStatsService::class.java)
         val buildEventListenerRegistry: BuildEventListenerRegistryInternal = project.serviceOf()
         buildEventListenerRegistry.onOperationCompletion(listenerService)
-
-        prepareBuildTaskService(project)
-        prepareBuildScanListener(project, extension, metricsDispatcher)
     }
 
     private fun prepareBuildData(
