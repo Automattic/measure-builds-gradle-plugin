@@ -40,6 +40,11 @@ fun InMemoryReport.toAppsMetricsPayload(
         "task-${it.name}" to it.duration.inWholeMilliseconds.toString()
     }
 
+    val remoteBuildCacheMetrics = mapOf(
+        "total-savings" to remoteBuildCacheData?.totalSavings?.inWholeMilliseconds?.toString(),
+        "avg-speed" to remoteBuildCacheData?.estimatedDownloadSpeed
+    ).filterValues { it != null }.mapKeys { "remote-build-cache-${it.key}" }.mapValues { it.value.orEmpty() }
+
     return GroupedAppsMetrics(
         meta = meta.map { (key, value) ->
             AppsMetric(
@@ -48,7 +53,7 @@ fun InMemoryReport.toAppsMetricsPayload(
                 value = value.ifBlank { "null" }
             )
         },
-        metrics = (metrics + tasks).map { (key, value) ->
+        metrics = (metrics + tasks + remoteBuildCacheMetrics).map { (key, value) ->
             AppsMetric(
                 name = "$projectKey-$key",
                 // Apps Metrics doesn't allow metric value to be empty
