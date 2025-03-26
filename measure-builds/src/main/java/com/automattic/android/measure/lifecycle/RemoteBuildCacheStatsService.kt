@@ -1,6 +1,7 @@
 package com.automattic.android.measure.lifecycle
 
 import com.automattic.android.measure.InMemoryReport
+import com.automattic.android.measure.models.DownloadEvent
 import com.automattic.android.measure.models.OriginExecutionTaskData
 import com.automattic.android.measure.models.RemoteBuildCacheData
 import org.gradle.api.internal.tasks.execution.ExecuteTaskBuildOperationType
@@ -34,15 +35,18 @@ abstract class RemoteBuildCacheStatsService :
         finishEvent: OperationFinishEvent,
     ) {
         if (
-            (finishEvent.result is BuildCacheRemoteLoadBuildOperationType.Result) &&
-            (finishEvent.result as BuildCacheRemoteLoadBuildOperationType.Result).isHit
+            (finishEvent.result is BuildCacheRemoteLoadBuildOperationType.Result)
         ) {
-            val details = buildOperation.details as LoadOperationDetails
+            val result = finishEvent.result as BuildCacheRemoteLoadBuildOperationType.Result
 
-            InMemoryReport.remoteBuildCacheData?.remoteLoadTimes?.set(
-                details.cacheKey,
-                finishEvent.endTime - finishEvent.startTime
-            )
+            if (result.isHit) {
+                val details = buildOperation.details as LoadOperationDetails
+
+                InMemoryReport.remoteBuildCacheData?.remoteLoads?.set(
+                    details.cacheKey,
+                    DownloadEvent(finishEvent.startTime, finishEvent.endTime, result.archiveSize)
+                )
+            }
         }
 
         if (finishEvent.result is BuildCacheArchiveUnpackBuildOperationType.Result) {

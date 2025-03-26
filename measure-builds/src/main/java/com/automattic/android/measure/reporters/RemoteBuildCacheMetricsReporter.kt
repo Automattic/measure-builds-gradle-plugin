@@ -17,10 +17,12 @@ object RemoteBuildCacheMetricsReporter {
         metricsReporter.report.remoteBuildCacheData?.let { data ->
             val totalSavings = data.totalSavings
             val avoidances = data.avoidances
+            val estimatedDownloadSpeed = data.estimatedDownloadSpeed
 
             if (totalSavings > LOG_SAVINGS_THRESHOLD) {
                 logger.lifecycle(
-                    "\n${Emojis.ROCKET_ICON} Sum of estimated remote cache savings: $totalSavings. Top savings:"
+                    "\n${Emojis.ROCKET_ICON} Sum of estimated remote cache savings: $totalSavings. " +
+                        "Average speed was $estimatedDownloadSpeed. Top savings:"
                 )
                 logger.lifecycle(String.format(Locale.US, "%-15s %s", "Saved", "Task"))
                 avoidances.take(MAX_TOP_AVOIDANCES).forEach { (task, avoidance) ->
@@ -29,7 +31,8 @@ object RemoteBuildCacheMetricsReporter {
             } else if (totalSavings < Duration.ZERO) {
                 logger.lifecycle(
                     "\n${Emojis.FAILURE_ICON} Remote cache is estimated to have added" +
-                        " ${totalSavings.absoluteValue} to the build time. Check your network performance."
+                        " ${totalSavings.absoluteValue} to the build time. Check your network performance. " +
+                        "Average speed was $estimatedDownloadSpeed."
                 )
             }
         }

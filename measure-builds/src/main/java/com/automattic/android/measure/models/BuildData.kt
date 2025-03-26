@@ -1,6 +1,8 @@
 package com.automattic.android.measure.models
 
+import com.automattic.android.measure.tools.IntervalMeasurer
 import kotlinx.serialization.Serializable
+import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -36,9 +38,11 @@ data class ExecutionData(
 @Serializable
 data class RemoteBuildCacheData(
     val originExecutions: MutableMap<String, OriginExecutionTaskData> = hashMapOf(),
-    val remoteLoadTimes: MutableMap<String, Long> = hashMapOf(),
+    val remoteLoads: MutableMap<String, DownloadEvent> = hashMapOf(),
     val unpackTimes: MutableMap<String, Long> = hashMapOf()
 ) {
+    val remoteLoadTimes: Map<String, Long>
+        get() = remoteLoads.mapValues { it.value.endTime - it.value.startTime }
 
     /**
      * Maps cache keys to avoidance values, representing the estimated time saved by using the remote build cache.
@@ -65,12 +69,56 @@ data class RemoteBuildCacheData(
      */
     val totalSavings
         get() = avoidances.sumOf { it.second.inWholeMilliseconds }.milliseconds
+
+    private val clockTimeDownloadDuration: Duration
+        get() = remoteLoads.values.toList().map { it.startTime to it.endTime }
+            .let { IntervalMeasurer.findTotalTime(it) }.milliseconds
+
+    private val totalArchiveSize: Long
+        get() = remoteLoads.values.sumOf { it.archiveSize }
+
+    /**
+     * Estimates the download speed while considering task parallelization.
+     * This calculation does not account for any pauses between task executions.
+     *
+     * The estimation is based on the time between the start of the first fetch
+     * and the completion of the last fetch. The total fetched artifact size is
+     * divided by this duration to approximate the download speed.
+     *
+     * Note: This is an estimated value and may not reflect the exact download speed,
+     * but it still provides a useful approximation. Inspired by
+     * https://github.com/runningcode/gradle-doctor/blob/2e61538beeda9d8859e20861e18b227508edfd6f/doctor-plugin/src/main/java/com/osacky/doctor/BuildCacheConnectionMeasurer.kt#L15
+     */
+    @Suppress("MagicNumber")
+    val estimatedDownloadSpeed: String?
+        get() {
+            val bytesPerKiB = 1024
+            val bytesPerMiB = bytesPerKiB * 1024
+
+            val speedBps = if (clockTimeDownloadDuration.inWholeMilliseconds > 0) {
+                (totalArchiveSize.toDouble() / clockTimeDownloadDuration.inWholeMilliseconds) * 1000
+            } else {
+                return null
+            }
+
+            return when {
+                speedBps >= bytesPerMiB -> String.format(Locale.US, "%.2f MiB/s", speedBps / bytesPerMiB)
+                else -> String.format(Locale.US, "%.2f KiB/s", speedBps / bytesPerKiB)
+            }
+        }
 }
 
 @Serializable
 data class OriginExecutionTaskData(
     val name: String,
     val executionTime: Long
+)
+
+@Serializable
+data class DownloadEvent(
+    val startTime: Long,
+    val endTime: Long,
+    val archiveSize: Long
 )
 
 enum class Environment {
