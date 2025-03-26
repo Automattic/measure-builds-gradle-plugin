@@ -34,45 +34,40 @@ abstract class RemoteBuildCacheStatsService :
         buildOperation: BuildOperationDescriptor,
         finishEvent: OperationFinishEvent,
     ) {
-        if (
-            (finishEvent.result is BuildCacheRemoteLoadBuildOperationType.Result)
-        ) {
-            val result = finishEvent.result as BuildCacheRemoteLoadBuildOperationType.Result
+        when (val result = finishEvent.result) {
+            is BuildCacheRemoteLoadBuildOperationType.Result -> {
+                if (result.isHit) {
+                    val details = buildOperation.details as LoadOperationDetails
+                    InMemoryReport.remoteBuildCacheData?.remoteLoads?.set(
+                        details.cacheKey,
+                        DownloadEvent(finishEvent.startTime, finishEvent.endTime, result.archiveSize)
+                    )
+                }
+            }
 
-            if (result.isHit) {
-                val details = buildOperation.details as LoadOperationDetails
+            is BuildCacheArchiveUnpackBuildOperationType.Result -> {
+                val details = buildOperation.details as BuildCacheArchiveUnpackBuildOperationType.Details
 
-                InMemoryReport.remoteBuildCacheData?.remoteLoads?.set(
+                InMemoryReport.remoteBuildCacheData?.unpackTimes?.set(
                     details.cacheKey,
-                    DownloadEvent(finishEvent.startTime, finishEvent.endTime, result.archiveSize)
+                    finishEvent.endTime - finishEvent.startTime
                 )
             }
-        }
 
-        if (finishEvent.result is BuildCacheArchiveUnpackBuildOperationType.Result) {
-            val details = buildOperation.details as BuildCacheArchiveUnpackBuildOperationType.Details
-
-            InMemoryReport.remoteBuildCacheData?.unpackTimes?.set(
-                details.cacheKey,
-                finishEvent.endTime - finishEvent.startTime
-            )
-        }
-
-        if (finishEvent.result is ExecuteTaskBuildOperationType.Result) {
-            val result = finishEvent.result as ExecuteTaskBuildOperationType.Result
-
-            result.takeIf { !it.isIncremental }?.let {
-                result.originBuildCacheKeyBytes?.let { HashCode.fromBytes(it) }
-                    ?.toString() to result.originExecutionTime
-            }?.let { (cacheKey, executionTime) ->
-                if (cacheKey != null && executionTime != null) {
-                    InMemoryReport.remoteBuildCacheData?.originExecutions?.set(
-                        cacheKey,
-                        OriginExecutionTaskData(
-                            name = buildOperation.name,
-                            executionTime = executionTime,
+            is ExecuteTaskBuildOperationType.Result -> {
+                result.takeIf { !it.isIncremental }?.let {
+                    result.originBuildCacheKeyBytes?.let { HashCode.fromBytes(it) }
+                        ?.toString() to result.originExecutionTime
+                }?.let { (cacheKey, executionTime) ->
+                    if (cacheKey != null && executionTime != null) {
+                        InMemoryReport.remoteBuildCacheData?.originExecutions?.set(
+                            cacheKey,
+                            OriginExecutionTaskData(
+                                name = buildOperation.name,
+                                executionTime = executionTime,
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
