@@ -43,7 +43,7 @@ fun InMemoryReport.toAppsMetricsPayload(
     val remoteBuildCacheMetrics = mapOf(
         "total-savings" to remoteBuildCacheData?.totalSavings?.inWholeMilliseconds?.toString(),
         "avg-speed" to remoteBuildCacheData?.estimatedDownloadSpeed
-    ).filterValues { it != null }.mapKeys { "remote-build-cache-$it" }.mapValues { it.value.orEmpty() }
+    ).filterValues { it != null }.mapKeys { "remote-build-cache-${it.key}" }.mapValues { it.value.orEmpty() }
 
     return GroupedAppsMetrics(
         meta = meta.map { (key, value) ->
