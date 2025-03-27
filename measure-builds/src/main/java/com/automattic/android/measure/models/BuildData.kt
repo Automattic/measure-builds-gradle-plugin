@@ -2,7 +2,6 @@ package com.automattic.android.measure.models
 
 import com.automattic.android.measure.tools.IntervalMeasurer
 import kotlinx.serialization.Serializable
-import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -89,21 +88,12 @@ data class RemoteBuildCacheData(
      * but it still provides a useful approximation. Inspired by
      * https://github.com/runningcode/gradle-doctor/blob/2e61538beeda9d8859e20861e18b227508edfd6f/doctor-plugin/src/main/java/com/osacky/doctor/BuildCacheConnectionMeasurer.kt#L15
      */
-    @Suppress("MagicNumber")
-    val estimatedDownloadSpeed: String?
+    val estimatedDownloadSpeed: Double?
         get() {
-            val bytesPerKiB = 1024
-            val bytesPerMiB = bytesPerKiB * 1024
-
-            val speedBps = if (clockTimeDownloadDuration.inWholeMilliseconds > 0) {
-                (totalArchiveSize.toDouble() / clockTimeDownloadDuration.inWholeMilliseconds) * 1000
+            return if (clockTimeDownloadDuration.inWholeMilliseconds > 0) {
+                totalArchiveSize.toDouble() / clockTimeDownloadDuration.inWholeSeconds
             } else {
-                return null
-            }
-
-            return when {
-                speedBps >= bytesPerMiB -> String.format(Locale.US, "%.2f MiB/s", speedBps / bytesPerMiB)
-                else -> String.format(Locale.US, "%.2f KiB/s", speedBps / bytesPerKiB)
+                null
             }
         }
 }

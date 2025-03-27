@@ -17,7 +17,7 @@ object RemoteBuildCacheMetricsReporter {
         metricsReporter.report.remoteBuildCacheData?.let { data ->
             val totalSavings = data.totalSavings
             val avoidances = data.avoidances
-            val estimatedDownloadSpeed = data.estimatedDownloadSpeed
+            val estimatedDownloadSpeed = data.estimatedDownloadSpeed?.let { formatAverageSpeed(it) }
 
             if (totalSavings > LOG_SAVINGS_THRESHOLD) {
                 logger.lifecycle(
@@ -35,6 +35,17 @@ object RemoteBuildCacheMetricsReporter {
                         "Average speed was $estimatedDownloadSpeed."
                 )
             }
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun formatAverageSpeed(speedBps: Double): String {
+        val bytesPerKiB = 1024
+        val bytesPerMiB = bytesPerKiB * 1024
+
+        return when {
+            speedBps >= bytesPerMiB -> String.format(Locale.US, "%.2f MiB/s", speedBps / bytesPerMiB)
+            else -> String.format(Locale.US, "%.2f KiB/s", speedBps / bytesPerKiB)
         }
     }
 }
