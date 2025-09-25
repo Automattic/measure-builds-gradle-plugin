@@ -30,6 +30,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
+    testImplementation(kotlin("test"))
 }
 
 detekt {
