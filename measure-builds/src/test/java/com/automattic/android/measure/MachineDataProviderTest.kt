@@ -9,9 +9,9 @@ class MachineDataProviderTest {
     @Test
     fun testArchitectureLookup() {
         if (System.getenv("CI") != null) {
-            assertEquals("x86_64", MachineDataProvider().architecture())
+            assertEquals("amd64", MachineDataProvider().architecture())
         } else {
-            assertEquals("arm64", MachineDataProvider().architecture())
+            assertEquals("aarch64", MachineDataProvider().architecture())
         }
     }
 }

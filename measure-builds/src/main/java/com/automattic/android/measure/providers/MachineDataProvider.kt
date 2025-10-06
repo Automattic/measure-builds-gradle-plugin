@@ -5,32 +5,13 @@ class MachineDataProvider {
     fun operatingSystem(): String {
         return System.getProperty("os.name").lowercase()
     }
+
     fun architecture(): String {
-        val operatingSystem = this.operatingSystem()
-        var architecture = "unknown"
-
-        if (operatingSystem.contains("mac")) {
-            architecture = runCliCommand(listOf("uname", "-m"))
-        }
-
-        if (operatingSystem.contains("linux")) {
-            architecture = runCliCommand(listOf("uname", "-m"))
-        }
-
-        if (operatingSystem.contains("win")) {
-            architecture = runCliCommand(listOf("echo", "%PROCESSOR_ARCHITECTURE%"))
-        }
-
-        return architecture
-    }
-
-    private fun runCliCommand(command: List<String>): String {
-        val process = ProcessBuilder().apply {
-            command(command)
-        }.start()
-
-        process.waitFor()
-
-        return process.inputStream.reader().readText().trim()
+        // Use os.arch system property which is:
+        // - Cross-platform (works on Mac, Linux, Windows)
+        // - Configuration-cache safe (no external process calls)
+        // - Works on JDK 21+ (avoids security restrictions on exec)
+        // Returns values like: aarch64, x86_64, amd64, arm64, etc.
+        return System.getProperty("os.arch")
     }
 }
