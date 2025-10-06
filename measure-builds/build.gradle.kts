@@ -29,7 +29,7 @@ dependencies {
     testImplementation(gradleTestKit())
     testImplementation("org.assertj:assertj-core:3.24.2")
 
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
     testImplementation(kotlin("test"))
 }
 
