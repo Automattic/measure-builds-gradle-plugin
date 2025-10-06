@@ -40,6 +40,9 @@ detekt {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+    }
 }
 
 java {

@@ -8,10 +8,9 @@ class MachineDataProviderTest {
 
     @Test
     fun testArchitectureLookup() {
-        if (System.getenv("CI") != null) {
-            assertEquals("amd64", MachineDataProvider().architecture())
-        } else {
-            assertEquals("aarch64", MachineDataProvider().architecture())
-        }
+        val actual = MachineDataProvider().architecture()
+        val expected = System.getProperty("os.arch")
+        println("Architecture: $actual (expected: $expected)")
+        assertEquals(expected, actual)
     }
 }
