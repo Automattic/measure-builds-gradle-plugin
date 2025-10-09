@@ -14,14 +14,16 @@ object BuildDataProvider {
         val gradle = project.gradle
         val startParameter = gradle.startParameter
 
+        val machineData = MachineDataProvider()
+
         @Suppress("UnstableApiUsage")
         return BuildData(
             environment = gradle.environment(),
             gradleVersion = gradle.gradleVersion,
-            operatingSystem = System.getProperty("os.name").lowercase(),
+            operatingSystem = machineData.operatingSystem(),
             isConfigurationCache = startParameter.isConfigurationCacheRequested,
             includedBuildsNames = gradle.includedBuilds.toList().map { it.name },
-            architecture = architecture(project),
+            architecture = machineData.architecture(),
             user = username,
         )
     }
@@ -32,12 +34,5 @@ object BuildDataProvider {
             System.getenv("CI") != null -> Environment.CI
             else -> Environment.CMD
         }
-    }
-
-    private fun architecture(project: Project): String {
-        val exec = project.providers.exec {
-            it.commandLine("uname", "-m")
-        }.standardOutput.asText.get()
-        return exec.trim()
     }
 }
