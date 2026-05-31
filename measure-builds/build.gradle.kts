@@ -27,7 +27,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(gradleTestKit())
-    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.assertj:assertj-core:3.27.7")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
     testImplementation(kotlin("test"))
