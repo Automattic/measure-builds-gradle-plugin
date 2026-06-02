@@ -13,7 +13,7 @@ jobs:
       GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Run Gradle tasks
         run: ./gradlew :measure-builds:preMerge --continue
       - name: Publish on Plugin Portal
