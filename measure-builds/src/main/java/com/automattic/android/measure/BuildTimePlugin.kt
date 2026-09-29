@@ -20,7 +20,6 @@ import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.internal.build.event.BuildEventListenerRegistryInternal
 import org.gradle.internal.buildevents.BuildStartedTime
 import org.gradle.internal.extensions.core.serviceOf
-import org.gradle.invocation.DefaultGradle
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -32,8 +31,7 @@ class BuildTimePlugin @Inject constructor(
     private val flowProviders: FlowProviders,
 ) : Plugin<Project> {
     override fun apply(project: Project) {
-        val buildInitiatedTime =
-            (project.gradle as DefaultGradle).services[BuildStartedTime::class.java].startTime
+        val buildInitiatedTime = project.serviceOf<BuildStartedTime>().startTime
         val extension =
             project.extensions.create("measureBuilds", MeasureBuildsExtension::class.java, project)
 
