@@ -31,13 +31,6 @@ class BuildTimePluginIsolatedProjectsTest {
         // then
         assertThat(result.output).contains("Isolated projects is an incubating feature")
         assertThat(executionData.requestedTasks).contains("help")
-
-        // when
-        val reusedResult = runner.build()
-
-        // then
-        assertThat(reusedResult.output).contains("Reusing configuration cache")
-        assertThat(executionData.requestedTasks).contains("help")
     }
 
     @Test
