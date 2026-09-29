@@ -11,15 +11,14 @@ pluginManagement {
         }
     }
 
-    val kotlinVersion = "2.1.10"
+    val kotlinVersion = "2.1.21"
 
     plugins {
         kotlin("jvm") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion
-        id("com.gradle.plugin-publish") version "1.2.1"
+        id("com.gradle.plugin-publish") version "1.3.1"
         id("io.gitlab.arturbosch.detekt") version "1.23.8"
-        id("com.automattic.android.publish-to-s3") version "0.10.0-rc-1"
-        id("com.gradle.plugin-publish") version "1.2.1"
+        id("com.automattic.android.publish-to-s3") version "0.10.0"
     }
 }
 

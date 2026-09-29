@@ -16,7 +16,7 @@ dependencies {
     implementation(gradleApi())
     implementation("com.gradle:develocity-gradle-plugin:3.19.2")
 
-    val ktor = "3.1.1"
+    val ktor = "3.2.4"
     implementation("io.ktor:ktor-client-core:$ktor")
     implementation("io.ktor:ktor-client-cio:$ktor")
     implementation("io.ktor:ktor-client-logging:$ktor")
@@ -24,7 +24,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktor")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(gradleTestKit())
     testImplementation("org.assertj:assertj-core:3.27.7")
